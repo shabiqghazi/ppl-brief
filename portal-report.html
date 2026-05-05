@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Laporan Publik - SI-PPL FTK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-50 font-sans">
+    <main class="min-h-screen">
+      <header class="bg-slate-900 text-white px-6 py-6">
+        <div
+          class="max-w-6xl mx-auto flex flex-col lg:flex-row justify-between gap-6"
+        >
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">
+              Portal Laporan
+            </p>
+            <h1 class="text-3xl font-bold mt-2">Laporan Publik Ohne Login</h1>
+            <p class="mt-3 text-slate-300 max-w-2xl">
+              Guru pamong, pengurus sekolah, dan publik bisa mengirim laporan
+              mahasiswa PPL tanpa harus memiliki akun. Semua laporan masuk ke
+              antrian DPL untuk verifikasi dan tindak lanjut.
+            </p>
+          </div>
+          <div class="space-y-3">
+            <a
+              href="admin/index.html"
+              class="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-emerald-400 transition"
+            >
+              <i class="fas fa-clipboard-list"></i> Lihat Ringkasan Admin
+            </a>
+            <a
+              href="dpl/laporan.html"
+              class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-600 transition"
+            >
+              <i class="fas fa-bell"></i> Antrian Laporan DPL
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <section
+        class="max-w-6xl mx-auto px-6 py-10 grid gap-8 xl:grid-cols-[2fr_1fr]"
+      >
+        <div class="space-y-6">
+          <div
+            class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm"
+          >
+            <div class="flex items-start gap-4">
+              <div class="rounded-2xl bg-slate-100 p-4 text-slate-700">
+                <i class="fas fa-flag text-2xl"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-semibold text-slate-900">
+                  Kirim Laporan Mahasiswa
+                </h2>
+                <p class="mt-2 text-sm text-slate-500">
+                  Isi form ini jika Anda perlu melaporkan mahasiswa bermasalah,
+                  kondisi khusus, atau rekomendasi pemberhentian.
+                </p>
+              </div>
+            </div>
+
+            <form class="mt-8 space-y-6">
+              <div class="grid gap-4 lg:grid-cols-2">
+                <label class="block">
+                  <span class="text-sm font-medium text-slate-700"
+                    >Nama Pelapor</span
+                  >
+                  <input
+                    type="text"
+                    placeholder="Nama lengkap"
+                    class="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                  />
+                </label>
+                <label class="block">
+                  <span class="text-sm font-medium text-slate-700"
+                    >Sekolah / Instansi</span
+                  >
+                  <input
+                    type="text"
+                    placeholder="Contoh: MAN 1 Bandung"
+                    class="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                  />
+                </label>
+              </div>
+
+              <div class="grid gap-4 lg:grid-cols-2">
+                <label class="block">
+                  <span class="text-sm font-medium text-slate-700"
+                    >Nama Mahasiswa</span
+                  >
+                  <input
+                    type="text"
+                    placeholder="Nama mahasiswa"
+                    class="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                  />
+                </label>
+                <label class="block">
+                  <span class="text-sm font-medium text-slate-700"
+                    >Kategori Laporan</span
+                  >
+                  <select
+                    class="mt-2 w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                  >
+                    <option>Tidak hadir / absen</option>
+                    <option>Log tidak valid</option>
+                    <option>Kualitas mengajar rendah</option>
+                    <option>Rekomendasi pemberhentian</option>
+                    <option>Lainnya</option>
+                  </select>
+                </label>
+              </div>
+
+              <label class="block">
+                <span class="text-sm font-medium text-slate-700"
+                  >Deskripsi Laporan</span
+                >
+                <textarea
+                  rows="5"
+                  placeholder="Jelaskan kejadian dan bukti singkat..."
+                  class="mt-2 w-full rounded-3xl border border-slate-300 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                ></textarea>
+              </label>
+
+              <label class="block">
+                <span class="text-sm font-medium text-slate-700"
+                  >Lampiran (opsional)</span
+                >
+                <input type="file" class="mt-2 w-full text-sm text-slate-700" />
+              </label>
+
+              <div
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <p class="text-sm text-slate-500">
+                  Semua laporan akan masuk antrian DPL / admin untuk verifikasi.
+                </p>
+                <button
+                  type="submit"
+                  class="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 transition"
+                >
+                  <i class="fas fa-paper-plane"></i> Kirim Laporan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <aside class="space-y-4">
+          <div
+            class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+          >
+            <p class="text-sm uppercase tracking-[0.18em] text-slate-400">
+              Panduan
+            </p>
+            <ul class="mt-4 space-y-3 text-sm text-slate-600">
+              <li class="flex gap-3">
+                <span class="text-slate-900 font-semibold">•</span> Data pelapor
+                disimpan untuk tindak lanjut DPL.
+              </li>
+              <li class="flex gap-3">
+                <span class="text-slate-900 font-semibold">•</span> Tidak perlu
+                akun; laporan publik akan diverifikasi sebelum tindakan.
+              </li>
+              <li class="flex gap-3">
+                <span class="text-slate-900 font-semibold">•</span> Gunakan
+                kategori yang sesuai untuk mempercepat proses.
+              </li>
+            </ul>
+          </div>
+          <div
+            class="rounded-3xl border border-slate-200 bg-slate-900 text-white p-6 shadow-sm"
+          >
+            <p class="text-sm uppercase tracking-[0.18em] text-slate-300">
+              Info
+            </p>
+            <p class="mt-4 text-sm leading-7">
+              Portal ini mendukung pelaporan langsung dari guru pamong dan pihak
+              sekolah. Jika Anda pelapor internal FTK, sertakan nama dan sekolah
+              agar DPL dapat menindaklanjuti.
+            </p>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

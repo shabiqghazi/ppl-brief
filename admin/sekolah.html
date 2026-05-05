@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sekolah Mitra - SI-PPL FTK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-100 font-sans">
+    <div class="flex min-h-screen overflow-hidden">
+      <aside class="w-72 bg-slate-900 text-slate-300 p-6 hidden xl:block">
+        <h1 class="text-2xl font-bold text-white mb-8 italic">PPL Admin</h1>
+        <nav class="space-y-3 text-sm">
+          <p class="text-[10px] uppercase font-bold text-slate-500 mb-2">
+            Menu Admin
+          </p>
+          <a
+            href="index.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-chart-pie"></i> Ringkasan</a
+          >
+          <a
+            href="periode.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-calendar-alt"></i> Periode & Timeline</a
+          >
+          <a
+            href="mahasiswa.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-user-graduate"></i> Data Mahasiswa</a
+          >
+          <a
+            href="sekolah.html"
+            class="flex items-center gap-3 p-3 rounded-lg bg-slate-800 text-white"
+            ><i class="fas fa-building"></i> Sekolah Mitra</a
+          >
+          <a
+            href="../portal-report.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-flag"></i> Portal Laporan</a
+          >
+          <a
+            href="dokumen.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-file-lines"></i> Dokumen & Laporan</a
+          >
+          <a
+            href="notifikasi.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-bell"></i> Notifikasi</a
+          >
+          <div class="pt-4 border-t border-slate-800 mt-4">
+            <a
+              href="siakad.html"
+              class="flex items-center gap-3 p-3 rounded-lg text-orange-400 hover:bg-slate-800 transition"
+              ><i class="fas fa-sync"></i> Sync SIAKAD</a
+            >
+          </div>
+        </nav>
+      </aside>
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <header
+          class="h-16 bg-white border-b px-6 lg:px-10 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <a href="index.html" class="text-slate-600 hover:text-slate-900"
+              ><i class="fas fa-arrow-left"></i
+            ></a>
+            <div class="relative w-full max-w-xl">
+              <input
+                type="text"
+                placeholder="Cari Mahasiswa / Sekolah / Dokumen..."
+                class="w-full bg-slate-100 border-none rounded-full px-4 py-2 text-sm"
+              />
+            </div>
+          </div>
+          <button
+            class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium"
+          >
+            Kelola Sekolah
+          </button>
+        </header>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">Sekolah Mitra</h2>
+              <p class="text-sm text-slate-500">
+                Master data sekolah, kuota, dan status mitra.
+              </p>
+            </div>
+          </div>
+          <div
+            class="overflow-x-auto bg-white rounded-3xl border border-slate-200 shadow-sm"
+          >
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead
+                class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wide"
+              >
+                <tr>
+                  <th class="px-6 py-4 text-left">Nama Sekolah</th>
+                  <th class="px-6 py-4 text-left">Jenjang</th>
+                  <th class="px-6 py-4 text-left">Kapasitas</th>
+                  <th class="px-6 py-4 text-left">Status</th>
+                  <th class="px-6 py-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody
+                class="divide-y divide-slate-200 bg-white text-sm text-slate-700"
+              >
+                <tr>
+                  <td class="px-6 py-4 font-medium">SMA Negeri 3 Bandung</td>
+                  <td class="px-6 py-4">SMA</td>
+                  <td class="px-6 py-4">10</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700"
+                      >Penuh</span
+                    >
+                  </td>
+                  <td class="px-6 py-4 text-right text-blue-600">
+                    Edit | Detail
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 font-medium">MA As-Syifa</td>
+                  <td class="px-6 py-4">MA</td>
+                  <td class="px-6 py-4">8</td>
+                  <td class="px-6 py-4">
+                    <span
+                      class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700"
+                      >Tersedia</span
+                    >
+                  </td>
+                  <td class="px-6 py-4 text-right text-blue-600">
+                    Edit | Detail
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

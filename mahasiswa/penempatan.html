@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Penempatan - SI-PPL FTK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-50 font-sans">
+    <div class="flex min-h-screen">
+      <aside class="w-64 bg-emerald-800 text-white p-6 hidden md:block">
+        <div class="mb-8">
+          <h1 class="text-xl font-bold tracking-tighter">SI-PPL FTK</h1>
+          <p class="text-xs text-emerald-200">Portal Mahasiswa</p>
+        </div>
+        <nav class="space-y-4 text-sm">
+          <a
+            href="index.html"
+            class="block p-3 hover:bg-emerald-700 rounded-lg transition"
+            ><i class="fas fa-home mr-3"></i> Dashboard</a
+          >
+          <a href="penempatan.html" class="block p-3 bg-emerald-700 rounded-lg"
+            ><i class="fas fa-school mr-3"></i> Penempatan</a
+          >
+          <a
+            href="log.html"
+            class="block p-3 hover:bg-emerald-700 rounded-lg transition"
+            ><i class="fas fa-book mr-3"></i> Log Aktivitas</a
+          >
+          <a
+            href="modul.html"
+            class="block p-3 hover:bg-emerald-700 rounded-lg transition"
+            ><i class="fas fa-file-upload mr-3"></i> Modul Ajar</a
+          >
+          <a
+            href="penilaian.html"
+            class="block p-3 hover:bg-emerald-700 rounded-lg transition"
+            ><i class="fas fa-graduation-cap mr-3"></i> Penilaian</a
+          >
+        </nav>
+      </aside>
+      <main class="flex-1">
+        <header
+          class="bg-white border-b p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+        >
+          <div>
+            <h2 class="text-lg font-semibold text-gray-700">Penempatan</h2>
+            <p class="text-sm text-slate-500">
+              Detail sekolah, guru pamong, dan jadwal mengajar.
+            </p>
+          </div>
+          <button
+            class="px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm"
+          >
+            Lihat Detail Penempatan
+          </button>
+        </header>
+        <div class="p-8 space-y-6">
+          <div class="grid gap-4 md:grid-cols-2">
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm"
+            >
+              <p class="text-xs uppercase text-slate-400">Sekolah Mitra</p>
+              <p class="mt-3 text-lg font-semibold text-slate-900">
+                MAN 1 Kota Bandung
+              </p>
+              <p class="text-sm text-slate-500 mt-2">
+                Alamat: Jl. Merdeka No. 17
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm"
+            >
+              <p class="text-xs uppercase text-slate-400">Guru Pamong</p>
+              <p class="mt-3 text-lg font-semibold text-slate-900">
+                Ibu Saraswati
+              </p>
+              <p class="text-sm text-slate-500 mt-2">
+                Mata Pelajaran: Bahasa Indonesia
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

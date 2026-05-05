@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laporan Portal - DPL SI-PPL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-indigo-50/30">
+    <nav class="bg-indigo-900 text-white p-4 sticky top-0 z-20">
+      <div
+        class="container mx-auto flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3"
+      >
+        <span class="font-bold tracking-widest uppercase">DPL Dashboard</span>
+        <div class="flex flex-wrap gap-3 text-sm text-indigo-100">
+          <a href="index.html" class="hover:text-white">Daftar Bimbingan</a>
+          <a href="jadwal.html" class="hover:text-white">Jadwal Ujian</a>
+          <a href="penilaian.html" class="hover:text-white">Penilaian</a>
+          <a href="rekap.html" class="hover:text-white">Rekap Nilai</a>
+          <a
+            href="laporan.html"
+            class="hover:text-white font-semibold underline"
+            >Laporan</a
+          >
+        </div>
+        <div class="bg-indigo-800 px-4 py-2 rounded-lg text-sm">
+          Dr. Yusuf Mansur, M.Ag
+        </div>
+      </div>
+    </nav>
+    <div class="container mx-auto py-8 px-4">
+      <div
+        class="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"
+      >
+        <div>
+          <h2 class="text-2xl font-bold text-indigo-900">Antrian Laporan</h2>
+          <p class="text-slate-500">
+            Semua laporan portal publik dan rekomendasi bermasalah untuk
+            mahasiswa bimbingan Anda.
+          </p>
+        </div>
+        <button
+          class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-indigo-900 shadow hover:bg-slate-100 transition"
+        >
+          <i class="fas fa-filter"></i> Filter Status
+        </button>
+      </div>
+
+      <div class="grid gap-6">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
+          >
+            <div>
+              <h3 class="text-xl font-semibold text-slate-900">
+                Laporan Mahasiswa Bermasalah
+              </h3>
+              <p class="text-sm text-slate-500">
+                Terdapat laporan dari guru pamong yang menandai kehadiran dan
+                kualitas log.
+              </p>
+            </div>
+            <span
+              class="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700"
+              >Menunggu Tindak Lanjut</span
+            >
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="space-y-2">
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Pelapor:</span> Siti
+                Nurhaliza
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Mahasiswa:</span>
+                Ahmad Rizki
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Kategori:</span>
+                Tidak hadir / absen
+              </p>
+            </div>
+            <div class="space-y-2">
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Sekolah:</span> MAN 1
+                Bandung
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">DPL:</span> Dr. Yusuf
+                Mansur
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Tanggal:</span> 04
+                Mei 2026
+              </p>
+            </div>
+          </div>
+          <div class="mt-4 rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
+            <p class="font-semibold">Deskripsi:</p>
+            <p>
+              Siswa sering tidak hadir tanpa pemberitahuan. Log harian tidak
+              lengkap dan ada ketidaksesuaian dengan jadwal sekolah.
+            </p>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button
+              class="rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+            >
+              Tindak Lanjut
+            </button>
+            <button
+              class="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition"
+            >
+              Abaikan
+            </button>
+            <button
+              class="rounded-full bg-indigo-50 px-5 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition"
+            >
+              Buka Detail
+            </button>
+          </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4"
+          >
+            <div>
+              <h3 class="text-xl font-semibold text-slate-900">
+                Rekomendasi Pemberhentian
+              </h3>
+              <p class="text-sm text-slate-500">
+                Laporan dari guru pamong yang menyarankan penghentian atas dasar
+                kondisi khusus.
+              </p>
+            </div>
+            <span
+              class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700"
+              >High Priority</span
+            >
+          </div>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="space-y-2">
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Pelapor:</span> Bapak
+                Hendra Gunawan
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Mahasiswa:</span>
+                Siti Aminah
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Kategori:</span>
+                Rekomendasi pemberhentian
+              </p>
+            </div>
+            <div class="space-y-2">
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Sekolah:</span> SMA
+                Negeri 3 Bandung
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">DPL:</span> Dr. Yusuf
+                Mansur
+              </p>
+              <p class="text-sm text-slate-600">
+                <span class="font-semibold text-slate-900">Tanggal:</span> 02
+                Mei 2026
+              </p>
+            </div>
+          </div>
+          <div class="mt-4 rounded-3xl bg-slate-50 p-4 text-sm text-slate-700">
+            <p class="font-semibold">Deskripsi:</p>
+            <p>
+              Guru pamong mengajukan rekomendasi penghentian karena tidak
+              terpenuhinya syarat minimal 10 pertemuan dan kualitas log yang
+              buruk.
+            </p>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <button
+              class="rounded-full bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+            >
+              Tindak Lanjut
+            </button>
+            <button
+              class="rounded-full bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition"
+            >
+              Tunda
+            </button>
+            <button
+              class="rounded-full bg-indigo-50 px-5 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 transition"
+            >
+              Buka Detail
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

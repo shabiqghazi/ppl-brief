@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dokumen & Laporan - SI-PPL FTK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-slate-100 font-sans">
+    <div class="flex min-h-screen overflow-hidden">
+      <aside class="w-72 bg-slate-900 text-slate-300 p-6 hidden xl:block">
+        <h1 class="text-2xl font-bold text-white mb-8 italic">PPL Admin</h1>
+        <nav class="space-y-3 text-sm">
+          <p class="text-[10px] uppercase font-bold text-slate-500 mb-2">
+            Menu Admin
+          </p>
+          <a
+            href="index.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-chart-pie"></i> Ringkasan</a
+          >
+          <a
+            href="periode.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-calendar-alt"></i> Periode & Timeline</a
+          >
+          <a
+            href="mahasiswa.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-user-graduate"></i> Data Mahasiswa</a
+          >
+          <a
+            href="sekolah.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-building"></i> Sekolah Mitra</a
+          >
+          <a
+            href="../portal-report.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-flag"></i> Portal Laporan</a
+          >
+          <a
+            href="dokumen.html"
+            class="flex items-center gap-3 p-3 rounded-lg bg-slate-800 text-white"
+            ><i class="fas fa-file-lines"></i> Dokumen & Laporan</a
+          >
+          <a
+            href="notifikasi.html"
+            class="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition"
+            ><i class="fas fa-bell"></i> Notifikasi</a
+          >
+          <div class="pt-4 border-t border-slate-800 mt-4">
+            <a
+              href="siakad.html"
+              class="flex items-center gap-3 p-3 rounded-lg text-orange-400 hover:bg-slate-800 transition"
+              ><i class="fas fa-sync"></i> Sync SIAKAD</a
+            >
+          </div>
+        </nav>
+      </aside>
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <header
+          class="h-16 bg-white border-b px-6 lg:px-10 flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <a href="index.html" class="text-slate-600 hover:text-slate-900"
+              ><i class="fas fa-arrow-left"></i
+            ></a>
+            <div class="relative w-full max-w-xl">
+              <input
+                type="text"
+                placeholder="Cari Mahasiswa / Sekolah / Dokumen..."
+                class="w-full bg-slate-100 border-none rounded-full px-4 py-2 text-sm"
+              />
+            </div>
+          </div>
+          <button
+            class="bg-emerald-600 text-white px-4 py-2 rounded text-sm font-medium"
+          >
+            Generate PDF
+          </button>
+        </header>
+        <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">
+                Dokumen & Laporan
+              </h2>
+              <p class="text-sm text-slate-500">
+                Akses pembuatan surat, laporan, dan export data.
+              </p>
+            </div>
+          </div>
+          <div class="grid gap-4 md:grid-cols-3">
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm"
+            >
+              <p class="text-sm text-slate-500 uppercase">
+                Surat Pembukaan PPL
+              </p>
+              <p class="mt-4 font-semibold text-slate-900">
+                Download template & cetak PDF.
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm"
+            >
+              <p class="text-sm text-slate-500 uppercase">Rekap Nilai Akhir</p>
+              <p class="mt-4 font-semibold text-slate-900">
+                Export laporan per prodi atau sekolah.
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm"
+            >
+              <p class="text-sm text-slate-500 uppercase">
+                Portal Laporan Publik
+              </p>
+              <p class="mt-4 font-semibold text-slate-900">
+                Kelola antrian laporan dari guru pamong.
+              </p>
+            </div>
+            <div
+              class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm"
+            >
+              <p class="text-sm text-slate-500 uppercase">
+                Sertifikat Kelulusan
+              </p>
+              <p class="mt-4 font-semibold text-slate-900">
+                Generate bukti lulus PDF otomatis.
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
