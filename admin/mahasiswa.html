@@ -78,18 +78,26 @@
               />
             </div>
           </div>
-          <button
-            class="bg-slate-900 text-white px-4 py-2 rounded text-sm font-medium"
-          >
-            Tambah Mahasiswa
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium"
+              onclick="alert('Membuka modal Tukar Tempat (Swap) antar mahasiswa...')"
+            >
+              Tukar Tempat (Swap)
+            </button>
+            <button
+              class="bg-slate-900 text-white px-4 py-2 rounded text-sm font-medium"
+            >
+              Tambah Mahasiswa
+            </button>
+          </div>
         </header>
         <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
           <div class="flex items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-bold text-slate-900">Data Mahasiswa</h2>
               <p class="text-sm text-slate-500">
-                Kelola peserta PPL dan lihat status penempatan.
+                Kelola peserta PPL, sync data SIAKAD individu, dan plotting manual.
               </p>
             </div>
           </div>
@@ -121,7 +129,11 @@
                       >Terploting</span
                     >
                   </td>
-                  <td class="px-6 py-4 text-right text-blue-600">Detail</td>
+                  <td class="px-6 py-4 text-right space-x-2">
+                    <button class="text-orange-500 hover:underline text-xs font-bold" onclick="alert('Sinkronisasi data Ahmad Rizki dari SIAKAD...')"><i class="fas fa-sync mr-1"></i>Sync</button>
+                    <button class="text-blue-600 hover:underline">Detail</button>
+                    <button class="text-orange-600 hover:underline" onclick="alert('Membuka modal plotting manual untuk Ahmad Rizki...')">Plotting Manual</button>
+                  </td>
                 </tr>
                 <tr>
                   <td class="px-6 py-4 font-medium">Siti Aminah</td>
@@ -133,7 +145,11 @@
                       >Menunggu</span
                     >
                   </td>
-                  <td class="px-6 py-4 text-right text-blue-600">Detail</td>
+                  <td class="px-6 py-4 text-right space-x-2">
+                    <button class="text-orange-500 hover:underline text-xs font-bold" onclick="alert('Sinkronisasi data Siti Aminah dari SIAKAD...')"><i class="fas fa-sync mr-1"></i>Sync</button>
+                    <button class="text-blue-600 hover:underline">Detail</button>
+                    <button class="text-emerald-600 font-bold hover:underline" onclick="alert('Membuka modal plotting manual untuk Siti Aminah...')">Plotting Manual</button>
+                  </td>
                 </tr>
               </tbody>
             </table>

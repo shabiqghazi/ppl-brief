@@ -61,12 +61,15 @@
             </p>
           </div>
           <div class="flex items-center gap-4">
-            <span
-              class="text-sm text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-medium"
-              >Eligible - SIAKAD Sync</span
+            <div class="text-right hidden sm:block">
+              <p class="text-xs text-slate-400 uppercase font-bold">Data SIAKAD Terakhir</p>
+              <p class="text-[11px] text-slate-500">IPK: 3.75 | SKS: 110 | Prasyarat: Lulus</p>
+            </div>
+            <button
+              onclick="this.classList.add('animate-spin'); setTimeout(() => { this.classList.remove('animate-spin'); alert('Data SIAKAD Berhasil Disinkronkan!'); }, 1500)"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 text-orange-600 border border-orange-200 text-xs font-semibold hover:bg-orange-100 transition"
             >
-            <button class="text-slate-500 hover:text-slate-700">
-              <i class="fas fa-bell"></i>
+              <i class="fas fa-sync"></i> Sync SIAKAD
             </button>
             <div class="w-10 h-10 bg-slate-200 rounded-full"></div>
           </div>

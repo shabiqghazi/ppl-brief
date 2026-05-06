@@ -70,28 +70,25 @@
             <a href="index.html" class="text-slate-600 hover:text-slate-900"
               ><i class="fas fa-arrow-left"></i
             ></a>
-            <div class="relative w-full max-w-xl">
+            <div class="relative w-full max-w-xl flex gap-2">
               <input
                 type="text"
-                placeholder="Cari Mahasiswa / Sekolah / Dokumen..."
+                placeholder="Masukkan NIM untuk Sync Satuan..."
                 class="w-full bg-slate-100 border-none rounded-full px-4 py-2 text-sm"
               />
+              <button class="bg-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Sync NIM</button>
             </div>
           </div>
-          <button
-            class="bg-orange-500 text-white px-4 py-2 rounded text-sm font-medium"
-          >
-            Mulai Sinkronisasi
-          </button>
+          <div class="text-xs text-slate-400 italic">Auto-sync aktif saat login mhs</div>
         </header>
         <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
           <div class="flex items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-bold text-slate-900">
-                Sinkronisasi SIAKAD
+                Integrasi SIAKAD
               </h2>
               <p class="text-sm text-slate-500">
-                Tarik data mahasiswa, dosen, dan KRS langsung dari SIAKAD.
+                Sinkronisasi data dilakukan secara otomatis (Just-in-Time) saat mahasiswa login dan mendaftar PPL.
               </p>
             </div>
           </div>
@@ -99,20 +96,20 @@
             <div
               class="rounded-2xl border border-slate-200 p-4 bg-white shadow-sm"
             >
-              <p class="text-sm text-slate-500 uppercase">Update Terakhir</p>
-              <p class="mt-2 font-semibold text-slate-900">04 Mei 2026</p>
+              <p class="text-sm text-slate-500 uppercase">Model Sinkronisasi</p>
+              <p class="mt-2 font-semibold text-slate-900">Individu (JIT)</p>
             </div>
             <div
               class="rounded-2xl border border-slate-200 p-4 bg-white shadow-sm"
             >
-              <p class="text-sm text-slate-500 uppercase">Status Sinkron</p>
-              <p class="mt-2 font-semibold text-emerald-700">Berhasil</p>
+              <p class="text-sm text-slate-500 uppercase">Cakupan Data</p>
+              <p class="mt-2 font-semibold text-slate-900 text-xs">Biodata, IPK, SKS, Prasyarat</p>
             </div>
             <div
               class="rounded-2xl border border-slate-200 p-4 bg-white shadow-sm"
             >
-              <p class="text-sm text-slate-500 uppercase">Data Ditambahkan</p>
-              <p class="mt-2 font-semibold text-slate-900">58 mahasiswa</p>
+              <p class="text-sm text-slate-500 uppercase">Sync Terakhir</p>
+              <p class="mt-2 font-semibold text-slate-900">Live / Real-time</p>
             </div>
           </div>
         </main>
