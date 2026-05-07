@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard DPL - PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK DPL</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item active">Dashboard</a>
+        <a href="../verifikasi/index.html" class="nav-item">Verifikasi Logbook</a>
+        <a href="../penilaian/index.html" class="nav-item">Penilaian Akhir</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Beranda DPL</h1>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted">Dr. Ahmad</span>
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">DA</div>
+        </div>
+      </header>
+
+      <div class="page-container">
+        <!-- Stats -->
+        <div class="flex gap-2 mb-4" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Mahasiswa Bimbingan</p>
+            <p style="font-size: 1.5rem; font-weight: 700;">12</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Logbook Menunggu Verifikasi</p>
+            <p style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">24</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Laporan Akhir Terkumpul</p>
+            <p style="font-size: 1.5rem; font-weight: 700; color: var(--success);">8</p>
+          </div>
+        </div>
+
+        <!-- Student List Summary -->
+        <div class="card" style="padding: 0;">
+          <div class="flex justify-between items-center" style="padding: 1.5rem;">
+            <h3>Mahasiswa Bimbingan Saya</h3>
+            <button class="btn btn-outline">Detail Semua</button>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mahasiswa</th>
+                <th>Sekolah Penempatan</th>
+                <th>Progress Log</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 500;">Budi Santoso</td>
+                <td>MAN 1 Bandung</td>
+                <td>8 / 10 Mandiri</td>
+                <td><span class="badge badge-success">Aktif</span></td>
+                <td><a href="../verifikasi/index.html" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Cek Log</a></td>
+              </tr>
+              <tr>
+                <td style="font-weight: 500;">Siti Aminah</td>
+                <td>MAN 1 Bandung</td>
+                <td>5 / 10 Mandiri</td>
+                <td><span class="badge badge-warning">Izin Khusus</span></td>
+                <td><a href="../verifikasi/index.html" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Cek Log</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

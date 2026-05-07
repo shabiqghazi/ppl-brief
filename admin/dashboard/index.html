@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK Admin</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item active">Dashboard</a>
+        <a href="../periode/index.html" class="nav-item">Manajemen Periode</a>
+        <a href="../mitra/index.html" class="nav-item">Sekolah & DPL</a>
+        <a href="../laporan/index.html" class="nav-item">Rekap & Laporan</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Dashboard Overview</h1>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted">Super Admin</span>
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">AD</div>
+        </div>
+      </header>
+
+      <div class="page-container">
+        <!-- Stats Grid -->
+        <div class="flex gap-2 mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Total Mahasiswa</p>
+            <p style="font-size: 1.5rem; font-weight: 700;">1,240</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Mahasiswa Aktif</p>
+            <p style="font-size: 1.5rem; font-weight: 700;">856</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">Sekolah Mitra</p>
+            <p style="font-size: 1.5rem; font-weight: 700;">42</p>
+          </div>
+          <div class="card" style="margin-bottom: 0;">
+            <p class="text-sm text-muted">DPL Bertugas</p>
+            <p style="font-size: 1.5rem; font-weight: 700;">28</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+          <!-- Recent Activity -->
+          <div class="card">
+            <h3 class="mb-4">Periode PPL Saat Ini</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nama Periode</th>
+                  <th>Jenis</th>
+                  <th>Status</th>
+                  <th>Pendaftaran</th>
+                </tr>
+              </thead>
+              <tbody id="period-list">
+                <!-- Will be populated by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <h3 class="mb-4">Aksi Cepat</h3>
+            <div class="flex flex-direction-column gap-2" style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <a href="../periode/index.html" class="btn btn-primary">Buat Periode Baru</a>
+              <a href="../mitra/index.html" class="btn btn-outline">Import Data Sekolah</a>
+              <a href="../laporan/index.html" class="btn btn-outline">Unduh Rekap Nilai</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/data.js"></script>
+  <script>
+    const periods = store.get('periods');
+    const periodList = document.getElementById('period-list');
+    
+    periodList.innerHTML = periods.map(p => `
+      <tr>
+        <td style="font-weight: 500;">${p.name}</td>
+        <td><span class="badge ${p.type === 'Internasional' ? 'badge-warning' : 'badge-success'}">${p.type}</span></td>
+        <td><span class="badge ${p.status === 'Active' ? 'badge-success' : 'badge-danger'}">${p.status}</span></td>
+        <td class="text-muted">${p.regStart} s/d ${p.regEnd}</td>
+      </tr>
+    `).join('');
+  </script>
+</body>
+</html>

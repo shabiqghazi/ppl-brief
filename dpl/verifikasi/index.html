@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifikasi Logbook - DPL PPL</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK DPL</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
+        <a href="../verifikasi/index.html" class="nav-item active">Verifikasi Logbook</a>
+        <a href="../penilaian/index.html" class="nav-item">Penilaian Akhir</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Verifikasi Aktivitas Mahasiswa</h1>
+      </header>
+
+      <div class="page-container">
+        <!-- Filters -->
+        <div class="card mb-4">
+          <div class="flex gap-2">
+            <select class="form-input" style="width: 240px;">
+              <option>Budi Santoso (MAN 1 Bandung)</option>
+              <option>Siti Aminah (MAN 1 Bandung)</option>
+            </select>
+            <select class="form-input" style="width: 200px;">
+              <option>Semua Status</option>
+              <option>Menunggu</option>
+              <option>Terverifikasi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Verification Table -->
+        <div class="card" style="padding: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Kelas</th>
+                <th>Materi / Aktivitas</th>
+                <th>Jenis</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: #fffcf0;">
+                <td>12 Juni 2026</td>
+                <td>XI-IPS-2</td>
+                <td>Adab terhadap Orang Tua</td>
+                <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">Mandiri</span></td>
+                <td>
+                  <div class="flex gap-2">
+                    <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Verifikasi</button>
+                    <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--danger);">Tolak</button>
+                  </div>
+                </td>
+              </tr>
+              <tr style="background: #fffcf0;">
+                <td>11 Juni 2026</td>
+                <td>X-IPA-1</td>
+                <td>Sejarah Peradaban Islam</td>
+                <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">Mandiri</span></td>
+                <td>
+                  <div class="flex gap-2">
+                    <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Verifikasi</button>
+                    <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--danger);">Tolak</button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="text-muted">10 Juni 2026</td>
+                <td class="text-muted">X-IPA-1</td>
+                <td class="text-muted">Observasi Guru Pamong</td>
+                <td><span class="badge" style="background: #f3f4f6; color: #374151;">Observasi</span></td>
+                <td><span class="badge badge-success">Terverifikasi</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

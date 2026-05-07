@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Pelaporan Tamu - PPL FTK</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <style>
+    .portal-container {
+      max-width: 600px;
+      margin: 4rem auto;
+      padding: 0 1rem;
+    }
+    .portal-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="portal-container">
+    <div class="portal-header">
+      <h1 style="color: var(--primary); font-size: 2rem; font-weight: 800;">PPL FTK Portal</h1>
+      <p class="text-muted">Layanan Pelaporan & Rekomendasi Sekolah Mitra</p>
+    </div>
+
+    <div class="card">
+      <h3 class="mb-4">Formulir Pelaporan (Tanpa Login)</h3>
+      <p class="text-sm text-muted mb-4">Gunakan formulir ini untuk melaporkan kendala, perilaku mahasiswa, atau memberikan rekomendasi terkait pelaksanaan PPL di sekolah Anda.</p>
+      
+      <form>
+        <div class="form-group">
+          <label class="form-label">Nama Pelapor (Guru Pamong / Kepsek)</label>
+          <input type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asal Sekolah</label>
+          <input type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mahasiswa yang Dilaporkan</label>
+          <input type="text" class="form-input" placeholder="Nama Mahasiswa / NIM" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kategori Laporan</label>
+          <select class="form-input">
+            <option>Laporan Masalah (Kedisiplinan/Akademik)</option>
+            <option>Rekomendasi Pemberhentian</option>
+            <option>Apresiasi / Prestasi Khusus</option>
+            <option>Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deskripsi Laporan</label>
+          <textarea class="form-input" style="height: 120px;" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Kirim Laporan Ke DPL/Admin</button>
+      </form>
+    </div>
+
+    <div style="text-align: center; margin-top: 2rem;">
+      <a href="../index.html" class="text-sm" style="color: var(--primary); text-decoration: none;">&larr; Kembali ke Halaman Utama</a>
+    </div>
+  </div>
+</body>
+</html>

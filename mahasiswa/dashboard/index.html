@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Mahasiswa - PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK MHS</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item active">Dashboard</a>
+        <a href="../daftar/index.html" class="nav-item">Pendaftaran & WAR</a>
+        <a href="../logbook/index.html" class="nav-item">Logbook Harian</a>
+        <a href="../ujian/index.html" class="nav-item">Pelaporan & Nilai</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Beranda Mahasiswa</h1>
+        <div class="flex items-center gap-2">
+          <span class="text-sm text-muted">Budi Santoso (123001)</span>
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--success); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">BS</div>
+        </div>
+      </header>
+
+  <script src="../../assets/js/data.js"></script>
+  <script>
+    const currentUser = store.get('currentUser').mhs;
+    const studentData = store.get('students').find(s => s.id === currentUser.id);
+    
+    if (studentData) {
+      document.querySelector('.page-container').innerHTML = `
+        <!-- Status Card -->
+        <div class="card" style="background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; border: none;">
+          <h2 class="mb-4">Halo, ${studentData.name}!</h2>
+          <div class="flex gap-2">
+            <div style="flex: 1;">
+              <p class="text-sm" style="opacity: 0.8;">Status PPL Anda:</p>
+              <p style="font-size: 1.25rem; font-weight: 600;">${studentData.status} - Sedang Mengajar</p>
+            </div>
+            <div style="flex: 1;">
+              <p class="text-sm" style="opacity: 0.8;">Lokasi Penempatan:</p>
+              <p style="font-size: 1.25rem; font-weight: 600;">${studentData.school || 'Belum Memilih'}</p>
+            </div>
+            <div style="flex: 1;">
+              <p class="text-sm" style="opacity: 0.8;">DPL Pendamping:</p>
+              <p style="font-size: 1.25rem; font-weight: 600;">${studentData.dpl || 'Belum Ditugaskan'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <!-- Progress Stats -->
+          <div class="card">
+            <h3 class="mb-4">Progress Mengajar</h3>
+            <div class="mb-4">
+              <div class="flex justify-between text-sm mb-4">
+                <span>Pertemuan Mandiri</span>
+                <span>8 / 10 Minimal</span>
+              </div>
+              <div style="width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
+                <div style="width: 80%; height: 100%; background: var(--primary);"></div>
+              </div>
+            </div>
+            <p class="text-sm text-muted">Sisa 2 pertemuan mandiri lagi untuk memenuhi syarat eligibilitas ujian.</p>
+          </div>
+
+          <!-- Notifications -->
+          <div class="card">
+            <h3 class="mb-4">Pemberitahuan</h3>
+            <div class="flex flex-direction-column gap-2" style="display: flex; flex-direction: column; gap: 1rem;">
+              <div class="flex gap-2 items-center">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
+                <div>
+                  <p class="text-sm" style="font-weight: 500;">Batas Upload Laporan Akhir</p>
+                  <p class="text-muted" style="font-size: 0.75rem;">15 Juli 2026 - 23:59 WIB</p>
+                </div>
+              </div>
+              <div class="flex gap-2 items-center">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></div>
+                <div>
+                  <p class="text-sm" style="font-weight: 500;">Logbook Tanggal 10 Juni Diverifikasi</p>
+                  <p class="text-muted" style="font-size: 0.75rem;">Oleh ${studentData.dpl || 'DPL'} - 2 jam yang lalu</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

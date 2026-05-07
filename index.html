@@ -3,718 +3,98 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>PPL Management System - FTK UIN SGD</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
     <style>
-      :root {
-        --font-sans:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-          Cantarell, sans-serif;
-        --color-text-primary: #1a1a1a;
-        --color-text-secondary: #666666;
-        --color-text-tertiary: #999999;
-        --color-text-danger: #c41c1c;
-        --color-text-warning: #8b5f0f;
-        --color-text-success: #0f6e56;
-        --color-background-primary: #ffffff;
-        --color-background-secondary: #f6f6f6;
-        --color-background-danger: #fdd8d8;
-        --color-background-warning: #fef3e8;
-        --color-background-success: #e1f5ee;
-        --color-border-primary: #3b82f6;
-        --color-border-secondary: #d1d5db;
-        --color-border-tertiary: #e5e7eb;
-        --color-border-danger: #fca5a5;
-        --color-border-warning: #efc16c;
-        --color-border-success: #5dcaa5;
-        --border-radius-lg: 8px;
-        --border-radius-md: 6px;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: var(--font-sans);
-        padding: 0 1rem;
-      }
-      .wrap {
-        padding: 1.5rem 0;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .header {
-        margin-bottom: 1.5rem;
-      }
-      .header h2 {
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--color-text-primary);
-        margin-bottom: 4px;
-      }
-      .header p {
-        font-size: 13px;
-        color: var(--color-text-secondary);
-      }
-      .modules {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 10px;
-        margin-bottom: 1.5rem;
-      }
-      .mod {
-        background: var(--color-background-secondary);
-        border: 0.5px solid var(--color-border-tertiary);
-        border-radius: var(--border-radius-lg);
-        padding: 14px 16px;
-        cursor: pointer;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .mod:hover {
-        border-color: var(--color-border-secondary);
-        background: var(--color-background-primary);
-      }
-      .mod.active {
-        border-color: var(--color-border-primary);
-        background: var(--color-background-primary);
-      }
-      .mod-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 6px;
-        margin-bottom: 10px;
+      .login-container {
+        height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       }
-      .mod-num {
-        font-size: 11px;
-        font-weight: 500;
-        margin-bottom: 4px;
-        color: var(--color-text-tertiary);
+      .login-card {
+        background: white;
+        padding: 3rem;
+        border-radius: 1rem;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
       }
-      .mod-title {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--color-text-primary);
-        line-height: 1.3;
+      .role-btn {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 600;
+        transition: all 0.2s;
       }
-      .mod-count {
-        font-size: 11px;
-        color: var(--color-text-tertiary);
-        margin-top: 3px;
+      .role-btn:hover {
+        background-color: var(--bg-main);
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-2px);
       }
-      .detail {
-        border: 0.5px solid var(--color-border-tertiary);
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
-      }
-      .detail-head {
-        padding: 16px 20px;
-        border-bottom: 0.5px solid var(--color-border-tertiary);
-      }
-      .detail-head h3 {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--color-text-primary);
-      }
-      .detail-head p {
-        font-size: 13px;
-        color: var(--color-text-secondary);
-        margin-top: 4px;
-        line-height: 1.5;
-      }
-      .actors {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 10px;
-      }
-      .actor {
-        font-size: 11px;
-        padding: 3px 9px;
-        border-radius: 20px;
-        font-weight: 500;
-        border: 0.5px solid;
-      }
-      .features {
-        padding: 16px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-      .feat {
-        padding: 14px 16px;
-        background: var(--color-background-secondary);
-        border: 0.5px solid var(--color-border-tertiary);
-        border-radius: var(--border-radius-lg);
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 12px;
-        align-items: start;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .feat:hover {
-        border-color: var(--color-border-secondary);
-        background: var(--color-background-primary);
-      }
-      .feat:last-child {
-        border-bottom: none;
-      }
-      .feat-name {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--color-text-primary);
-        margin-bottom: 4px;
-      }
-      .feat-desc {
-        font-size: 12px;
-        color: var(--color-text-secondary);
-        line-height: 1.5;
-      }
-      .feat-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-top: 6px;
-      }
-      .tag {
-        font-size: 10px;
-        padding: 2px 7px;
-        border-radius: 10px;
-        border: 0.5px solid var(--color-border-tertiary);
-        color: var(--color-text-secondary);
-      }
-      .prio {
-        font-size: 10px;
-        padding: 3px 8px;
-        border-radius: 10px;
-        font-weight: 500;
-        white-space: nowrap;
-        align-self: start;
-      }
-      .p-high {
-        background: var(--color-background-danger);
-        color: var(--color-text-danger);
-        border: 0.5px solid var(--color-border-danger);
-      }
-      .p-med {
-        background: var(--color-background-warning);
-        color: var(--color-text-warning);
-        border: 0.5px solid var(--color-border-warning);
-      }
-      .p-low {
-        background: var(--color-background-success);
-        color: var(--color-text-success);
-        border: 0.5px solid var(--color-border-success);
-      }
-      .integ-section {
-        padding: 16px 20px;
-        border-top: 0.5px solid var(--color-border-tertiary);
-      }
-      .integ-title {
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--color-text-secondary);
-        margin-bottom: 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-      .integ-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-      .integ-item {
-        background: var(--color-background-secondary);
-        border-radius: var(--border-radius-md);
-        padding: 10px 12px;
-      }
-      .integ-item-title {
-        font-size: 12px;
-        font-weight: 500;
-        color: var(--color-text-primary);
-      }
-      .integ-item-desc {
-        font-size: 11px;
-        color: var(--color-text-secondary);
-        margin-top: 2px;
-        line-height: 1.4;
+      .logo {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <h2 class="sr-only">Spesifikasi fitur sistem manajemen PPL FTK</h2>
-      <div class="header">
-        <h2>Sistem manajemen PPL — FTK</h2>
-        <p>Klik modul untuk melihat daftar fitur lengkap &amp; prioritasnya</p>
-      </div>
-      <div class="modules" id="mods"></div>
-      <div class="detail" id="detail"></div>
-    </div>
-    <script>
-      const A = {
-        admin: { label: "Admin", bg: "#E6F1FB", tc: "#185FA5", bc: "#85B7EB" },
-        dpl: { label: "DPL", bg: "#EEEDFE", tc: "#534AB7", bc: "#AFA9EC" },
-        mhs: {
-          label: "Mahasiswa",
-          bg: "#E1F5EE",
-          tc: "#0F6E56",
-          bc: "#5DCAA5",
-        },
-        pimpinan: {
-          label: "Pimpinan",
-          bg: "#FAEEDA",
-          tc: "#854F0B",
-          bc: "#EF9F27",
-        },
-        sistem: {
-          label: "Sistem",
-          bg: "#F1EFE8",
-          tc: "#5F5E5A",
-          bc: "#B4B2A9",
-        },
-        tamu: {
-          label: "Portal Tamu",
-          bg: "#FAECE7",
-          tc: "#993C1D",
-          bc: "#F0997B",
-        },
-      };
-      const M = [
-        {
-          id: "m1",
-          title: "Integrasi SIAKAD & SSO",
-          dot: "#185FA5",
-          features: [
-            {
-              name: "Single Sign-On via LDAP SIAKAD",
-              desc: "Login menggunakan akun SIAKAD existing via LDAP. Role (admin/DPL/mahasiswa) di-resolve otomatis. Tidak ada pembuatan akun baru di sistem PPL.",
-              actors: ["admin", "dpl", "mhs"],
-              tags: ["LDAP", "SSO"],
-              prio: "high",
-            },
-            {
-              name: "Sinkronisasi data mahasiswa JIT",
-              desc: "Sinkronisasi data mahasiswa dari SIAKAD dilakukan saat login pertama kali dan pendaftaran PPL. Data mencakup biodata, IPK, SKS lulus, dan status prasyarat. Mendukung sinkronisasi ulang individu.",
-              actors: ["sistem", "mhs", "admin"],
-              tags: ["Just-in-Time", "Sync individu"],
-              prio: "high",
-            },
-            {
-              name: "Sinkronisasi data dosen",
-              desc: "Import data dosen dari SIAKAD: nama, NIDN, prodi, bidang keahlian. Digunakan untuk penugasan DPL.",
-              actors: ["sistem"],
-              tags: ["SIAKAD API"],
-              prio: "high",
-            },
-            {
-              name: "Push nilai & status kelulusan ke SIAKAD",
-              desc: "Setelah nilai akhir difinalisasi, kirim ke SIAKAD dengan konversi skala 0–100 ke huruf mutu sesuai konfigurasi global (misal >80=A). Admin yang mengatur tabel konversi.",
-              actors: ["sistem", "admin"],
-              tags: ["Push SIAKAD", "Konversi nilai"],
-              prio: "med",
-              note: "Tabel konversi dikonfigurasi admin, berlaku global semua prodi.",
-            },
-            {
-              name: "Validasi eligibilitas otomatis",
-              desc: "Sistem menandai mahasiswa tidak eligible berdasarkan data SIAKAD: status nonaktif, sudah punya nilai PPL, prasyarat belum terpenuhi, dll.",
-              actors: ["sistem", "admin"],
-              tags: ["Business rule"],
-              prio: "high",
-            },
-          ],
-        },
-        {
-          id: "m2",
-          title: "Manajemen periode PPL",
-          dot: "#534AB7",
-          features: [
-            {
-              name: "Buat & kelola periode PPL",
-              desc: "Admin membuat periode PPL dengan rentang tanggal dan nama angkatan. Periode mencakup semua prodi FTK sekaligus. Timeline milestone (observasi, pembukaan, mengajar, upload laporan, ujian) dikonfigurasi di sini.",
-              actors: ["admin"],
-              tags: ["CRUD", "Milestone"],
-              prio: "high",
-            },
-            {
-              name: "Periode susulan",
-              desc: "Periode susulan dibuat terpisah dalam semester yang sama dengan periode utama. Mahasiswa susulan mengikuti semua tahapan dari awal di sekolah berbeda.",
-              actors: ["admin", "sistem"],
-              tags: ["Susulan"],
-              prio: "high",
-              note: "Susulan tidak bercampur dengan angkatan baru karena beda periode.",
-            },
-            {
-              name: "Pengumuman & sosialisasi digital",
-              desc: "Admin mempublikasikan materi sosialisasi (PDF, video embed, link). Mahasiswa dapat notifikasi dan bisa mengakses dari dashboard.",
-              actors: ["admin", "mhs"],
-              tags: ["Notifikasi", "Upload file"],
-              prio: "high",
-            },
-            {
-              name: "Kalender & milestone PPL",
-              desc: "Kalender interaktif menampilkan semua tahapan per periode. Bisa dilihat oleh semua role sesuai scope aksesnya.",
-              actors: ["admin", "dpl", "mhs"],
-              tags: ["Kalender"],
-              prio: "high",
-            },
-            {
-              name: "Manajemen sekolah & syarat mitra",
-              desc: "CRUD sekolah mitra: nama, jenjang, kapasitas prodi, serta syarat khusus (gender, minimal IPK). Import/export via Excel.",
-              actors: ["admin"],
-              tags: ["CRUD", "Requirement"],
-              prio: "high",
-            },
-            {
-              name: "Konfigurasi rubrik penilaian per prodi",
-              desc: "Admin mengatur rubrik penilaian dan daftar dokumen yang harus diupload per prodi. Rubrik bisa berbeda antar periode; default mengikuti periode sebelumnya.",
-              actors: ["admin"],
-              tags: ["Rubrik", "Per prodi"],
-              prio: "high",
-              note: "Rubrik hanya untuk panduan — perhitungan nilai sepenuhnya kewenangan DPL.",
-            },
-          ],
-        },
-        {
-          id: "m3",
-          title: "Penempatan mahasiswa",
-          dot: "#0F6E56",
-          features: [
-            {
-              name: "Sistem WAR (Pemilihan Mandiri)",
-              desc: "Mahasiswa memilih sendiri sekolah yang tersedia. Sistem memvalidasi kelayakan berdasarkan sisa kuota prodi, gender, dan minimal IPK secara real-time.",
-              actors: ["mhs", "sistem"],
-              tags: ["WAR", "Real-time validation"],
-              prio: "high",
-            },
-            {
-              name: "Override & Tukar Penempatan",
-              desc: "Admin dapat mengubah penempatan mahasiswa secara manual atau melakukan tukar tempat antar mahasiswa (swap) selama syarat sekolah tujuan terpenuhi.",
-              actors: ["admin"],
-              tags: ["Manual override", "Swap"],
-              prio: "high",
-            },
-            {
-              name: "Penempatan Manual (Kalah WAR)",
-              desc: "Mahasiswa yang tidak mendapatkan sekolah dapat melapor ke admin. Admin menempatkan mahasiswa secara manual ke sekolah yang masih memiliki ruang atau sekolah khusus.",
-              actors: ["mhs", "admin"],
-              tags: ["Manual assignment"],
-              prio: "high",
-            },
-            {
-              name: "Import Excel penempatan & kuota",
-              desc: "Admin bisa import file Excel untuk kuota per prodi per sekolah atau daftar penempatan hasil rapat manual.",
-              actors: ["admin"],
-              tags: ["Import Excel"],
-              prio: "high",
-            },
-            {
-              name: "Penugasan DPL",
-              desc: "Admin menugaskan DPL ke sekolah secara manual. Tersedia fitur bantu auto-assign DPL berbasis beban kerja yang bisa di-override admin.",
-              actors: ["admin"],
-              tags: ["DPL Assignment", "Auto-assign tool"],
-              prio: "high",
-            },
-            {
-              name: "Generate surat pengantar & pembukaan",
-              desc: "PDF otomatis untuk observasi (per mahasiswa) dan pembukaan (per sekolah) dengan TTD digital.",
-              actors: ["admin", "mhs"],
-              tags: ["PDF", "TTD digital"],
-              prio: "high",
-            },
-          ],
-        },
-        {
-          id: "m4",
-          title: "Aktivitas mengajar",
-          dot: "#854F0B",
-          features: [
-            {
-              name: "Log pertemuan harian",
-              desc: "Mahasiswa mencatat setiap sesi: tanggal, kelas, mapel, jenis (observasi/terbimbing/mandiri). Jika ada kesalahan setelah terverifikasi, mahasiswa bisa edit dan log masuk antrian verifikasi ulang.",
-              actors: ["mhs"],
-              tags: ["Log harian"],
-              prio: "high",
-              note: "Verifikasi dilakukan offline via export dokumen → tanda tangan guru pamong → input ulang mahasiswa → verifikasi akhir DPL.",
-            },
-            {
-              name: "Export logbook otomatis",
-              desc: "Sistem generate PDF/Excel logbook dari data log yang sudah diinput mahasiswa. Dokumen ini diberikan ke guru pamong untuk diparaf/ditandatangani secara fisik.",
-              actors: ["mhs", "sistem"],
-              tags: ["Export PDF", "Export Excel"],
-              prio: "high",
-            },
-            {
-              name: "Verifikasi log oleh DPL",
-              desc: "Setelah mahasiswa input ulang data log yang sudah diverifikasi guru pamong secara fisik, DPL melakukan verifikasi akhir di sistem.",
-              actors: ["dpl"],
-              tags: ["Verifikasi"],
-              prio: "high",
-            },
-            {
-              name: "Counter pertemuan mandiri",
-              desc: "Sistem hitung otomatis pertemuan mengajar mandiri yang sudah diverifikasi DPL. Ditampilkan sebagai progress bar menuju syarat ujian (min. 10x). Kewenangan kelolosan tetap di DPL.",
-              actors: ["sistem", "mhs", "dpl"],
-              tags: ["Auto-count", "Progress"],
-              prio: "high",
-            },
-            {
-              name: "Upload modul ajar / RPP",
-              desc: "Mahasiswa upload modul ajar sebelum mengajar. Histori revisi tersimpan. DPL bisa memberi catatan.",
-              actors: ["mhs", "dpl"],
-              tags: ["Upload", "Versi dokumen"],
-              prio: "high",
-            },
-            {
-              name: "Penanganan kondisi khusus",
-              desc: "Mahasiswa bisa mengajukan status kondisi khusus (sakit, force majeure). DPL/admin bisa menyetujui atau menginput langsung tanpa pengajuan. Mahasiswa kondisi khusus tidak di-flag sebagai bermasalah. Kelolosan ujian tetap ditentukan DPL berdasarkan jumlah pertemuan.",
-              actors: ["mhs", "dpl", "admin"],
-              tags: ["Force majeure", "Izin khusus"],
-              prio: "high",
-              note: "Tidak ada batas toleransi hari — kewenangan penuh di DPL.",
-            },
-            {
-              name: "Relokasi sekolah",
-              desc: "Admin bisa memindahkan mahasiswa ke sekolah lain jika terjadi kondisi darurat (bencana, sekolah tutup). Mahasiswa mendapat guru pamong baru di sekolah baru. Data log yang sudah ada tetap tersimpan.",
-              actors: ["admin"],
-              tags: ["Relokasi"],
-              prio: "med",
-            },
-          ],
-        },
-        {
-          id: "m5",
-          title: "Portal tamu & pelaporan",
-          dot: "#993C1D",
-          features: [
-            {
-              name: "Portal laporan publik (tanpa akun)",
-              desc: "Halaman publik yang bisa diakses siapa saja (termasuk guru pamong) tanpa login. Berisi form laporan dengan beberapa kategori. Identitas pelapor diinput manual (nama, sekolah, nama mahasiswa yang dilaporkan).",
-              actors: ["tamu"],
-              tags: ["Portal publik", "Tanpa autentikasi"],
-              prio: "high",
-              note: "Keamanan dijaga oleh verifikasi DPL — semua laporan tidak langsung berefek tanpa persetujuan DPL/admin.",
-            },
-            {
-              name: "Laporan mahasiswa bermasalah",
-              desc: "Guru pamong bisa melaporkan mahasiswa: sering tidak hadir, miskonsepsi berulang, atau masalah lain. Input: nama pelapor, nama mahasiswa, kategori masalah, deskripsi. Laporan masuk ke antrian DPL.",
-              actors: ["tamu", "dpl"],
-              tags: ["Report", "Flag mahasiswa"],
-              prio: "high",
-            },
-            {
-              name: "Rekomendasi pemberhentian via portal",
-              desc: "Guru pamong bisa mengajukan rekomendasi pemberhentian mahasiswa melalui form khusus di portal. DPL memutuskan pemberhentian di sistem. DPL/admin juga bisa memberhentikan langsung tanpa laporan portal.",
-              actors: ["tamu", "dpl", "admin"],
-              tags: ["Pemberhentian", "Rekomendasi"],
-              prio: "high",
-            },
-            {
-              name: "Antrian & tindak lanjut laporan",
-              desc: "DPL melihat semua laporan masuk untuk mahasiswa bimbingannya. Bisa ditandai: ditindaklanjuti, diabaikan (dengan alasan). Riwayat laporan tersimpan per mahasiswa.",
-              actors: ["dpl", "admin"],
-              tags: ["Manajemen laporan"],
-              prio: "high",
-            },
-          ],
-        },
-        {
-          id: "m6",
-          title: "Penilaian & ujian PPL",
-          dot: "#639922",
-          features: [
-            {
-              name: "Cek eligibilitas ujian",
-              desc: "Sistem memeriksa syarat ujian: min. 10x pertemuan mandiri terverifikasi DPL, semua dokumen wajib terupload. Hasilnya ditampilkan ke mahasiswa dan DPL. Keputusan akhir tetap di DPL.",
-              actors: ["sistem", "mhs", "dpl"],
-              tags: ["Auto-check", "Eligibility"],
-              prio: "high",
-            },
-            {
-              name: "Penjadwalan ujian (untuk notifikasi)",
-              desc: "DPL input jadwal ujian per mahasiswa. Fungsinya sebagai pemberitahuan saja — pelaksanaan ujian bisa diwakilkan atau dijadwal ulang oleh DPL langsung.",
-              actors: ["dpl", "admin"],
-              tags: ["Scheduling", "Notifikasi"],
-              prio: "high",
-            },
-            {
-              name: "Upload laporan akhir mahasiswa",
-              desc: "Form upload dokumen akhir PPL: lembar penilaian guru pamong (fisik discan), logbook, laporan (RPP, media ajar, presensi, daftar nilai, dll). Dokumen yang wajib diupload dikonfigurasi per prodi oleh admin.",
-              actors: ["mhs"],
-              tags: ["Upload dokumen", "Per prodi"],
-              prio: "high",
-              note: "Logbook di form ini terpisah dari data log sistem — mahasiswa bisa upload file berbeda.",
-            },
-            {
-              name: "Penilaian DPL",
-              desc: "DPL mengisi nilai akhir mahasiswa (skala 0–100) berdasarkan lembar penilaian guru pamong dan dokumen yang diupload mahasiswa. Nilai bisa diubah selama periode belum selesai.",
-              actors: ["dpl"],
-              tags: ["Input nilai", "0-100"],
-              prio: "high",
-              note: "Perhitungan nilai sepenuhnya kewenangan DPL. Rubrik hanya panduan.",
-            },
-            {
-              name: "Rekap nilai & status kelulusan",
-              desc: "Sistem hitung dan tampilkan rekap nilai semua mahasiswa. DPL/admin tetapkan status: Lulus / Lulus Bersyarat / Tidak Lulus. Mahasiswa bisa lihat nilai setelah DPL selesai menilai.",
-              actors: ["admin", "dpl", "pimpinan"],
-              tags: ["Rekap", "Status kelulusan"],
-              prio: "high",
-            },
-            {
-              name: "Alur lulus bersyarat",
-              desc: "Mahasiswa status Lulus Bersyarat bisa upload ulang semua dokumen. DPL memberi catatan dokumen mana yang perlu diperbaiki. Setelah revisi, status kembali ke Menunggu Penilaian untuk dinilai ulang DPL.",
-              actors: ["mhs", "dpl"],
-              tags: ["Lulus bersyarat", "Revisi dokumen"],
-              prio: "high",
-            },
-            {
-              name: "Banding nilai & status kelulusan",
-              desc: "Mahasiswa bisa ajukan banding nilai atau status kelulusan via textarea alasan selama periode belum selesai. DPL yang memutuskan. Riwayat banding tersimpan dan bisa dilihat mahasiswa.",
-              actors: ["mhs", "dpl"],
-              tags: ["Banding", "Audit trail"],
-              prio: "high",
-            },
-          ],
-        },
-        {
-          id: "m7",
-          title: "Dokumen & laporan",
-          dot: "#3B6D11",
-          features: [
-            {
-              name: "Laporan kehadiran & aktivitas",
-              desc: "Export rekap kehadiran dan log aktivitas per mahasiswa (Excel/PDF). Filter: per sekolah, prodi, periode.",
-              actors: ["admin", "dpl", "pimpinan"],
-              tags: ["Export", "Filter"],
-              prio: "high",
-            },
-            {
-              name: "Rekap nilai akhir",
-              desc: "Laporan nilai akhir lengkap dengan status kelulusan. Export per prodi atau seluruh FTK.",
-              actors: ["admin", "dpl", "pimpinan"],
-              tags: ["Export", "Rekap nilai"],
-              prio: "high",
-            },
-            {
-              name: "Sertifikat lulus PPL",
-              desc: "Generate sertifikat PDF per mahasiswa yang lulus. Berisi nama, NIM, prodi, periode, TTD digital pejabat.",
-              actors: ["admin", "mhs"],
-              tags: ["PDF", "TTD digital"],
-              prio: "med",
-            },
-            {
-              name: "Dashboard analitik pimpinan",
-              desc: "View-only: jumlah mahasiswa aktif, distribusi sekolah, % kelulusan per prodi, tren nilai lintas periode.",
-              actors: ["pimpinan"],
-              tags: ["Dashboard", "Read-only"],
-              prio: "med",
-            },
-            {
-              name: "Audit trail nilai, penempatan & kelulusan",
-              desc: "Riwayat perubahan nilai, penempatan, dan status kelulusan bisa dilihat di UI. Mahasiswa bisa lihat histori perubahan pada data mereka sendiri. Admin/pimpinan bisa lihat semua.",
-              actors: ["admin", "dpl", "mhs", "pimpinan"],
-              tags: ["Audit trail", "Transparansi"],
-              prio: "high",
-              note: "Mencakup: siapa yang mengubah, kapan, nilai sebelum dan sesudah.",
-            },
-          ],
-        },
-        {
-          id: "m8",
-          title: "Notifikasi & komunikasi",
-          dot: "#993556",
-          features: [
-            {
-              name: "Notifikasi in-app & email",
-              desc: "Event penting memicu notifikasi: pengumuman penempatan, reminder upload modul, jadwal ujian, status kelulusan, laporan portal tamu masuk, flag mahasiswa. Via in-app dan email kampus (LDAP).",
-              actors: ["sistem"],
-              tags: ["Push notif", "Email"],
-              prio: "high",
-            },
-            {
-              name: "PWA support",
-              desc: "Aplikasi web mendukung installasi sebagai PWA di Android/iOS. Notifikasi push browser aktif. Layout mobile-first untuk kebutuhan mahasiswa input log mengajar dari HP setelah mengajar.",
-              actors: ["mhs", "dpl"],
-              tags: ["PWA", "Mobile-first"],
-              prio: "high",
-              note: "Halaman log mengajar harian diprioritaskan untuk UX mobile.",
-            },
-            {
-              name: "Pengumuman dari admin",
-              desc: "Broadcast ke semua mahasiswa aktif atau target per prodi/sekolah. Teks + lampiran.",
-              actors: ["admin"],
-              tags: ["Broadcast", "Segmentasi"],
-              prio: "med",
-            },
-            {
-              name: "Catatan & feedback DPL ke mahasiswa",
-              desc: "DPL bisa beri catatan ke mahasiswa bimbingan. Mahasiswa bisa membalas. Riwayat tersimpan per mahasiswa.",
-              actors: ["dpl", "mhs"],
-              tags: ["Feedback", "Thread"],
-              prio: "med",
-            },
-          ],
-        },
-      ];
+    <div class="login-container">
+      <div class="login-card">
+        <div class="logo">PPL FTK</div>
+        <p class="text-muted mb-4">Sistem Manajemen PPL Terintegrasi</p>
 
-      let active = 0;
-      function ab(id) {
-        const a = A[id];
-        return `<span class="actor" style="background:${a.bg};color:${a.tc};border-color:${a.bc}">${a.label}</span>`;
-      }
-      function pl(p) {
-        if (p === "high") return '<span class="prio p-high">Tinggi</span>';
-        if (p === "med") return '<span class="prio p-med">Sedang</span>';
-        return '<span class="prio p-low">Nice to have</span>';
-      }
-      function renderMods() {
-        document.getElementById("mods").innerHTML = M.map(
-          (m, i) => `
-    <div class="mod${i === active ? " active" : ""}" onclick="setActive(${i})">
-      <div class="mod-dot" style="background:${m.dot}"></div>
-      <div class="mod-num">M${String(i + 1).padStart(2, "0")}</div>
-      <div class="mod-title">${m.title}</div>
-      <div class="mod-count">${m.features.length} fitur</div>
-    </div>`,
-        ).join("");
-      }
-      function renderDetail() {
-        const m = M[active];
-        const allA = [...new Set(m.features.flatMap((f) => f.actors))];
-        document.getElementById("detail").innerHTML = `
-    <div class="detail-head">
-      <h3>${m.title}</h3>
-      <p>Modul ${active + 1} dari ${M.length} — ${m.features.length} fitur</p>
-      <div class="actors">${allA.map(ab).join("")}</div>
-    </div>
-    ${m.features
-      .map(
-        (f) => `
-      <div class="feat">
-        <div>
-          <div class="feat-name">${f.name}${f.isNew ? '<span class="new-badge">baru</span>' : ""}</div>
-          <div class="feat-desc">${f.desc}</div>
-          ${f.note ? `<div class="feat-note">${f.note}</div>` : ""}
-          <div class="feat-tags">${f.actors.map(ab).join("")}${f.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
+        <div style="margin-top: 2rem">
+          <p class="form-label mb-4">Pilih Role untuk Masuk (Simulasi):</p>
+          <a href="admin/dashboard/index.html" class="role-btn"
+            >Login sebagai Admin</a
+          >
+          <a href="mahasiswa/dashboard/index.html" class="role-btn"
+            >Login sebagai Mahasiswa</a
+          >
+          <a href="dpl/dashboard/index.html" class="role-btn"
+            >Login sebagai DPL</a
+          >
         </div>
-        ${pl(f.prio)}
-      </div>`,
-      )
-      .join("")}`;
-      }
-      function setActive(i) {
-        active = i;
-        renderMods();
-        renderDetail();
-      }
-      renderMods();
-      renderDetail();
-    </script>
+
+        <div
+          style="
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+          "
+        >
+          <a
+            href="brief.html"
+            class="text-sm"
+            style="
+              color: var(--primary);
+              text-decoration: none;
+              font-weight: 600;
+            "
+            >Lihat Daftar Fitur (Brief)</a
+          >
+          <a
+            href="portal/index.html"
+            class="text-sm"
+            style="color: var(--text-muted); text-decoration: none"
+            >Akses Portal Tamu & Pelaporan</a
+          >
+        </div>
+      </div>
+    </div>
   </body>
 </html>

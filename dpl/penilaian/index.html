@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penilaian Akhir - DPL PPL</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK DPL</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
+        <a href="../verifikasi/index.html" class="nav-item">Verifikasi Logbook</a>
+        <a href="../penilaian/index.html" class="nav-item active">Penilaian Akhir</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Input Penilaian Akhir</h1>
+      </header>
+
+      <div class="page-container">
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem;">
+          <!-- Student Selector & Summary -->
+          <div>
+            <div class="card">
+              <h3 class="mb-4">Pilih Mahasiswa</h3>
+              <div class="form-group">
+                <select class="form-input">
+                  <option>Budi Santoso (123001)</option>
+                  <option>Siti Aminah (123002)</option>
+                </select>
+              </div>
+              <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-main); border-radius: 0.5rem;">
+                <p class="text-sm" style="font-weight: 500;">Dokumen Mahasiswa:</p>
+                <a href="#" class="text-sm" style="color: var(--primary); display: block; margin-top: 0.5rem;">Download Laporan Akhir (ZIP)</a>
+                <a href="#" class="text-sm" style="color: var(--primary); display: block; margin-top: 0.25rem;">Lihat Logbook Digital</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grading Form -->
+          <div class="card">
+            <h3 class="mb-4">Formulir Penilaian</h3>
+            <form>
+              <div class="form-group">
+                <label class="form-label">Nilai Angka (0-100)</label>
+                <input type="number" class="form-input" style="max-width: 120px;" placeholder="85">
+                <p class="text-muted" style="font-size: 0.75rem; margin-top: 0.25rem;">Konversi Huruf Mutu: A (>80), B (70-80), C (60-70)</p>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Catatan & Evaluasi DPL</label>
+                <textarea class="form-input" style="height: 120px;" placeholder="Tuliskan catatan performa mahasiswa selama PPL..."></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Status Kelulusan</label>
+                <select class="form-input">
+                  <option>Lulus</option>
+                  <option>Lulus Bersyarat (Butuh Revisi)</option>
+                  <option>Tidak Lulus</option>
+                </select>
+              </div>
+              <div class="flex justify-between mt-4">
+                <button type="button" class="btn btn-outline">Simpan Draft</button>
+                <button type="submit" class="btn btn-primary">Finalisasi Nilai</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

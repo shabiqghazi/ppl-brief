@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pelaporan & Nilai - PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK MHS</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
+        <a href="../daftar/index.html" class="nav-item">Pendaftaran & WAR</a>
+        <a href="../logbook/index.html" class="nav-item">Logbook Harian</a>
+        <a href="../ujian/index.html" class="nav-item active">Pelaporan & Nilai</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Laporan Akhir & Penilaian</h1>
+      </header>
+
+      <div class="page-container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <!-- Upload Section -->
+          <div class="card">
+            <h3 class="mb-4">Unggah Laporan Akhir</h3>
+            <p class="text-sm text-muted mb-4">Pastikan semua dokumen (Logbook fisik, lembar penilaian guru pamong, RPP, dll) telah digabungkan dalam satu file ZIP atau folder Google Drive.</p>
+            
+            <div class="form-group">
+              <label class="form-label">Link GDrive / Unggah ZIP</label>
+              <input type="text" class="form-input" placeholder="https://drive.google.com/...">
+            </div>
+            
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-xs text-muted">Batas: 15 Juli 2026</span>
+              <button class="btn btn-primary">Submit Laporan</button>
+            </div>
+            
+            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-main); border-radius: 0.5rem;">
+              <p class="text-sm" style="font-weight: 500;">Status Pengumpulan:</p>
+              <p class="text-sm text-success">Sudah Dikumpulkan (12 Juli 2026)</p>
+            </div>
+          </div>
+
+          <!-- Grade Section -->
+          <div class="card">
+            <h3 class="mb-4">Hasil Penilaian Akhir</h3>
+            
+            <div style="text-align: center; padding: 2rem 0;">
+              <p class="text-sm text-muted mb-2">Nilai Akhir (Skala 100)</p>
+              <p style="font-size: 3rem; font-weight: 800; color: var(--primary);">88.5</p>
+              <span class="badge badge-success" style="padding: 0.5rem 1rem; font-size: 1rem;">Lulus (A)</span>
+            </div>
+
+            <div style="border-top: 1px solid var(--border); padding-top: 1rem;">
+              <p class="text-sm" style="font-weight: 500;">Catatan DPL:</p>
+              <p class="text-sm text-muted italic">"Performa mengajar sangat baik, penguasaan kelas di MAN 1 Bandung sudah matang. Laporan tersusun rapi."</p>
+            </div>
+
+            <button class="btn btn-outline" style="width: 100%; margin-top: 1.5rem;">Ajukan Banding Nilai</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

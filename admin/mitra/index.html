@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sekolah & DPL - Admin PPL</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK Admin</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
+        <a href="../periode/index.html" class="nav-item">Manajemen Periode</a>
+        <a href="../mitra/index.html" class="nav-item active">Sekolah & DPL</a>
+        <a href="../laporan/index.html" class="nav-item">Rekap & Laporan</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Sekolah Mitra & DPL</h1>
+      </header>
+
+      <div class="page-container">
+        <!-- Filters & Actions -->
+        <div class="flex justify-between items-center mb-4">
+          <div class="flex gap-2">
+            <select class="form-input" style="width: 240px;">
+              <option>Angkatan 2026 Ganjil</option>
+              <option>PPL Internasional Malaysia</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-outline">Import Excel</button>
+            <button class="btn btn-primary">+ Tambah Sekolah</button>
+          </div>
+        </div>
+
+        <!-- School List -->
+        <div class="card" style="padding: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nama Sekolah</th>
+                <th>Kuota Prodi</th>
+                <th>Terpilih</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="school-table"></tbody>
+          </table>
+        </div>
+
+        <!-- Student-DPL Assignment -->
+        <div class="flex justify-between items-center mb-4 mt-8">
+          <h2>Penugasan DPL ke Mahasiswa</h2>
+          <button class="btn btn-primary" onclick="alert('Simulasi: Auto-assign DPL berbasis beban kerja')">Auto-Assign DPL</button>
+        </div>
+        <div class="card" style="padding: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mahasiswa</th>
+                <th>Prodi</th>
+                <th>Sekolah</th>
+                <th>DPL Pendamping</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="assignment-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/data.js"></script>
+  <script>
+    const schoolTable = document.getElementById('school-table');
+    const assignmentTable = document.getElementById('assignment-table');
+
+    function renderSchools() {
+      const schools = store.get('schools');
+      schoolTable.innerHTML = schools.map(s => `
+        <tr>
+          <td style="font-weight: 500;">${s.name}</td>
+          <td>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              ${Object.entries(s.quota).map(([prodi, count]) => `
+                <span class="badge" style="background: #f3f4f6; color: #374151;">${prodi}: ${count}</span>
+              `).join('')}
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <span style="font-weight: 600;">${s.selected}</span>
+              <span class="text-muted text-sm">mahasiswa</span>
+            </div>
+          </td>
+          <td>
+            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Detail</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAssignments() {
+      const students = store.get('students');
+      assignmentTable.innerHTML = students.map(s => `
+        <tr>
+          <td>
+            <p style="font-weight: 500;">${s.name}</p>
+            <p class="text-xs text-muted">${s.id}</p>
+          </td>
+          <td>${s.prodi}</td>
+          <td>${s.school || '<span class="text-muted">Belum memilih</span>'}</td>
+          <td>
+            ${s.dpl ? `<span class="badge badge-success">${s.dpl}</span>` : `<span class="badge badge-warning">Belum ada</span>`}
+          </td>
+          <td>
+            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Ubah DPL</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    renderSchools();
+    renderAssignments();
+  </script>
+</body>
+</html>

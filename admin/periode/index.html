@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Periode - Admin PPL</title>
+  <link rel="stylesheet" href="../../assets/css/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK Admin</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
+        <a href="../periode/index.html" class="nav-item active">Manajemen Periode</a>
+        <a href="../mitra/index.html" class="nav-item">Sekolah & DPL</a>
+        <a href="../laporan/index.html" class="nav-item">Rekap & Laporan</a>
+      </nav>
+      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
+        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size: 1.25rem; font-weight: 600;">Manajemen Periode PPL</h1>
+      </header>
+
+      <div class="page-container">
+        <div class="flex justify-between items-center mb-4">
+          <h2>Daftar Periode</h2>
+          <button class="btn btn-primary" onclick="showModal()">+ Tambah Periode</button>
+        </div>
+
+        <div class="card" style="padding: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nama Periode</th>
+                <th>Jenis</th>
+                <th>Status</th>
+                <th>Rentang Waktu</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="period-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Simulated Modal -->
+  <div id="modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 20; align-items: center; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 600px; margin-bottom: 0;">
+      <h3 class="mb-4">Buat Periode PPL Baru</h3>
+      <form id="period-form">
+        <div class="form-group">
+          <label class="form-label">Nama Angkatan/Periode</label>
+          <input type="text" class="form-input" placeholder="Contoh: Angkatan 2026 Genap" required>
+        </div>
+        <div class="flex gap-2">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Jenis PPL (Teks)</label>
+            <input type="text" class="form-input" placeholder="Reguler / Internasional" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Status</label>
+            <select class="form-input">
+              <option>Active</option>
+              <option>Closed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Deskripsi Syarat Pendaftaran (Markdown)</label>
+          <textarea class="form-input" style="height: 120px;" placeholder="# Persyaratan..."></textarea>
+        </div>
+        <div class="flex gap-2">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Mulai Pendaftaran</label>
+            <input type="date" class="form-input" required>
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">Selesai Pendaftaran</label>
+            <input type="date" class="form-input" required>
+          </div>
+        </div>
+        <div class="flex justify-between mt-4">
+          <button type="button" class="btn btn-outline" onclick="hideModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Periode</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../../assets/js/data.js"></script>
+  <script>
+    const periodTable = document.getElementById('period-table');
+    const modal = document.getElementById('modal');
+
+    function renderPeriods() {
+      const periods = store.get('periods');
+      periodTable.innerHTML = periods.map(p => `
+        <tr>
+          <td style="font-weight: 500;">${p.name}</td>
+          <td><span class="badge ${p.type === 'Internasional' ? 'badge-warning' : 'badge-success'}">${p.type}</span></td>
+          <td><span class="badge ${p.status === 'Active' ? 'badge-success' : 'badge-danger'}">${p.status}</span></td>
+          <td class="text-muted">${p.regStart} s/d ${p.regEnd}</td>
+          <td>
+            <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function showModal() { modal.style.display = 'flex'; }
+    function hideModal() { modal.style.display = 'none'; }
+
+    renderPeriods();
+  </script>
+</body>
+</html>
