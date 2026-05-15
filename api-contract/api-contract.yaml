@@ -1,0 +1,2189 @@
+openapi: 3.0.3
+info:
+  title: Sistem Manajemen PPL FTK
+  description: |
+    API Contract untuk Sistem Manajemen PPL (Program Pengalaman Lapangan)
+    Fakultas Teknik dan Kependidikan.
+
+    Cakupan dokumen ini: **Modul 1 — Integrasi SALAM & SSO** dan
+    **Modul 2 — Manajemen Periode PPL**.
+
+    ## Autentikasi
+    Semua endpoint (kecuali `/auth/login`) memerlukan Bearer JWT token
+    yang diperoleh dari endpoint login.
+
+    ## Role
+    | Role | Keterangan |
+    |------|-----------|
+    | `admin` | Administrator sistem PPL |
+    | `dpl` | Dosen Pembimbing Lapangan |
+    | `mahasiswa` | Mahasiswa peserta PPL |
+  version: 1.0.0
+  contact:
+    name: Tim Pengembang PPL FTK
+
+servers:
+  - url: /api/v1
+    description: API base path
+
+tags:
+  - name: Auth
+    description: Autentikasi via SSO LDAP SALAM (Modul 1)
+  - name: SALAM Sync
+    description: Sinkronisasi & integrasi data dengan sistem SALAM (Modul 1)
+  - name: PPL Types
+    description: Manajemen master jenis PPL (Modul 2)
+  - name: Periods
+    description: CRUD periode PPL (Modul 2)
+  - name: Period Schools
+    description: Manajemen sekolah mitra per periode (Modul 2)
+  - name: Period Rubrics
+    description: Konfigurasi rubrik penilaian per prodi per periode (Modul 2)
+  - name: Announcements
+    description: Pengumuman & sosialisasi digital per periode (Modul 2)
+  - name: Milestones
+    description: Kalender & milestone per periode (Modul 2)
+
+security:
+  - BearerAuth: []
+
+# ===========================================================================
+# COMPONENTS
+# ===========================================================================
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ---------------------------------------------------------------------------
+  # PARAMETERS
+  # ---------------------------------------------------------------------------
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      description: UUID resource
+      schema:
+        type: string
+        format: uuid
+
+    PeriodIdParam:
+      name: id
+      in: path
+      required: true
+      description: UUID periode PPL
+      schema:
+        type: string
+        format: uuid
+
+    AnnouncementIdParam:
+      name: announcement_id
+      in: path
+      required: true
+      description: UUID pengumuman
+      schema:
+        type: string
+        format: uuid
+
+    SchoolIdParam:
+      name: school_id
+      in: path
+      required: true
+      description: UUID entri sekolah mitra pada periode
+      schema:
+        type: string
+        format: uuid
+
+    MilestoneIdParam:
+      name: milestone_id
+      in: path
+      required: true
+      description: UUID milestone
+      schema:
+        type: string
+        format: uuid
+
+    PageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    PerPageParam:
+      name: per_page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  # ---------------------------------------------------------------------------
+  # RESPONSES
+  # ---------------------------------------------------------------------------
+  responses:
+    Unauthorized:
+      description: Token tidak ada atau tidak valid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: UNAUTHORIZED
+            message: Token tidak valid atau sudah kadaluarsa
+
+    Forbidden:
+      description: Role tidak memiliki izin untuk operasi ini
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: FORBIDDEN
+            message: Anda tidak memiliki izin untuk melakukan aksi ini
+
+    NotFound:
+      description: Resource tidak ditemukan
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: NOT_FOUND
+            message: Resource tidak ditemukan
+
+    UnprocessableEntity:
+      description: Validasi gagal
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+
+  # ---------------------------------------------------------------------------
+  # SCHEMAS
+  # ---------------------------------------------------------------------------
+  schemas:
+
+    # ---- Common ----
+
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: INVALID_CREDENTIALS
+        message:
+          type: string
+          example: Username atau password salah
+
+    ValidationError:
+      type: object
+      required: [code, message, errors]
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Validasi input gagal
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: registration_end
+              message:
+                type: string
+                example: Tanggal akhir pendaftaran harus setelah tanggal mulai
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        per_page:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 42
+        total_pages:
+          type: integer
+          example: 3
+
+    # ---- Auth ----
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          description: Username akun SALAM (NIM untuk mahasiswa, NIDN untuk dosen/admin)
+          example: "20212001"
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          description: Durasi kedaluwarsa token dalam detik
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+          example: "20212001"
+        name:
+          type: string
+          example: Budi Santoso
+        email:
+          type: string
+          format: email
+          example: budi@univ.ac.id
+        role:
+          type: string
+          enum: [admin, dpl, mahasiswa]
+        nim:
+          type: string
+          nullable: true
+          description: Diisi hanya untuk role mahasiswa
+          example: "20212001"
+        nidn:
+          type: string
+          nullable: true
+          description: Diisi hanya untuk role dpl
+          example: "0012345678"
+        prodi:
+          type: string
+          nullable: true
+          example: Pendidikan Teknik Informatika
+
+    # ---- SALAM Sync ----
+
+    MahasiswaData:
+      type: object
+      description: Data mahasiswa yang disinkronisasi dari SALAM
+      properties:
+        nim:
+          type: string
+          example: "20212001"
+        name:
+          type: string
+          example: Budi Santoso
+        email:
+          type: string
+          format: email
+        prodi:
+          type: string
+          example: Pendidikan Teknik Informatika
+        prodi_code:
+          type: string
+          example: PEND_INFORMATIKA
+        ipk:
+          type: number
+          format: float
+          example: 3.75
+        sks_lulus:
+          type: integer
+          example: 110
+        gender:
+          type: string
+          enum: [L, P]
+        status:
+          type: string
+          enum: [aktif, nonaktif]
+          description: Status keaktifan di SALAM
+        synced_at:
+          type: string
+          format: date-time
+
+    DosenData:
+      type: object
+      description: Data dosen yang disinkronisasi dari SALAM
+      properties:
+        nidn:
+          type: string
+          example: "0012345678"
+        name:
+          type: string
+          example: Dr. Andi Kurniawan, M.T.
+        email:
+          type: string
+          format: email
+        prodi:
+          type: string
+          example: Pendidikan Teknik Informatika
+        prodi_code:
+          type: string
+        bidang_keahlian:
+          type: string
+          example: Rekayasa Perangkat Lunak
+        synced_at:
+          type: string
+          format: date-time
+
+    EligibilityStatus:
+      type: object
+      properties:
+        nim:
+          type: string
+        eligible:
+          type: boolean
+        reasons:
+          type: array
+          description: Alasan tidak eligible. Kosong jika eligible.
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                enum:
+                  - ALREADY_PASSED
+                  - INACTIVE_STATUS
+                  - PREREQUISITE_NOT_MET
+                  - IPK_BELOW_MINIMUM
+                  - ALREADY_REGISTERED
+              message:
+                type: string
+          example:
+            - code: ALREADY_PASSED
+              message: Mahasiswa sudah memiliki nilai lulus PPL
+
+    NilaiConversionTable:
+      type: object
+      description: Tabel konversi nilai 0-100 ke huruf mutu (dikonfigurasi admin)
+      properties:
+        id:
+          type: string
+          format: uuid
+        entries:
+          type: array
+          items:
+            type: object
+            required: [min_score, grade]
+            properties:
+              min_score:
+                type: number
+                minimum: 0
+                maximum: 100
+                description: Batas bawah nilai untuk huruf mutu ini
+                example: 80
+              grade:
+                type: string
+                example: A
+
+    NilaiPushRequest:
+      type: object
+      required: [period_id, items]
+      properties:
+        period_id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [nim, nilai]
+            properties:
+              nim:
+                type: string
+              nilai:
+                type: number
+                minimum: 0
+                maximum: 100
+                description: Nilai numerik 0–100, akan dikonversi ke huruf mutu
+
+    NilaiPushResult:
+      type: object
+      properties:
+        pushed:
+          type: integer
+          description: Jumlah record yang berhasil dipush ke SALAM
+        failed:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              nim:
+                type: string
+              reason:
+                type: string
+
+    SyncJobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, done, failed]
+        total:
+          type: integer
+          nullable: true
+        processed:
+          type: integer
+          nullable: true
+        failed:
+          type: integer
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        finished_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ---- PPL Types ----
+
+    PPLType:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: PPL Reguler
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PPLTypeRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          example: PPL Khusus Luar Daerah
+        description:
+          type: string
+          nullable: true
+
+    # ---- Periods ----
+
+    Period:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: PPL Genap 2025/2026
+        ppl_type:
+          $ref: '#/components/schemas/PPLType'
+        status:
+          type: string
+          enum: [draft, published, registration, active, closed]
+          description: |
+            Alur status: `draft` → `published` → `registration` → `active` → `closed`
+        start_date:
+          type: string
+          format: date
+          description: Tanggal mulai periode PPL secara keseluruhan (wajib)
+        end_date:
+          type: string
+          format: date
+          description: Tanggal akhir periode PPL secara keseluruhan (wajib)
+        registration_start:
+          type: string
+          format: date
+          description: Mulai pendaftaran (wajib)
+        registration_end:
+          type: string
+          format: date
+          description: Akhir pendaftaran (wajib)
+        preparation_start:
+          type: string
+          format: date
+          nullable: true
+        preparation_end:
+          type: string
+          format: date
+          nullable: true
+        implementation_start:
+          type: string
+          format: date
+          nullable: true
+        implementation_end:
+          type: string
+          format: date
+          nullable: true
+        reporting_start:
+          type: string
+          format: date
+          nullable: true
+        reporting_end:
+          type: string
+          format: date
+          nullable: true
+        registration_requirements:
+          type: string
+          description: Syarat pendaftaran dalam format Markdown (opsional, dinamis per periode)
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PeriodRequest:
+      type: object
+      required:
+        - name
+        - start_date
+        - end_date
+        - registration_start
+        - registration_end
+      properties:
+        name:
+          type: string
+          example: PPL Genap 2025/2026
+        ppl_type_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: UUID jenis PPL yang sudah ada. Isi salah satu antara ini atau `new_ppl_type_name`.
+        new_ppl_type_name:
+          type: string
+          nullable: true
+          description: Nama jenis PPL baru yang akan dibuat otomatis jika `ppl_type_id` kosong.
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        registration_start:
+          type: string
+          format: date
+        registration_end:
+          type: string
+          format: date
+        preparation_start:
+          type: string
+          format: date
+          nullable: true
+        preparation_end:
+          type: string
+          format: date
+          nullable: true
+        implementation_start:
+          type: string
+          format: date
+          nullable: true
+        implementation_end:
+          type: string
+          format: date
+          nullable: true
+        reporting_start:
+          type: string
+          format: date
+          nullable: true
+        reporting_end:
+          type: string
+          format: date
+          nullable: true
+        registration_requirements:
+          type: string
+          description: Konten Markdown untuk syarat pendaftaran
+          nullable: true
+
+    # ---- Period Schools ----
+
+    School:
+      type: object
+      description: Master data sekolah
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: SMAN 1 Makassar
+        npsn:
+          type: string
+          description: Nomor Pokok Sekolah Nasional
+          nullable: true
+          example: "40300001"
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+          example: Makassar
+
+    ProdiSlot:
+      type: object
+      description: Kuota & syarat satu prodi di suatu sekolah untuk periode tertentu
+      required: [prodi_code, quota]
+      properties:
+        prodi_code:
+          type: string
+          example: PEND_INFORMATIKA
+        prodi_name:
+          type: string
+          description: Dibaca dari master prodi (read-only saat response)
+          readOnly: true
+          example: Pendidikan Teknik Informatika
+        quota:
+          type: integer
+          minimum: 0
+          description: Total kuota mahasiswa untuk prodi ini di sekolah ini
+        min_ipk:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 4.0
+          nullable: true
+          description: IPK minimal (opsional, bisa berbeda per prodi per sekolah)
+        gender_requirement:
+          type: string
+          enum: [L, P, all]
+          nullable: true
+          description: Batasan gender (opsional)
+          example: all
+        filled:
+          type: integer
+          readOnly: true
+          description: Kuota yang sudah terisi (hanya pada response)
+
+    PeriodSchool:
+      type: object
+      description: Data sekolah mitra yang terdaftar pada suatu periode
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        school:
+          $ref: '#/components/schemas/School'
+        prodi_slots:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProdiSlot'
+
+    PeriodSchoolRequest:
+      type: object
+      required: [school_id, prodi_slots]
+      properties:
+        school_id:
+          type: string
+          format: uuid
+          description: UUID sekolah dari master data
+        prodi_slots:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ProdiSlot'
+
+    SchoolImportResult:
+      type: object
+      properties:
+        imported:
+          type: integer
+          description: Jumlah sekolah/prodi slot yang berhasil diimport
+        skipped:
+          type: integer
+          description: Jumlah baris yang dilewati (duplikat atau data sudah ada)
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+                description: Nomor baris di file Excel
+              reason:
+                type: string
+
+    # ---- Rubrics ----
+
+    Rubric:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        prodi_code:
+          type: string
+          example: PEND_INFORMATIKA
+        content:
+          type: string
+          description: Konten rubrik penilaian dalam format Markdown
+        updated_at:
+          type: string
+          format: date-time
+
+    RubricUpsertRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          description: |
+            Konten Markdown untuk rubrik penilaian prodi ini pada periode ini.
+            Rubrik hanya sebagai panduan; perhitungan nilai tetap kewenangan DPL.
+
+    # ---- Announcements ----
+
+    AnnouncementAttachment:
+      type: object
+      required: [type, url]
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        type:
+          type: string
+          enum: [pdf, video_embed, link]
+        url:
+          type: string
+          format: uri
+        title:
+          type: string
+          nullable: true
+
+    Announcement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body:
+          type: string
+          description: Konten pengumuman (plain text atau Markdown)
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnouncementAttachment'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Null jika belum dipublikasikan (masih draft)
+        created_by:
+          type: string
+          description: Nama admin yang membuat
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AnnouncementRequest:
+      type: object
+      required: [title, body]
+      properties:
+        title:
+          type: string
+          example: Pengumuman Pembukaan Pendaftaran PPL Genap 2025/2026
+        body:
+          type: string
+          description: Konten teks pengumuman
+        attachments:
+          type: array
+          items:
+            type: object
+            required: [type, url]
+            properties:
+              type:
+                type: string
+                enum: [pdf, video_embed, link]
+              url:
+                type: string
+                format: uri
+              title:
+                type: string
+                nullable: true
+        publish:
+          type: boolean
+          default: false
+          description: Set `true` untuk langsung mempublikasikan. Set `false` untuk menyimpan sebagai draft.
+
+    # ---- Milestones ----
+
+    Milestone:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          example: Batas Upload Laporan Akhir
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        visible_to:
+          type: array
+          description: Role yang dapat melihat milestone ini
+          items:
+            type: string
+            enum: [admin, dpl, mahasiswa]
+          example: [admin, dpl, mahasiswa]
+        created_at:
+          type: string
+          format: date-time
+
+    MilestoneRequest:
+      type: object
+      required: [title, start_date, visible_to]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        visible_to:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [admin, dpl, mahasiswa]
+          example: [admin, dpl, mahasiswa]
+
+# ===========================================================================
+# PATHS
+# ===========================================================================
+paths:
+
+  # =========================================================================
+  # MODUL 1 — INTEGRASI SALAM & SSO
+  # =========================================================================
+
+  # ---- Auth ----
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login via SSO LDAP SALAM
+      description: |
+        Autentikasi menggunakan kredensial akun SALAM existing melalui LDAP.
+        Role pengguna (admin/dpl/mahasiswa) di-resolve otomatis dari LDAP — tidak ada
+        pembuatan akun baru di sistem PPL.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: "20212001"
+              password: "rahasia123"
+      responses:
+        '200':
+          description: Login berhasil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Kredensial tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_CREDENTIALS
+                message: Username atau password salah
+        '503':
+          description: Layanan LDAP SALAM tidak tersedia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: SALAM_UNAVAILABLE
+                message: Layanan SALAM sedang tidak tersedia, coba beberapa saat lagi
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout dan invalidasi token
+      description: Menginvalidasi access token yang sedang digunakan.
+      responses:
+        '204':
+          description: Logout berhasil
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Profil pengguna yang sedang login
+      description: Mengembalikan data profil dan role pengguna yang terautentikasi.
+      responses:
+        '200':
+          description: Profil pengguna
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ---- SALAM Sync ----
+
+  /salam/sync/mahasiswa:
+    post:
+      tags: [SALAM Sync]
+      summary: Sinkronisasi bulk data mahasiswa dari SALAM
+      description: |
+        Admin memicu sinkronisasi data semua mahasiswa dari SALAM.
+        Data yang disinkronisasi: biodata, IPK, SKS lulus, status prasyarat.
+        Proses berjalan secara asynchronous; gunakan `job_id` untuk memantau status.
+      responses:
+        '202':
+          description: Proses sinkronisasi berhasil dimulai
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    format: uuid
+                  message:
+                    type: string
+                    example: Sinkronisasi dimulai. Pantau status di GET /salam/sync/jobs/{job_id}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /salam/sync/mahasiswa/{nim}:
+    post:
+      tags: [SALAM Sync]
+      summary: Sinkronisasi ulang data mahasiswa individu
+      description: |
+        Memperbarui data satu mahasiswa dari SALAM secara sinkron.
+        Digunakan saat mahasiswa mendaftar ke periode PPL (just-in-time sync)
+        atau saat admin perlu menyegarkan data secara manual.
+      parameters:
+        - name: nim
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "20212001"
+      responses:
+        '200':
+          description: Data mahasiswa berhasil disinkronisasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MahasiswaData'
+        '404':
+          description: NIM tidak ditemukan di SALAM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: NOT_FOUND
+                message: Mahasiswa dengan NIM 20212001 tidak ditemukan di SALAM
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          description: Layanan SALAM tidak tersedia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /salam/sync/dosen:
+    post:
+      tags: [SALAM Sync]
+      summary: Sinkronisasi data dosen dari SALAM
+      description: |
+        Import data dosen dari SALAM: nama, NIDN, prodi, bidang keahlian.
+        Data ini digunakan untuk kebutuhan penugasan DPL per periode.
+        Proses berjalan secara asynchronous.
+      responses:
+        '202':
+          description: Proses sinkronisasi berhasil dimulai
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  job_id:
+                    type: string
+                    format: uuid
+                  message:
+                    type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /salam/sync/jobs/{job_id}:
+    get:
+      tags: [SALAM Sync]
+      summary: Status job sinkronisasi
+      description: Memantau progress job sinkronisasi asynchronous (mahasiswa atau dosen).
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Status job sinkronisasi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncJobStatus'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /salam/push-nilai:
+    post:
+      tags: [SALAM Sync]
+      summary: Push nilai & status kelulusan ke SALAM
+      description: |
+        Mengirim nilai akhir yang sudah difinalisasi ke SALAM.
+        Nilai dikonversi dari skala 0–100 ke huruf mutu menggunakan tabel
+        konversi global yang dikonfigurasi admin.
+
+        **Syarat:** periode harus dalam status `closed`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NilaiPushRequest'
+      responses:
+        '200':
+          description: Hasil push nilai ke SALAM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NilaiPushResult'
+        '400':
+          description: Periode belum ditutup atau ada data tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: PERIOD_NOT_CLOSED
+                message: Nilai hanya bisa dipush setelah periode berstatus closed
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          description: Layanan SALAM tidak tersedia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /salam/nilai-conversion:
+    get:
+      tags: [SALAM Sync]
+      summary: Lihat tabel konversi nilai ke huruf mutu
+      description: Tabel konversi yang digunakan saat push nilai ke SALAM.
+      responses:
+        '200':
+          description: Tabel konversi aktif
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NilaiConversionTable'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [SALAM Sync]
+      summary: Update tabel konversi nilai ke huruf mutu
+      description: |
+        Admin mengatur tabel konversi nilai numerik (0–100) ke huruf mutu.
+        Berlaku global untuk semua prodi. Entri diurutkan berdasarkan `min_score` descending.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                entries:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [min_score, grade]
+                    properties:
+                      min_score:
+                        type: number
+                        minimum: 0
+                        maximum: 100
+                      grade:
+                        type: string
+                        example: A
+            example:
+              entries:
+                - min_score: 85
+                  grade: A
+                - min_score: 75
+                  grade: B
+                - min_score: 65
+                  grade: C
+                - min_score: 55
+                  grade: D
+                - min_score: 0
+                  grade: E
+      responses:
+        '200':
+          description: Tabel konversi berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NilaiConversionTable'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /salam/eligibility/{nim}:
+    get:
+      tags: [SALAM Sync]
+      summary: Cek eligibilitas mahasiswa untuk mendaftar PPL
+      description: |
+        Mengecek apakah mahasiswa memenuhi syarat mendaftar ke periode PPL tertentu
+        berdasarkan data SALAM: status keaktifan, nilai PPL sebelumnya, prasyarat SKS/IPK, dll.
+      parameters:
+        - name: nim
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "20212001"
+        - name: period_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: UUID periode PPL yang ingin didaftar
+      responses:
+        '200':
+          description: Status eligibilitas mahasiswa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EligibilityStatus'
+        '404':
+          description: Mahasiswa tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /salam/eligibility/validate:
+    post:
+      tags: [SALAM Sync]
+      summary: Validasi eligibilitas batch mahasiswa
+      description: Admin memvalidasi eligibilitas sejumlah mahasiswa sekaligus untuk satu periode.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period_id, nims]
+              properties:
+                period_id:
+                  type: string
+                  format: uuid
+                nims:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                  example: ["20212001", "20212002", "20212003"]
+      responses:
+        '200':
+          description: Hasil validasi eligibilitas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EligibilityStatus'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # =========================================================================
+  # MODUL 2 — MANAJEMEN PERIODE PPL
+  # =========================================================================
+
+  # ---- PPL Types ----
+
+  /ppl-types:
+    get:
+      tags: [PPL Types]
+      summary: List semua jenis PPL
+      description: |
+        Mengembalikan semua master jenis PPL yang tersedia sebagai pilihan
+        saat membuat periode. Bisa ditambah secara inline saat buat periode.
+      responses:
+        '200':
+          description: Daftar jenis PPL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PPLType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [PPL Types]
+      summary: Buat jenis PPL baru
+      description: Admin menambahkan jenis PPL baru ke master data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PPLTypeRequest'
+      responses:
+        '201':
+          description: Jenis PPL berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PPLType'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /ppl-types/{id}:
+    put:
+      tags: [PPL Types]
+      summary: Update jenis PPL
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PPLTypeRequest'
+      responses:
+        '200':
+          description: Jenis PPL berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PPLType'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: [PPL Types]
+      summary: Hapus jenis PPL
+      description: |
+        Menghapus jenis PPL dari master data.
+        Gagal (409) jika masih digunakan oleh satu atau lebih periode.
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Jenis PPL berhasil dihapus
+        '409':
+          description: Jenis PPL masih digunakan oleh periode yang ada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: IN_USE
+                message: Jenis PPL ini masih digunakan oleh 2 periode
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ---- Periods ----
+
+  /periods:
+    get:
+      tags: [Periods]
+      summary: List periode PPL
+      description: |
+        Mengembalikan daftar periode PPL. Mahasiswa dan DPL hanya melihat
+        periode yang relevan dengan mereka; admin melihat semua.
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, published, registration, active, closed]
+          description: Filter berdasarkan status periode
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Daftar periode PPL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Period'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Periods]
+      summary: Buat periode PPL baru
+      description: |
+        Admin membuat periode PPL baru. Field wajib: nama, jenis PPL, rentang waktu
+        periode (start/end), dan rentang waktu pendaftaran.
+
+        Untuk jenis PPL, isi `ppl_type_id` (UUID existing) **atau** `new_ppl_type_name`
+        (nama baru yang akan dibuat otomatis) — tidak boleh keduanya kosong.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodRequest'
+            example:
+              name: PPL Genap 2025/2026
+              ppl_type_id: null
+              new_ppl_type_name: PPL Reguler
+              start_date: "2026-02-01"
+              end_date: "2026-06-30"
+              registration_start: "2026-01-10"
+              registration_end: "2026-01-31"
+              preparation_start: "2026-02-01"
+              preparation_end: "2026-02-28"
+              implementation_start: "2026-03-01"
+              implementation_end: "2026-05-31"
+              reporting_start: "2026-06-01"
+              reporting_end: "2026-06-30"
+              registration_requirements: "## Syarat Pendaftaran\n- IPK minimal 2.75\n- Lulus mata kuliah Micro Teaching"
+      responses:
+        '201':
+          description: Periode berhasil dibuat (status awal `draft`)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}:
+    get:
+      tags: [Periods]
+      summary: Detail periode PPL
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      responses:
+        '200':
+          description: Detail periode PPL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [Periods]
+      summary: Update periode PPL
+      description: Perbarui seluruh data periode. Semua field dikirim ulang (full update).
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodRequest'
+      responses:
+        '200':
+          description: Periode berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: [Periods]
+      summary: Hapus periode PPL
+      description: |
+        Menghapus periode PPL. Hanya bisa dilakukan jika belum ada mahasiswa
+        yang mendaftar ke periode tersebut.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      responses:
+        '204':
+          description: Periode berhasil dihapus
+        '409':
+          description: Periode sudah memiliki data pendaftaran mahasiswa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: HAS_REGISTRATIONS
+                message: Periode tidak bisa dihapus karena sudah ada mahasiswa yang mendaftar
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/status:
+    patch:
+      tags: [Periods]
+      summary: Ubah status periode PPL
+      description: |
+        Mengubah status periode mengikuti alur: `draft` → `published` → `registration` → `active` → `closed`.
+        Transisi terbalik tidak diizinkan.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, published, registration, active, closed]
+            example:
+              status: registration
+      responses:
+        '200':
+          description: Status berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Period'
+        '400':
+          description: Transisi status tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_TRANSITION
+                message: Tidak bisa mengubah status dari active ke draft
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ---- Period Schools ----
+
+  /periods/{id}/schools:
+    get:
+      tags: [Period Schools]
+      summary: List sekolah mitra pada periode
+      description: Mengembalikan semua sekolah mitra beserta kuota dan syarat per prodi untuk periode ini.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - name: prodi_code
+          in: query
+          schema:
+            type: string
+          description: Filter sekolah yang membuka slot untuk prodi tertentu
+      responses:
+        '200':
+          description: Daftar sekolah mitra
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PeriodSchool'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Period Schools]
+      summary: Tambah sekolah mitra ke periode
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodSchoolRequest'
+            example:
+              school_id: "550e8400-e29b-41d4-a716-446655440000"
+              prodi_slots:
+                - prodi_code: PEND_INFORMATIKA
+                  quota: 3
+                  min_ipk: 3.0
+                  gender_requirement: all
+                - prodi_code: PEND_ELEKTRO
+                  quota: 2
+                  gender_requirement: L
+      responses:
+        '201':
+          description: Sekolah berhasil ditambahkan ke periode
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodSchool'
+        '400':
+          description: Sekolah sudah terdaftar di periode ini atau data tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/schools/import:
+    post:
+      tags: [Period Schools]
+      summary: Import data sekolah mitra dari Excel
+      description: |
+        Mengimport data sekolah mitra dan kuota prodi dari file Excel (.xlsx).
+
+        **Format kolom yang diharapkan:**
+        `nama_sekolah`, `npsn`, `prodi_code`, `quota`, `min_ipk` (opsional), `gender` (opsional)
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File Excel (.xlsx)
+                overwrite:
+                  type: boolean
+                  default: false
+                  description: |
+                    Jika `true`, timpa data sekolah yang sudah ada di periode ini.
+                    Jika `false`, baris yang sudah ada dilewati (skip).
+      responses:
+        '200':
+          description: Hasil import
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SchoolImportResult'
+        '400':
+          description: File tidak valid atau format kolom salah
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_FILE
+                message: File bukan format Excel yang valid atau kolom wajib tidak ditemukan
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/schools/{school_id}:
+    get:
+      tags: [Period Schools]
+      summary: Detail sekolah mitra pada periode
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/SchoolIdParam'
+      responses:
+        '200':
+          description: Detail sekolah mitra
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodSchool'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [Period Schools]
+      summary: Update data sekolah mitra pada periode
+      description: Memperbarui daftar prodi slot (kuota, syarat IPK, syarat gender) untuk sekolah ini.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/SchoolIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodSchoolRequest'
+      responses:
+        '200':
+          description: Data sekolah berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodSchool'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: [Period Schools]
+      summary: Hapus sekolah mitra dari periode
+      description: |
+        Menghapus sekolah dari daftar mitra periode.
+        Gagal (409) jika sudah ada mahasiswa yang ditempatkan di sekolah ini.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/SchoolIdParam'
+      responses:
+        '204':
+          description: Sekolah berhasil dihapus dari periode
+        '409':
+          description: Ada mahasiswa yang sudah ditempatkan di sekolah ini
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: HAS_PLACEMENTS
+                message: Sekolah tidak bisa dihapus karena sudah ada mahasiswa yang ditempatkan
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ---- Rubrics ----
+
+  /periods/{id}/rubrics:
+    get:
+      tags: [Period Rubrics]
+      summary: List rubrik penilaian per prodi pada periode
+      description: |
+        Mengembalikan semua rubrik penilaian yang sudah dikonfigurasi untuk periode ini.
+        Rubrik bersifat per-prodi; jika belum dikonfigurasi, default dari periode sebelumnya
+        bisa dijadikan referensi.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      responses:
+        '200':
+          description: Daftar rubrik
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Rubric'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /periods/{id}/rubrics/{prodi_code}:
+    get:
+      tags: [Period Rubrics]
+      summary: Lihat rubrik untuk prodi tertentu
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - name: prodi_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: PEND_INFORMATIKA
+      responses:
+        '200':
+          description: Rubrik penilaian prodi ini
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rubric'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [Period Rubrics]
+      summary: Buat atau update rubrik penilaian untuk prodi
+      description: |
+        Upsert rubrik Markdown untuk satu prodi pada periode ini.
+        Jika rubrik belum ada, akan dibuat baru.
+        Rubrik hanya untuk panduan DPL — perhitungan nilai sepenuhnya kewenangan DPL.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - name: prodi_code
+          in: path
+          required: true
+          schema:
+            type: string
+          example: PEND_INFORMATIKA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RubricUpsertRequest'
+            example:
+              content: |
+                ## Rubrik Penilaian PPL — Pendidikan Teknik Informatika
+
+                ### Komponen Penilaian
+                | Komponen | Bobot |
+                |----------|-------|
+                | Perangkat Pembelajaran | 30% |
+                | Praktik Mengajar | 40% |
+                | Laporan PPL | 30% |
+      responses:
+        '200':
+          description: Rubrik berhasil disimpan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rubric'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ---- Announcements ----
+
+  /periods/{id}/announcements:
+    get:
+      tags: [Announcements]
+      summary: List pengumuman pada periode
+      description: |
+        Admin melihat semua pengumuman (draft + published).
+        Mahasiswa dan DPL hanya melihat yang sudah dipublikasikan.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - name: published
+          in: query
+          schema:
+            type: boolean
+          description: |
+            `true` — hanya tampilkan yang sudah dipublikasikan.
+            `false` — hanya tampilkan draft (admin only).
+            Kosongkan untuk semua.
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Daftar pengumuman
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Announcement'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Announcements]
+      summary: Buat pengumuman baru
+      description: |
+        Admin membuat pengumuman. Set `publish: true` untuk langsung mempublikasikan,
+        atau biarkan `false` untuk disimpan sebagai draft terlebih dahulu.
+        Lampiran bisa berupa PDF, video embed (URL), atau link eksternal.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementRequest'
+            example:
+              title: Panduan Teknis Pendaftaran PPL Genap 2025/2026
+              body: Berikut adalah panduan lengkap pendaftaran PPL. Silakan pelajari sebelum mendaftar.
+              attachments:
+                - type: pdf
+                  url: https://storage.univ.ac.id/ppl/panduan-pendaftaran.pdf
+                  title: Panduan Pendaftaran (PDF)
+                - type: video_embed
+                  url: https://www.youtube.com/embed/xxxxx
+                  title: Video Sosialisasi PPL
+              publish: true
+      responses:
+        '201':
+          description: Pengumuman berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/announcements/{announcement_id}:
+    get:
+      tags: [Announcements]
+      summary: Detail pengumuman
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/AnnouncementIdParam'
+      responses:
+        '200':
+          description: Detail pengumuman
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    put:
+      tags: [Announcements]
+      summary: Update pengumuman
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/AnnouncementIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementRequest'
+      responses:
+        '200':
+          description: Pengumuman berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: [Announcements]
+      summary: Hapus pengumuman
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/AnnouncementIdParam'
+      responses:
+        '204':
+          description: Pengumuman berhasil dihapus
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/announcements/{announcement_id}/publish:
+    patch:
+      tags: [Announcements]
+      summary: Publikasikan atau cabut pengumuman
+      description: Toggle status publikasi pengumuman antara draft dan published.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/AnnouncementIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [publish]
+              properties:
+                publish:
+                  type: boolean
+                  description: '`true` untuk publish, `false` untuk tarik kembali ke draft'
+      responses:
+        '200':
+          description: Status publikasi berhasil diubah
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ---- Milestones ----
+
+  /periods/{id}/milestones:
+    get:
+      tags: [Milestones]
+      summary: List milestone & kalender periode
+      description: |
+        Mengembalikan semua milestone periode. Setiap role hanya melihat
+        milestone yang memiliki role mereka dalam `visible_to`.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      responses:
+        '200':
+          description: Daftar milestone
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Milestone'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Milestones]
+      summary: Tambah milestone baru
+      description: Admin menambahkan milestone atau event ke kalender periode.
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilestoneRequest'
+            example:
+              title: Batas Akhir Upload Laporan PPL
+              description: Seluruh dokumen laporan PPL harus sudah diunggah sebelum tanggal ini.
+              start_date: "2026-06-15"
+              end_date: null
+              visible_to:
+                - admin
+                - dpl
+                - mahasiswa
+      responses:
+        '201':
+          description: Milestone berhasil dibuat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '400':
+          $ref: '#/components/responses/UnprocessableEntity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /periods/{id}/milestones/{milestone_id}:
+    put:
+      tags: [Milestones]
+      summary: Update milestone
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/MilestoneIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MilestoneRequest'
+      responses:
+        '200':
+          description: Milestone berhasil diupdate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Milestone'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    delete:
+      tags: [Milestones]
+      summary: Hapus milestone
+      parameters:
+        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: '#/components/parameters/MilestoneIdParam'
+      responses:
+        '204':
+          description: Milestone berhasil dihapus
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
