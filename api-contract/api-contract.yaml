@@ -1,24 +1,26 @@
 openapi: 3.0.3
 info:
-  title: Sistem Manajemen PPL FTK
+  title: Sistem Manajemen PPL-PLP FTK
   description: |
-    API Contract untuk Sistem Manajemen PPL (Program Pengalaman Lapangan)
-    Fakultas Teknik dan Kependidikan.
+    API Contract untuk Sistem Manajemen PPL-PLP
+    Fakultas Tarbiyah dan Keguruan
+    UIN Sunan Gunung Djati Bandung
 
-    Cakupan dokumen ini: **Modul 1 — Integrasi SALAM & SSO**,
-    **Modul 2 — Manajemen Periode PPL**, dan
-    **Modul 3 — Pendaftaran & Penempatan**.
+    Cakupan dokumen ini: 
+    - **Modul 1 — Integrasi SALAM & Otentikasi**,
+    - **Modul 2 — Manajemen Periode PPL-PLP**, dan
+    - **Modul 3 — Pendaftaran & Penempatan**.
 
     ## Autentikasi
-    Semua endpoint (kecuali `/auth/login`) memerlukan Bearer JWT token
-    yang diperoleh dari endpoint login.
+    Semua endpoint (kecuali `/auth/signin`) memerlukan Bearer JWT token
+    yang diperoleh dari endpoint signin.
 
     ## Role
     | Role | Keterangan |
     |------|-----------|
-    | `admin` | Administrator sistem PPL |
+    | `admin` | Administrator sistem |
     | `dpl` | Dosen Pembimbing Lapangan |
-    | `mahasiswa` | Mahasiswa peserta PPL |
+    | `mahasiswa` | Mahasiswa peserta PPL-PLP |
   version: 1.0.0
   contact:
     name: Tim Pengembang PPL FTK
@@ -29,7 +31,7 @@ servers:
 
 tags:
   - name: Auth
-    description: Autentikasi via SSO LDAP SALAM (Modul 1)
+    description: Autentikasi via LDAP SALAM (Modul 1)
   - name: SALAM Sync
     description: Sinkronisasi & integrasi data dengan sistem SALAM (Modul 1)
   - name: PPL Types
@@ -259,7 +261,7 @@ components:
 
     # ---- Auth ----
 
-    LoginRequest:
+    SigninRequest:
       type: object
       required: [username, password]
       properties:
@@ -271,21 +273,12 @@ components:
           type: string
           format: password
 
-    LoginResponse:
+    SigninResponse:
       type: object
       properties:
         access_token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        token_type:
-          type: string
-          example: Bearer
-        expires_in:
-          type: integer
-          description: Durasi kedaluwarsa token dalam detik
-          example: 3600
-        user:
-          $ref: "#/components/schemas/UserProfile"
 
     UserProfile:
       type: object
@@ -1021,7 +1014,7 @@ components:
             $ref: "#/components/schemas/ProdiSlot"
         is_eligible:
           type: boolean
-          description: Apakah mahasiswa yang sedang login eligible untuk memilih sekolah ini
+          description: Apakah mahasiswa yang sedang signin eligible untuk memilih sekolah ini
         ineligibility_reasons:
           type: array
           description: Alasan tidak eligible. Kosong jika eligible.
@@ -1152,32 +1145,32 @@ components:
 # ===========================================================================
 paths:
   # =========================================================================
-  # MODUL 1 — INTEGRASI SALAM & SSO
+  # MODUL 1 — INTEGRASI SALAM
   # =========================================================================
 
   # ---- Auth ----
 
-  /auth/login:
+  /auth/signin:
     post:
       tags: [Auth]
-      summary: Login via SSO LDAP SALAM
+      summary: Signin via LDAP SALAM
       description: |
         Autentikasi menggunakan kredensial akun SALAM existing melalui LDAP.
         Role pengguna (admin/dpl/mahasiswa) di-resolve otomatis dari LDAP — tidak ada
-        pembuatan akun baru di sistem PPL.
+        pembuatan akun baru di sistem PPL-PLP.
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequest"
+              $ref: "#/components/schemas/SigninRequest"
             example:
               username: "20212001"
               password: "rahasia123"
       responses:
         "200":
-          description: Login berhasil
+          description: Signin berhasil
           content:
             application/json:
               schema:
@@ -1185,7 +1178,7 @@ paths:
                 required: [data, message]
                 properties:
                   data:
-                    $ref: "#/components/schemas/LoginResponse"
+                    $ref: "#/components/schemas/SigninResponse"
                   message:
                     type: string
         "401":
@@ -1207,21 +1200,21 @@ paths:
                 message: Layanan SALAM sedang tidak tersedia, coba beberapa saat lagi
                 errors: []
 
-  /auth/logout:
+  /auth/signout:
     post:
       tags: [Auth]
-      summary: Logout dan invalidasi token
+      summary: Signout dan invalidasi token
       description: Menginvalidasi access token yang sedang digunakan.
       responses:
         "204":
-          description: Logout berhasil
+          description: Signout berhasil
         "401":
           $ref: "#/components/responses/Unauthorized"
 
   /auth/me:
     get:
       tags: [Auth]
-      summary: Profil pengguna yang sedang login
+      summary: Profil pengguna yang sedang signin
       description: Mengembalikan data profil dan role pengguna yang terautentikasi.
       responses:
         "200":
