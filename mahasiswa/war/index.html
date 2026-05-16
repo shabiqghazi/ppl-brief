@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pilih Sekolah (WAR) — PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <style>
+    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
+    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
+    .war-header { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; border-radius: .75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+    .timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .school-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .school-card { background: var(--white); border: 1.5px solid var(--border); border-radius: .625rem; padding: 1.125rem; transition: border-color .15s, box-shadow .15s; position: relative; }
+    .school-card:hover:not(.school-full):not(.school-ineligible) { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+    .school-full { opacity: .65; }
+    .school-ineligible { opacity: .75; }
+    .school-selected { border-color: var(--success) !important; box-shadow: 0 0 0 3px rgba(16,185,129,.15) !important; }
+    .quota-bar { height: 5px; background: #e5e7eb; border-radius: 3px; margin-top: 4px; }
+    .quota-fill-green { height: 100%; border-radius: 3px; background: var(--success); }
+    .quota-fill-warn { height: 100%; border-radius: 3px; background: var(--warning); }
+    .quota-fill-red { height: 100%; border-radius: 3px; background: var(--danger); }
+    .elig-tag { display: inline-flex; align-items: center; gap: .3rem; font-size: .7rem; padding: .2rem .6rem; border-radius: 9999px; font-weight: 500; }
+    .tag-ok { background: #d1fae5; color: #065f46; }
+    .tag-fail { background: #fee2e2; color: #991b1b; }
+    .tag-full { background: #f3f4f6; color: #6b7280; }
+    .filter-bar { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .prodi-slot-row { display: flex; justify-content: space-between; align-items: center; font-size: .8125rem; padding: .375rem 0; border-bottom: 1px solid #f0f0f0; }
+    .prodi-slot-row:last-child { border-bottom: none; }
+    /* Selected banner */
+    .selected-banner { background: #f0fdf4; border: 1px solid #86efac; border-radius: .5rem; padding: .875rem 1.125rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; display: none; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK — Mahasiswa</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+        <div class="nav-section">M3 — Pendaftaran</div>
+        <a href="../daftar/" class="nav-item">📝 Daftar PPL</a>
+        <a href="../war/" class="nav-item active">🏫 Pilih Sekolah</a>
+        <div class="nav-section">M4 — Aktivitas</div>
+        <a href="../logbook/" class="nav-item">📓 Logbook Mengajar</a>
+        <div class="nav-section">M6 — Penilaian</div>
+        <a href="../ujian/" class="nav-item">🎓 Ujian &amp; Nilai</a>
+      </nav>
+      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
+    </aside>
+
+    <div class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size:1.125rem;font-weight:600">Pilih Sekolah (WAR)</h1>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="text-sm text-muted">Budi Santoso · PAI</span>
+          <div style="width:32px;height:32px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">BS</div>
+        </div>
+      </header>
+
+      <main class="page-container">
+        <!-- WAR Header -->
+        <div class="war-header">
+          <div>
+            <div style="font-size:.75rem;opacity:.85;margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.05em">Periode WAR — PPL Ganjil 2026/2027</div>
+            <div style="font-size:1rem;font-weight:600">Pilih sekolah penempatanmu secara mandiri</div>
+            <div style="font-size:.8125rem;opacity:.8;margin-top:.25rem">Kamu: <strong>Budi Santoso</strong> · PAI · IPK 3.75 · Laki-laki</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:.75rem;opacity:.8;margin-bottom:.25rem">Sisa Waktu WAR</div>
+            <div class="timer" id="timer">11:42:07</div>
+          </div>
+        </div>
+
+        <!-- Selected banner -->
+        <div class="selected-banner" id="selected-banner">
+          <div>
+            <span style="font-size:.875rem;font-weight:600;color:#15803d">✓ Sekolah Dipilih: <span id="selected-name">—</span></span>
+            <span class="text-sm text-muted" style="margin-left:.5rem">Kamu masih bisa membatalkan selama periode WAR berlangsung.</span>
+          </div>
+          <button class="btn btn-outline" style="font-size:.75rem;color:var(--danger)" onclick="cancelChoice()">Batalkan Pilihan</button>
+        </div>
+
+        <div class="filter-bar">
+          <input class="form-input" id="search" placeholder="Cari nama sekolah…" oninput="filterCards()" style="max-width:220px" />
+          <select class="form-input" style="max-width:120px" onchange="filterCards()">
+            <option value="">Semua kota</option>
+            <option value="Bandung">Bandung</option>
+            <option value="Cimahi">Cimahi</option>
+          </select>
+          <label style="font-size:.875rem;display:flex;align-items:center;gap:.375rem;cursor:pointer">
+            <input type="checkbox" id="elig-only" onchange="filterCards()" /> Hanya yang bisa dipilih
+          </label>
+          <span class="text-sm text-muted" style="margin-left:auto">12 sekolah tersedia</span>
+        </div>
+
+        <div class="school-grid" id="school-grid">
+
+          <!-- Available + Eligible -->
+          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="MAN 1 Bandung">
+            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
+              <div style="font-weight:600;font-size:.9375rem">MAN 1 Bandung</div>
+              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
+            </div>
+            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300001</div>
+            <div style="margin-bottom:.875rem">
+              <div class="prodi-slot-row">
+                <span style="font-weight:500">PAI</span>
+                <div style="text-align:right">
+                  <span style="font-weight:600">2</span><span class="text-muted"> / 5 sisa</span>
+                  <div class="quota-bar" style="width:80px"><div class="quota-fill-warn" style="width:60%"></div></div>
+                </div>
+              </div>
+              <div class="prodi-slot-row">
+                <span>PBA</span>
+                <div style="text-align:right"><span>3</span><span class="text-muted"> / 3 sisa</span></div>
+              </div>
+            </div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: IPK ≥ 3.0 · Semua gender</div>
+            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'MAN 1 Bandung')">Pilih Sekolah Ini</button>
+          </div>
+
+          <!-- Available + Eligible -->
+          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="SMAN 8 Bandung">
+            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
+              <div style="font-weight:600;font-size:.9375rem">SMAN 8 Bandung</div>
+              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
+            </div>
+            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300002</div>
+            <div style="margin-bottom:.875rem">
+              <div class="prodi-slot-row">
+                <span style="font-weight:500">PAI</span>
+                <div style="text-align:right">
+                  <span style="font-weight:600">4</span><span class="text-muted"> / 4 sisa</span>
+                  <div class="quota-bar" style="width:80px"><div class="quota-fill-green" style="width:0%"></div></div>
+                </div>
+              </div>
+              <div class="prodi-slot-row">
+                <span>PGMI</span>
+                <div style="text-align:right"><span>2</span><span class="text-muted"> / 2 sisa</span></div>
+              </div>
+            </div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: Tidak ada</div>
+            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'SMAN 8 Bandung')">Pilih Sekolah Ini</button>
+          </div>
+
+          <!-- Full -->
+          <div class="school-card school-full" data-city="Bandung" data-eligible="true" data-full="true" data-name="MTsN 2 Kota Bandung">
+            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
+              <div style="font-weight:600;font-size:.9375rem">MTsN 2 Kota Bandung</div>
+              <span class="elig-tag tag-full">Penuh</span>
+            </div>
+            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300003</div>
+            <div style="margin-bottom:.875rem">
+              <div class="prodi-slot-row">
+                <span style="font-weight:500">PAI</span>
+                <div style="text-align:right">
+                  <span style="color:var(--danger);font-weight:600">0</span><span class="text-muted"> / 3 sisa</span>
+                  <div class="quota-bar" style="width:80px"><div class="quota-fill-red" style="width:100%"></div></div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: IPK ≥ 2.75</div>
+            <button class="btn btn-outline" style="width:100%" disabled>Kuota Penuh</button>
+          </div>
+
+          <!-- Ineligible: gender -->
+          <div class="school-card school-ineligible" data-city="Cimahi" data-eligible="false" data-full="false" data-name="SMA Negeri 3 Cimahi">
+            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
+              <div style="font-weight:600;font-size:.9375rem">SMA Negeri 3 Cimahi</div>
+              <span class="elig-tag tag-fail">✕ Tidak Memenuhi</span>
+            </div>
+            <div class="text-sm text-muted" style="margin-bottom:.875rem">Cimahi · NPSN: 40300004</div>
+            <div style="margin-bottom:.875rem">
+              <div class="prodi-slot-row">
+                <span style="font-weight:500">PAI</span>
+                <div style="text-align:right"><span>3</span><span class="text-muted"> / 4 sisa</span></div>
+              </div>
+            </div>
+            <div style="font-size:.75rem;background:#fee2e2;color:#991b1b;padding:.375rem .625rem;border-radius:.375rem;margin-bottom:.875rem">
+              ✕ Sekolah ini hanya menerima <strong>perempuan</strong> untuk prodi PAI
+            </div>
+            <button class="btn btn-outline" style="width:100%;cursor:not-allowed;opacity:.5" disabled>Tidak Memenuhi Syarat</button>
+          </div>
+
+          <!-- Available + Eligible -->
+          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="MA Al-Ihsan Baleendah">
+            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
+              <div style="font-weight:600;font-size:.9375rem">MA Al-Ihsan Baleendah</div>
+              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
+            </div>
+            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300005</div>
+            <div style="margin-bottom:.875rem">
+              <div class="prodi-slot-row">
+                <span style="font-weight:500">PAI</span>
+                <div style="text-align:right"><span style="font-weight:600">3</span><span class="text-muted"> / 4 sisa</span></div>
+              </div>
+            </div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: Tidak ada</div>
+            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'MA Al-Ihsan Baleendah')">Pilih Sekolah Ini</button>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Timer countdown (demo)
+    let secs = 11 * 3600 + 42 * 60 + 7;
+    setInterval(() => {
+      secs--;
+      if (secs < 0) secs = 0;
+      const h = String(Math.floor(secs/3600)).padStart(2,'0');
+      const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+    }, 1000);
+
+    let chosen = null;
+    function pilihSekolah(btn, name) {
+      if (chosen) {
+        if (!confirm(`Batalkan pilihan "${chosen}" dan pilih "${name}"?`)) return;
+      } else {
+        if (!confirm(`Pilih ${name} sebagai sekolah PPL kamu?`)) return;
+      }
+      chosen = name;
+      // Reset all cards
+      document.querySelectorAll('.school-card').forEach(c => c.classList.remove('school-selected'));
+      btn.closest('.school-card').classList.add('school-selected');
+      btn.textContent = '✓ Dipilih';
+      btn.className = 'btn btn-outline';
+      btn.style.borderColor = 'var(--success)';
+      btn.style.color = 'var(--success)';
+      document.getElementById('selected-name').textContent = name;
+      document.getElementById('selected-banner').style.display = 'flex';
+    }
+    function cancelChoice() {
+      if (!confirm('Batalkan pilihan sekolah?')) return;
+      chosen = null;
+      document.querySelectorAll('.school-card').forEach(c => {
+        c.classList.remove('school-selected');
+        const btn = c.querySelector('button:not([disabled])');
+        if (btn) { btn.textContent = 'Pilih Sekolah Ini'; btn.className = 'btn btn-primary'; btn.style = ''; }
+      });
+      document.getElementById('selected-banner').style.display = 'none';
+    }
+    function filterCards() {
+      const q = document.getElementById('search').value.toLowerCase();
+      const eligOnly = document.getElementById('elig-only').checked;
+      document.querySelectorAll('.school-card').forEach(c => {
+        const name = c.dataset.name.toLowerCase();
+        const elig = c.dataset.eligible === 'true';
+        c.style.display = (name.includes(q) && (!eligOnly || elig)) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,95 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verifikasi Logbook - DPL PPL</title>
-  <link rel="stylesheet" href="../../assets/css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verifikasi Log — PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <style>
+    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
+    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
+    .coming-soon { text-align: center; padding: 4rem 2rem; }
+  </style>
 </head>
 <body>
   <div class="app-container">
     <aside class="sidebar">
-      <div class="sidebar-header">PPL FTK DPL</div>
+      <div class="sidebar-header">PPL FTK — DPL</div>
       <nav class="sidebar-nav">
-        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
-        <a href="../verifikasi/index.html" class="nav-item active">Verifikasi Logbook</a>
-        <a href="../penilaian/index.html" class="nav-item">Penilaian Akhir</a>
+        <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+        <div class="nav-section">M3 — Bimbingan</div>
+        <a href="../mahasiswa/" class="nav-item">👩‍🎓 Mahasiswa Saya</a>
+        <div class="nav-section">M4 — Aktivitas</div>
+        <a href="../verifikasi/" class="nav-item active">✅ Verifikasi Log</a>
+        <div class="nav-section">M6 — Penilaian</div>
+        <a href="../penilaian/" class="nav-item">🎓 Penilaian</a>
       </nav>
-      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
-        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
-      </div>
+      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
     </aside>
 
-    <main class="main-content">
+    <div class="main-content">
       <header class="top-bar">
-        <h1 style="font-size: 1.25rem; font-weight: 600;">Verifikasi Aktivitas Mahasiswa</h1>
+        <h1 style="font-size:1.125rem;font-weight:600">Verifikasi Log Mengajar</h1>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="text-sm text-muted">Dr. Ahmad Fauzi, M.Pd.</span>
+          <div style="width:32px;height:32px;background:#4f46e5;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">AF</div>
+        </div>
       </header>
 
-      <div class="page-container">
-        <!-- Filters -->
-        <div class="card mb-4">
-          <div class="flex gap-2">
-            <select class="form-input" style="width: 240px;">
-              <option>Budi Santoso (MAN 1 Bandung)</option>
-              <option>Siti Aminah (MAN 1 Bandung)</option>
-            </select>
-            <select class="form-input" style="width: 200px;">
-              <option>Semua Status</option>
-              <option>Menunggu</option>
-              <option>Terverifikasi</option>
-            </select>
+      <main class="page-container">
+        <div class="coming-soon">
+          <div style="font-size:3rem;margin-bottom:1rem">✅</div>
+          <h2 style="font-size:1.25rem;font-weight:600;margin-bottom:.5rem">Modul 4 — Verifikasi Aktivitas Mengajar</h2>
+          <p class="text-muted" style="max-width:420px;margin:0 auto .75rem">Fitur verifikasi logbook mengajar mahasiswa akan tersedia setelah periode pelaksanaan PPL dimulai dan mahasiswa mulai mengisi log aktivitas harian mereka.</p>
+          <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:.5rem;padding:.75rem 1rem;display:inline-block;font-size:.875rem;color:#1d4ed8">
+            Periode pelaksanaan PPL mulai: <strong>1 September 2026</strong>
           </div>
         </div>
-
-        <!-- Verification Table -->
-        <div class="card" style="padding: 0;">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Kelas</th>
-                <th>Materi / Aktivitas</th>
-                <th>Jenis</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr style="background: #fffcf0;">
-                <td>12 Juni 2026</td>
-                <td>XI-IPS-2</td>
-                <td>Adab terhadap Orang Tua</td>
-                <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">Mandiri</span></td>
-                <td>
-                  <div class="flex gap-2">
-                    <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Verifikasi</button>
-                    <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--danger);">Tolak</button>
-                  </div>
-                </td>
-              </tr>
-              <tr style="background: #fffcf0;">
-                <td>11 Juni 2026</td>
-                <td>X-IPA-1</td>
-                <td>Sejarah Peradaban Islam</td>
-                <td><span class="badge" style="background: #e0f2fe; color: #0369a1;">Mandiri</span></td>
-                <td>
-                  <div class="flex gap-2">
-                    <button class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Verifikasi</button>
-                    <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--danger);">Tolak</button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="text-muted">10 Juni 2026</td>
-                <td class="text-muted">X-IPA-1</td>
-                <td class="text-muted">Observasi Guru Pamong</td>
-                <td><span class="badge" style="background: #f3f4f6; color: #374151;">Observasi</span></td>
-                <td><span class="badge badge-success">Terverifikasi</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
 </body>
 </html>

@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mahasiswa Saya — PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <style>
+    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
+    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
+    .school-tab { display: flex; gap: .5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .stab { padding: .4375rem .875rem; border-radius: .375rem; font-size: .875rem; cursor: pointer; border: 1px solid var(--border); background: white; color: #374151; }
+    .stab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .school-panel { display: none; }
+    .school-panel.active { display: block; }
+    .student-card { border: 1px solid var(--border); border-radius: .75rem; padding: 1rem 1.25rem; margin-bottom: .75rem; display: flex; align-items: center; gap: 1rem; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .875rem; font-weight: 700; color: white; flex-shrink: 0; }
+    .progress-mini { height: 5px; border-radius: 3px; background: #e5e7eb; overflow: hidden; margin-top: .375rem; width: 120px; }
+    .progress-fill { height: 100%; border-radius: 3px; }
+    .detail-panel { position: fixed; top: 0; right: -420px; width: 420px; height: 100vh; background: white; border-left: 1px solid var(--border); box-shadow: -4px 0 24px rgba(0,0,0,.08); transition: right .25s; z-index: 100; display: flex; flex-direction: column; }
+    .detail-panel.open { right: 0; }
+    .panel-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+    .info-row { display: flex; justify-content: space-between; font-size: .875rem; padding: .5rem 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .log-item { padding: .75rem 0; border-bottom: 1px solid var(--border); font-size: .875rem; }
+    .log-item:last-child { border-bottom: none; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.3); z-index: 99; }
+    .overlay.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">PPL FTK — DPL</div>
+      <nav class="sidebar-nav">
+        <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+        <div class="nav-section">M3 — Bimbingan</div>
+        <a href="../mahasiswa/" class="nav-item active">👩‍🎓 Mahasiswa Saya</a>
+        <div class="nav-section">M4 — Aktivitas</div>
+        <a href="../verifikasi/" class="nav-item">✅ Verifikasi Log</a>
+        <div class="nav-section">M6 — Penilaian</div>
+        <a href="../penilaian/" class="nav-item">🎓 Penilaian</a>
+      </nav>
+      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
+    </aside>
+
+    <div class="main-content">
+      <header class="top-bar">
+        <h1 style="font-size:1.125rem;font-weight:600">Mahasiswa Saya</h1>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="text-sm text-muted">Dr. Ahmad Fauzi, M.Pd.</span>
+          <div style="width:32px;height:32px;background:#4f46e5;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">AF</div>
+        </div>
+      </header>
+
+      <main class="page-container">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+          <div>
+            <div style="font-weight:600">8 mahasiswa · Periode Ganjil 2026/2027</div>
+            <div class="text-sm text-muted">Pilih sekolah untuk melihat detail penempatan</div>
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <input class="form-input" placeholder="Cari nama / NIM…" style="width:200px;padding:.375rem .75rem;font-size:.875rem" oninput="filterStudents(this.value)" />
+          </div>
+        </div>
+
+        <!-- Tab sekolah -->
+        <div class="school-tab">
+          <button class="stab active" onclick="switchSchool(0, this)">SMA Negeri 1 Banda Aceh <span style="font-size:.75rem;opacity:.75">(5)</span></button>
+          <button class="stab" onclick="switchSchool(1, this)">MAN 1 Banda Aceh <span style="font-size:.75rem;opacity:.75">(3)</span></button>
+        </div>
+
+        <!-- SMAN 1 -->
+        <div class="school-panel active" id="panel-0">
+          <div class="card" style="margin-bottom:1rem;background:#f8fafc">
+            <div style="display:flex;gap:2rem;font-size:.8125rem;flex-wrap:wrap">
+              <div><span class="text-muted">Kepala Sekolah</span><div style="font-weight:500">Drs. Hasan Basri, M.Pd.</div></div>
+              <div><span class="text-muted">Guru Pamong PPL</span><div style="font-weight:500">Ibu Zulaiha, S.Pd.</div></div>
+              <div><span class="text-muted">Alamat</span><div style="font-weight:500">Jl. Teuku Nyak Arif, Banda Aceh</div></div>
+              <div><span class="text-muted">Kuota Terpakai</span><div style="font-weight:500;color:var(--warning)">5 / 6</div></div>
+            </div>
+          </div>
+
+          <div id="list-0">
+            <div class="student-card" data-name="budi santoso" data-nim="123001">
+              <div class="avatar" style="background:#10b981">BS</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Budi Santoso</div>
+                <div class="text-sm text-muted">123001 · PAI · ♂</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#10b981;width:70%"></div></div>
+                  <span style="font-size:.75rem;color:#6b7280">7/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#fef3c7;color:#92400e;display:block;margin-bottom:.375rem">3 log menunggu</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('budi')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="siti rahmah" data-nim="123002">
+              <div class="avatar" style="background:#6366f1">SR</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Siti Rahmah</div>
+                <div class="text-sm text-muted">123002 · PAI · ♀</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#10b981;width:100%"></div></div>
+                  <span style="font-size:.75rem;color:#10b981;font-weight:500">✓ 10/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#dcfce7;color:#15803d;display:block;margin-bottom:.375rem">Syarat ujian terpenuhi</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('siti')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="ahmad rizki" data-nim="123005">
+              <div class="avatar" style="background:#f59e0b">AR</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Ahmad Rizki</div>
+                <div class="text-sm text-muted">123005 · PAI · ♂</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#f59e0b;width:50%"></div></div>
+                  <span style="font-size:.75rem;color:#6b7280">5/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#f3f4f6;color:#6b7280;display:block;margin-bottom:.375rem">Tidak ada log baru</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('ahmad')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="fatimah ridha" data-nim="123008">
+              <div class="avatar" style="background:#10b981">FR</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Fatimah Ridha</div>
+                <div class="text-sm text-muted">123008 · PBA · ♀</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#10b981;width:80%"></div></div>
+                  <span style="font-size:.75rem;color:#6b7280">8/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#fef3c7;color:#92400e;display:block;margin-bottom:.375rem">1 log menunggu</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('fatimah')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="nurul aisyah" data-nim="123011">
+              <div class="avatar" style="background:#ec4899">NA</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Nurul Aisyah</div>
+                <div class="text-sm text-muted">123011 · PBA · ♀</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#10b981;width:90%"></div></div>
+                  <span style="font-size:.75rem;color:#6b7280">9/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#f3f4f6;color:#6b7280;display:block;margin-bottom:.375rem">Tidak ada log baru</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('nurul')">Detail</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MAN 1 -->
+        <div class="school-panel" id="panel-1">
+          <div class="card" style="margin-bottom:1rem;background:#f8fafc">
+            <div style="display:flex;gap:2rem;font-size:.8125rem;flex-wrap:wrap">
+              <div><span class="text-muted">Kepala Madrasah</span><div style="font-weight:500">H. Abdul Rahim, M.Ag.</div></div>
+              <div><span class="text-muted">Guru Pamong PPL</span><div style="font-weight:500">Ibu Nurul Huda, S.Ag.</div></div>
+              <div><span class="text-muted">Alamat</span><div style="font-weight:500">Jl. Imam Bonjol, Banda Aceh</div></div>
+              <div><span class="text-muted">Kuota Terpakai</span><div style="font-weight:500;color:var(--success)">3 / 6</div></div>
+            </div>
+          </div>
+
+          <div id="list-1">
+            <div class="student-card" data-name="muhammad aldi" data-nim="123003">
+              <div class="avatar" style="background:#f59e0b">MA</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Muhammad Aldi</div>
+                <div class="text-sm text-muted">123003 · PAI · ♂</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#f59e0b;width:60%"></div></div>
+                  <span style="font-size:.75rem;color:#6b7280">6/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#fef3c7;color:#92400e;display:block;margin-bottom:.375rem">1 log menunggu</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('aldi')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="reza pratama" data-nim="123006">
+              <div class="avatar" style="background:#4f46e5">RP</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Reza Pratama</div>
+                <div class="text-sm text-muted">123006 · PAI · ♂</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#10b981;width:100%"></div></div>
+                  <span style="font-size:.75rem;color:#10b981;font-weight:500">✓ 11/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#dcfce7;color:#15803d;display:block;margin-bottom:.375rem">Syarat ujian terpenuhi</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('reza')">Detail</button>
+              </div>
+            </div>
+
+            <div class="student-card" data-name="dina safitri" data-nim="123009">
+              <div class="avatar" style="background:#06b6d4">DS</div>
+              <div style="flex:1">
+                <div style="font-weight:600">Dina Safitri</div>
+                <div class="text-sm text-muted">123009 · PBI · ♀</div>
+                <div style="display:flex;align-items:center;gap:.5rem;margin-top:.375rem">
+                  <div class="progress-mini"><div class="progress-fill" style="background:#ef4444;width:30%"></div></div>
+                  <span style="font-size:.75rem;color:#ef4444">3/10 mengajar</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <span class="badge" style="background:#fef2f2;color:#991b1b;display:block;margin-bottom:.375rem">Progress lambat</span>
+                <button class="btn btn-outline" style="font-size:.75rem;padding:.25rem .625rem" onclick="openDetail('dina')">Detail</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeDetail()"></div>
+
+  <!-- Detail panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="panel-header">
+      <div>
+        <div style="font-weight:600" id="dp-name">—</div>
+        <div class="text-sm text-muted" id="dp-sub">—</div>
+      </div>
+      <button onclick="closeDetail()" style="background:none;border:none;font-size:1.25rem;cursor:pointer;color:#6b7280">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="card" style="margin-bottom:1rem">
+        <h3 style="font-size:.8125rem;font-weight:600;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#6b7280">Data Mahasiswa</h3>
+        <div class="info-row"><span class="text-muted">NIM</span><span id="dp-nim">—</span></div>
+        <div class="info-row"><span class="text-muted">Prodi</span><span id="dp-prodi">—</span></div>
+        <div class="info-row"><span class="text-muted">IPK</span><span id="dp-ipk">—</span></div>
+        <div class="info-row"><span class="text-muted">Sekolah</span><span id="dp-school">—</span></div>
+        <div class="info-row"><span class="text-muted">Total Mengajar</span><span id="dp-teaching" style="font-weight:600">—</span></div>
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:.8125rem;font-weight:600;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.05em;color:#6b7280">Riwayat Log Mengajar</h3>
+        <div id="dp-logs"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const students = {
+      budi: { name:'Budi Santoso', sub:'123001 · PAI · SMAN 1', nim:'123001', prodi:'PAI', ipk:'3.75', school:'SMA Negeri 1 Banda Aceh', teaching:'7× (3 menunggu)', logs:[
+        {date:'13 Agu 2026', topic:'Fiqih Ibadah — Shalat Jamaah', status:'menunggu'},
+        {date:'12 Agu 2026', topic:'Al-Qur\'an — Tajwid Dasar', status:'menunggu'},
+        {date:'9 Agu 2026',  topic:'Akidah Akhlak — Sifat Wajib Allah', status:'menunggu'},
+        {date:'7 Agu 2026',  topic:'Fiqih — Thaharah', status:'terverifikasi'},
+        {date:'5 Agu 2026',  topic:'SKI — Khulafaur Rasyidin', status:'terverifikasi'},
+      ]},
+      siti: { name:'Siti Rahmah', sub:'123002 · PAI · SMAN 1', nim:'123002', prodi:'PAI', ipk:'3.82', school:'SMA Negeri 1 Banda Aceh', teaching:'10× (syarat terpenuhi)', logs:[
+        {date:'12 Agu 2026', topic:'Al-Qur\'an — Qira\'at', status:'terverifikasi'},
+        {date:'10 Agu 2026', topic:'Akidah — Iman kepada Kitab', status:'terverifikasi'},
+        {date:'8 Agu 2026',  topic:'Fiqih — Zakat', status:'terverifikasi'},
+      ]},
+      ahmad: { name:'Ahmad Rizki', sub:'123005 · PAI · SMAN 1', nim:'123005', prodi:'PAI', ipk:'3.51', school:'SMA Negeri 1 Banda Aceh', teaching:'5×', logs:[
+        {date:'6 Agu 2026', topic:'Fiqih — Puasa', status:'terverifikasi'},
+        {date:'4 Agu 2026', topic:'SKI — Dinasti Umayyah', status:'terverifikasi'},
+      ]},
+      fatimah: { name:'Fatimah Ridha', sub:'123008 · PBA · SMAN 1', nim:'123008', prodi:'PBA', ipk:'3.68', school:'SMA Negeri 1 Banda Aceh', teaching:'8× (1 menunggu)', logs:[
+        {date:'11 Agu 2026', topic:'Bahasa Arab — Nahwu Shorof', status:'menunggu'},
+        {date:'9 Agu 2026',  topic:'Bahasa Arab — Mufradat', status:'terverifikasi'},
+      ]},
+      nurul: { name:'Nurul Aisyah', sub:'123011 · PBA · SMAN 1', nim:'123011', prodi:'PBA', ipk:'3.90', school:'SMA Negeri 1 Banda Aceh', teaching:'9×', logs:[
+        {date:'10 Agu 2026', topic:'Bahasa Arab — Maharah Kalam', status:'terverifikasi'},
+        {date:'8 Agu 2026',  topic:'Bahasa Arab — Istima\'', status:'terverifikasi'},
+      ]},
+      aldi: { name:'Muhammad Aldi', sub:'123003 · PAI · MAN 1', nim:'123003', prodi:'PAI', ipk:'3.60', school:'MAN 1 Banda Aceh', teaching:'6× (1 menunggu)', logs:[
+        {date:'12 Agu 2026', topic:'Tafsir — Surah Al-Baqarah', status:'menunggu'},
+        {date:'9 Agu 2026',  topic:'Hadits — Arba\'in Nawawi', status:'terverifikasi'},
+      ]},
+      reza: { name:'Reza Pratama', sub:'123006 · PAI · MAN 1', nim:'123006', prodi:'PAI', ipk:'3.77', school:'MAN 1 Banda Aceh', teaching:'11×', logs:[
+        {date:'11 Agu 2026', topic:'Fiqih Muamalah', status:'terverifikasi'},
+        {date:'9 Agu 2026',  topic:'Aqidah — Tauhid Asma Sifat', status:'terverifikasi'},
+      ]},
+      dina: { name:'Dina Safitri', sub:'123009 · PBI · MAN 1', nim:'123009', prodi:'PBI', ipk:'3.45', school:'MAN 1 Banda Aceh', teaching:'3× (perlu perhatian)', logs:[
+        {date:'8 Agu 2026', topic:'English — Grammar Tenses', status:'terverifikasi'},
+        {date:'5 Agu 2026', topic:'English — Reading Comprehension', status:'terverifikasi'},
+      ]},
+    };
+
+    function openDetail(key) {
+      const s = students[key];
+      document.getElementById('dp-name').textContent = s.name;
+      document.getElementById('dp-sub').textContent = s.sub;
+      document.getElementById('dp-nim').textContent = s.nim;
+      document.getElementById('dp-prodi').textContent = s.prodi;
+      document.getElementById('dp-ipk').textContent = s.ipk;
+      document.getElementById('dp-school').textContent = s.school;
+      document.getElementById('dp-teaching').textContent = s.teaching;
+      const logsEl = document.getElementById('dp-logs');
+      logsEl.innerHTML = s.logs.map(l => `
+        <div class="log-item">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem">
+            <span style="font-weight:500">${l.topic}</span>
+            <span class="badge" style="${l.status==='menunggu'?'background:#fef3c7;color:#92400e':'background:#dcfce7;color:#15803d'}">${l.status==='menunggu'?'Menunggu':'Terverifikasi'}</span>
+          </div>
+          <div class="text-muted">${l.date}</div>
+        </div>`).join('');
+      document.getElementById('detailPanel').classList.add('open');
+      document.getElementById('overlay').classList.add('active');
+    }
+    function closeDetail() {
+      document.getElementById('detailPanel').classList.remove('open');
+      document.getElementById('overlay').classList.remove('active');
+    }
+    function switchSchool(idx, btn) {
+      document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.school-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + idx).classList.add('active');
+    }
+    function filterStudents(q) {
+      const term = q.toLowerCase();
+      document.querySelectorAll('.student-card').forEach(card => {
+        const match = card.dataset.name.includes(term) || card.dataset.nim.includes(term);
+        card.style.display = match ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

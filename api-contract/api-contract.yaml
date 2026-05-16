@@ -5,8 +5,9 @@ info:
     API Contract untuk Sistem Manajemen PPL (Program Pengalaman Lapangan)
     Fakultas Teknik dan Kependidikan.
 
-    Cakupan dokumen ini: **Modul 1 — Integrasi SALAM & SSO** dan
-    **Modul 2 — Manajemen Periode PPL**.
+    Cakupan dokumen ini: **Modul 1 — Integrasi SALAM & SSO**,
+    **Modul 2 — Manajemen Periode PPL**, dan
+    **Modul 3 — Pendaftaran & Penempatan**.
 
     ## Autentikasi
     Semua endpoint (kecuali `/auth/login`) memerlukan Bearer JWT token
@@ -43,6 +44,16 @@ tags:
     description: Pengumuman & sosialisasi digital per periode (Modul 2)
   - name: Milestones
     description: Kalender & milestone per periode (Modul 2)
+  - name: Registrations
+    description: Pendaftaran mahasiswa ke periode PPL (Modul 3)
+  - name: School Selection
+    description: Pemilihan sekolah mandiri via sistem WAR (Modul 3)
+  - name: Placements
+    description: Penempatan mahasiswa ke sekolah mitra (Modul 3)
+  - name: DPL Assignments
+    description: Penugasan Dosen Pembimbing Lapangan per periode (Modul 3)
+  - name: Letters
+    description: Generate surat pengantar observasi & pembukaan PPL (Modul 3)
 
 security:
   - BearerAuth: []
@@ -106,6 +117,33 @@ components:
         type: string
         format: uuid
 
+    RegistrationIdParam:
+      name: registration_id
+      in: path
+      required: true
+      description: UUID pendaftaran mahasiswa
+      schema:
+        type: string
+        format: uuid
+
+    PlacementIdParam:
+      name: placement_id
+      in: path
+      required: true
+      description: UUID penempatan mahasiswa
+      schema:
+        type: string
+        format: uuid
+
+    AssignmentIdParam:
+      name: assignment_id
+      in: path
+      required: true
+      description: UUID penugasan DPL
+      schema:
+        type: string
+        format: uuid
+
     PageParam:
       name: page
       in: query
@@ -114,14 +152,30 @@ components:
         minimum: 1
         default: 1
 
-    PerPageParam:
-      name: per_page
+    LimitParam:
+      name: limit
       in: query
       schema:
         type: integer
         minimum: 1
         maximum: 100
         default: 20
+
+    SortByParam:
+      name: sort_by
+      in: query
+      schema:
+        type: string
+      description: Field yang digunakan untuk pengurutan
+
+    SortDirectionParam:
+      name: sort_direction
+      in: query
+      schema:
+        type: string
+        enum: [asc, desc]
+        default: asc
+      description: Arah pengurutan
 
   # ---------------------------------------------------------------------------
   # RESPONSES
@@ -134,8 +188,8 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            code: UNAUTHORIZED
             message: Token tidak valid atau sudah kadaluarsa
+            errors: []
 
     Forbidden:
       description: Role tidak memiliki izin untuk operasi ini
@@ -144,8 +198,8 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            code: FORBIDDEN
             message: Anda tidak memiliki izin untuk melakukan aksi ini
+            errors: []
 
     NotFound:
       description: Resource tidak ditemukan
@@ -154,15 +208,19 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            code: NOT_FOUND
             message: Resource tidak ditemukan
+            errors: []
 
     UnprocessableEntity:
       description: Validasi gagal
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ValidationError"
+            $ref: "#/components/schemas/Error"
+          example:
+            message: Validasi input gagal
+            errors:
+              - "registration_end: Tanggal akhir pendaftaran harus setelah tanggal mulai"
 
   # ---------------------------------------------------------------------------
   # SCHEMAS
@@ -172,36 +230,16 @@ components:
 
     Error:
       type: object
-      required: [code, message]
+      required: [message, errors]
       properties:
-        code:
-          type: string
-          example: INVALID_CREDENTIALS
         message:
           type: string
           example: Username atau password salah
-
-    ValidationError:
-      type: object
-      required: [code, message, errors]
-      properties:
-        code:
-          type: string
-          example: VALIDATION_ERROR
-        message:
-          type: string
-          example: Validasi input gagal
         errors:
           type: array
           items:
-            type: object
-            properties:
-              field:
-                type: string
-                example: registration_end
-              message:
-                type: string
-                example: Tanggal akhir pendaftaran harus setelah tanggal mulai
+            type: string
+          example: []
 
     PaginationMeta:
       type: object
@@ -215,7 +253,7 @@ components:
         total:
           type: integer
           example: 42
-        total_pages:
+        total_page:
           type: integer
           example: 3
 
@@ -911,6 +949,204 @@ components:
             enum: [admin, dpl, mahasiswa]
           example: [admin, dpl, mahasiswa]
 
+    # ---- Registrations (M3) ----
+
+    Registration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        mahasiswa:
+          $ref: "#/components/schemas/MahasiswaData"
+        ppl_type:
+          $ref: "#/components/schemas/PPLType"
+        berkas_url:
+          type: string
+          format: uri
+          nullable: true
+          description: URL berkas syarat (link GDrive atau URL zip)
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+          description: |
+            `pending` = menunggu review admin, `approved` = diterima, `rejected` = ditolak
+        rejection_reason:
+          type: string
+          nullable: true
+          description: Alasan penolakan (diisi admin saat status `rejected`)
+        placement:
+          nullable: true
+          description: Data penempatan mahasiswa. `null` jika belum ditempatkan.
+          allOf:
+            - $ref: "#/components/schemas/Placement"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    RegistrationRequest:
+      type: object
+      required: [ppl_type_id]
+      properties:
+        ppl_type_id:
+          type: string
+          format: uuid
+          description: UUID jenis PPL yang dipilih mahasiswa
+        berkas_url:
+          type: string
+          format: uri
+          nullable: true
+          description: |
+            URL berkas persyaratan (link Google Drive atau URL zip).
+            Format berkas mengikuti deskripsi dinamis yang ditetapkan admin pada periode ini.
+
+    SchoolAvailability:
+      type: object
+      description: Data sekolah beserta ketersediaan slot real-time
+      properties:
+        period_school_id:
+          type: string
+          format: uuid
+        school:
+          $ref: "#/components/schemas/School"
+        prodi_slots:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProdiSlot"
+        is_eligible:
+          type: boolean
+          description: Apakah mahasiswa yang sedang login eligible untuk memilih sekolah ini
+        ineligibility_reasons:
+          type: array
+          description: Alasan tidak eligible. Kosong jika eligible.
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                enum: [QUOTA_FULL, GENDER_MISMATCH, IPK_BELOW_MINIMUM]
+              message:
+                type: string
+
+    Placement:
+      type: object
+      description: Data penempatan mahasiswa ke sekolah mitra pada suatu periode
+      properties:
+        id:
+          type: string
+          format: uuid
+        registration_id:
+          type: string
+          format: uuid
+        school:
+          $ref: "#/components/schemas/School"
+        prodi_code:
+          type: string
+          example: PEND_INFORMATIKA
+        dpl:
+          nullable: true
+          description: DPL yang bertugas. `null` jika belum ditugaskan.
+          allOf:
+            - $ref: "#/components/schemas/DosenData"
+        source:
+          type: string
+          enum: [war, manual]
+          description: "`war` = dipilih sendiri oleh mahasiswa, `manual` = ditempatkan oleh admin"
+        placed_at:
+          type: string
+          format: date-time
+
+    PlacementRequest:
+      type: object
+      required: [registration_id, period_school_id, prodi_code]
+      properties:
+        registration_id:
+          type: string
+          format: uuid
+          description: UUID pendaftaran mahasiswa yang akan ditempatkan
+        period_school_id:
+          type: string
+          format: uuid
+          description: UUID sekolah mitra pada periode ini
+        prodi_code:
+          type: string
+          example: PEND_INFORMATIKA
+
+    SwapRequest:
+      type: object
+      required: [placement_id_a, placement_id_b]
+      description: Tukar penempatan dua mahasiswa
+      properties:
+        placement_id_a:
+          type: string
+          format: uuid
+          description: UUID penempatan mahasiswa pertama
+        placement_id_b:
+          type: string
+          format: uuid
+          description: UUID penempatan mahasiswa kedua
+
+    DPLAssignment:
+      type: object
+      description: Penugasan DPL ke sekolah mitra pada suatu periode
+      properties:
+        id:
+          type: string
+          format: uuid
+        period_id:
+          type: string
+          format: uuid
+        dosen:
+          $ref: "#/components/schemas/DosenData"
+        school:
+          $ref: "#/components/schemas/School"
+        mahasiswa_count:
+          type: integer
+          readOnly: true
+          description: Jumlah mahasiswa bimbingan di sekolah ini (hanya pada response)
+        created_at:
+          type: string
+          format: date-time
+
+    DPLAssignmentRequest:
+      type: object
+      required: [nidn, period_school_id]
+      properties:
+        nidn:
+          type: string
+          description: NIDN dosen yang akan ditugaskan sebagai DPL
+          example: "0012345678"
+        period_school_id:
+          type: string
+          format: uuid
+          description: UUID sekolah mitra pada periode ini
+
+    DPLAssignmentImportResult:
+      type: object
+      properties:
+        imported:
+          type: integer
+          description: Jumlah penugasan yang berhasil diimport
+        skipped:
+          type: integer
+          description: Jumlah baris yang dilewati (sudah ada atau duplikat)
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+                description: Nomor baris di file Excel
+              reason:
+                type: string
+
 # ===========================================================================
 # PATHS
 # ===========================================================================
@@ -945,7 +1181,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/LoginResponse"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/LoginResponse"
+                  message:
+                    type: string
         "401":
           description: Kredensial tidak valid
           content:
@@ -953,8 +1195,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: INVALID_CREDENTIALS
                 message: Username atau password salah
+                errors: []
         "503":
           description: Layanan LDAP SALAM tidak tersedia
           content:
@@ -962,8 +1204,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: SALAM_UNAVAILABLE
                 message: Layanan SALAM sedang tidak tersedia, coba beberapa saat lagi
+                errors: []
 
   /auth/logout:
     post:
@@ -987,7 +1229,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserProfile"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/UserProfile"
+                  message:
+                    type: string
         "401":
           $ref: "#/components/responses/Unauthorized"
 
@@ -1008,10 +1256,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
-                  job_id:
-                    type: string
-                    format: uuid
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        format: uuid
                   message:
                     type: string
                     example: Sinkronisasi dimulai. Pantau status di GET /salam/sync/jobs/{job_id}
@@ -1041,7 +1293,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MahasiswaData"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/MahasiswaData"
+                  message:
+                    type: string
         "404":
           description: NIM tidak ditemukan di SALAM
           content:
@@ -1049,8 +1307,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: NOT_FOUND
                 message: Mahasiswa dengan NIM 20212001 tidak ditemukan di SALAM
+                errors: []
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1077,10 +1335,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
-                  job_id:
-                    type: string
-                    format: uuid
+                  data:
+                    type: object
+                    properties:
+                      job_id:
+                        type: string
+                        format: uuid
                   message:
                     type: string
         "401":
@@ -1106,7 +1368,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SyncJobStatus"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SyncJobStatus"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1136,7 +1404,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NilaiPushResult"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/NilaiPushResult"
+                  message:
+                    type: string
         "400":
           description: Periode belum ditutup atau ada data tidak valid
           content:
@@ -1144,8 +1418,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: PERIOD_NOT_CLOSED
                 message: Nilai hanya bisa dipush setelah periode berstatus closed
+                errors: []
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1168,7 +1442,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NilaiConversionTable"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/NilaiConversionTable"
+                  message:
+                    type: string
         "401":
           $ref: "#/components/responses/Unauthorized"
 
@@ -1218,7 +1498,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/NilaiConversionTable"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/NilaiConversionTable"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "401":
@@ -1253,7 +1539,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EligibilityStatus"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/EligibilityStatus"
+                  message:
+                    type: string
         "404":
           description: Mahasiswa tidak ditemukan
           content:
@@ -1292,11 +1584,17 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/EligibilityStatus"
+                  data:
+                    type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/EligibilityStatus"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "401":
@@ -1324,11 +1622,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/PPLType"
+                  message:
+                    type: string
         "401":
           $ref: "#/components/responses/Unauthorized"
 
@@ -1348,7 +1649,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PPLType"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PPLType"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "401":
@@ -1374,7 +1681,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PPLType"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PPLType"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1400,8 +1713,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: IN_USE
                 message: Jenis PPL ini masih digunakan oleh 2 periode
+                errors: []
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1426,7 +1739,9 @@ paths:
             enum: [draft, published, registration, active, closed]
           description: Filter berdasarkan status periode
         - $ref: "#/components/parameters/PageParam"
-        - $ref: "#/components/parameters/PerPageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SortByParam"
+        - $ref: "#/components/parameters/SortDirectionParam"
       responses:
         "200":
           description: Daftar periode PPL
@@ -1434,11 +1749,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message, meta]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/Period"
+                  message:
+                    type: string
                   meta:
                     $ref: "#/components/schemas/PaginationMeta"
         "401":
@@ -1480,7 +1798,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Period"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Period"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "401":
@@ -1500,7 +1824,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Period"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Period"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1524,7 +1854,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Period"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Period"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "404":
@@ -1552,8 +1888,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: HAS_REGISTRATIONS
                 message: Periode tidak bisa dihapus karena sudah ada mahasiswa yang mendaftar
+                errors: []
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1589,7 +1925,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Period"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Period"
+                  message:
+                    type: string
         "400":
           description: Transisi status tidak valid
           content:
@@ -1597,8 +1939,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: INVALID_TRANSITION
                 message: Tidak bisa mengubah status dari active ke draft
+                errors: []
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1627,11 +1969,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/PeriodSchool"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1664,7 +2009,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PeriodSchool"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PeriodSchool"
+                  message:
+                    type: string
         "400":
           description: Sekolah sudah terdaftar di periode ini atau data tidak valid
           content:
@@ -1713,7 +2064,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SchoolImportResult"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/SchoolImportResult"
+                  message:
+                    type: string
         "400":
           description: File tidak valid atau format kolom salah
           content:
@@ -1721,8 +2078,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: INVALID_FILE
                 message: File bukan format Excel yang valid atau kolom wajib tidak ditemukan
+                errors: []
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1743,7 +2100,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PeriodSchool"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PeriodSchool"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1768,7 +2131,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PeriodSchool"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/PeriodSchool"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1795,8 +2164,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
               example:
-                code: HAS_PLACEMENTS
                 message: Sekolah tidak bisa dihapus karena sudah ada mahasiswa yang ditempatkan
+                errors: []
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1823,11 +2192,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/Rubric"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1851,7 +2223,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rubric"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Rubric"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1894,7 +2272,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Rubric"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Rubric"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -1922,7 +2306,9 @@ paths:
             `false` — hanya tampilkan draft (admin only).
             Kosongkan untuk semua.
         - $ref: "#/components/parameters/PageParam"
-        - $ref: "#/components/parameters/PerPageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SortByParam"
+        - $ref: "#/components/parameters/SortDirectionParam"
       responses:
         "200":
           description: Daftar pengumuman
@@ -1930,11 +2316,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message, meta]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/Announcement"
+                  message:
+                    type: string
                   meta:
                     $ref: "#/components/schemas/PaginationMeta"
         "404":
@@ -1974,7 +2363,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Announcement"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Announcement"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "404":
@@ -1997,7 +2392,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Announcement"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Announcement"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -2021,7 +2422,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Announcement"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Announcement"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -2070,7 +2477,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Announcement"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Announcement"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -2096,11 +2509,14 @@ paths:
             application/json:
               schema:
                 type: object
+                required: [data, message]
                 properties:
                   data:
                     type: array
                     items:
                       $ref: "#/components/schemas/Milestone"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -2133,7 +2549,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Milestone"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Milestone"
+                  message:
+                    type: string
         "400":
           $ref: "#/components/responses/UnprocessableEntity"
         "404":
@@ -2162,7 +2584,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Milestone"
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Milestone"
+                  message:
+                    type: string
         "404":
           $ref: "#/components/responses/NotFound"
         "401":
@@ -2179,6 +2607,871 @@ paths:
       responses:
         "204":
           description: Milestone berhasil dihapus
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # =========================================================================
+  # MODUL 3 — PENDAFTARAN & PENEMPATAN
+  # =========================================================================
+
+  # ---- Registrations ----
+
+  /periods/{id}/registrations:
+    get:
+      tags: [Registrations]
+      summary: List pendaftaran pada periode
+      description: |
+        Admin melihat semua pendaftaran. Mahasiswa hanya melihat pendaftaran milik sendiri.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+          description: Filter berdasarkan status pendaftaran
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SortByParam"
+        - $ref: "#/components/parameters/SortDirectionParam"
+      responses:
+        "200":
+          description: Daftar pendaftaran
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Registration"
+                  message:
+                    type: string
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [Registrations]
+      summary: Daftar ke periode PPL
+      description: |
+        Mahasiswa mendaftar ke periode PPL yang sedang dalam status `registration`.
+        Eligibilitas dicek otomatis berdasarkan data SALAM saat pendaftaran.
+        Berkas syarat dikirim dalam satu input berupa link Google Drive atau URL zip
+        sesuai deskripsi dinamis dari admin pada periode ini.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequest"
+            example:
+              ppl_type_id: "550e8400-e29b-41d4-a716-446655440001"
+              berkas_url: "https://drive.google.com/drive/folders/xxxx"
+      responses:
+        "201":
+          description: Pendaftaran berhasil disimpan dengan status `pending`
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Registration"
+                  message:
+                    type: string
+        "400":
+          description: Mahasiswa tidak eligible atau sudah terdaftar di periode ini
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                already_registered:
+                  value:
+                    message: Mahasiswa sudah terdaftar di periode ini
+                    errors: []
+                not_eligible:
+                  value:
+                    message: Mahasiswa tidak memenuhi syarat eligibilitas PPL
+                    errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /periods/{id}/registrations/{registration_id}:
+    get:
+      tags: [Registrations]
+      summary: Detail pendaftaran
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/RegistrationIdParam"
+      responses:
+        "200":
+          description: Detail pendaftaran beserta data penempatan jika sudah ada
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Registration"
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /periods/{id}/registrations/{registration_id}/status:
+    patch:
+      tags: [Registrations]
+      summary: Approve atau reject pendaftaran
+      description: Admin menyetujui atau menolak pendaftaran mahasiswa.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/RegistrationIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [approved, rejected]
+                rejection_reason:
+                  type: string
+                  nullable: true
+                  description: Wajib diisi jika `status` adalah `rejected`
+            examples:
+              approve:
+                value:
+                  status: approved
+              reject:
+                value:
+                  status: rejected
+                  rejection_reason: Berkas tidak lengkap atau tidak sesuai format
+      responses:
+        "200":
+          description: Status pendaftaran berhasil diubah
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Registration"
+                  message:
+                    type: string
+        "400":
+          description: Status tidak valid atau `rejection_reason` kosong saat reject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ---- School Selection (WAR) ----
+
+  /periods/{id}/schools/available:
+    get:
+      tags: [School Selection]
+      summary: List sekolah yang tersedia untuk dipilih (WAR)
+      description: |
+        Mahasiswa melihat sekolah yang tersedia beserta sisa kuota per prodi secara real-time.
+        Sistem otomatis menandai kelayakan (`is_eligible`) berdasarkan prodi, IPK, dan gender mahasiswa.
+
+        Hanya bisa diakses saat periode berstatus `registration`.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - name: prodi_code
+          in: query
+          schema:
+            type: string
+          description: Filter sekolah berdasarkan kode prodi (opsional)
+      responses:
+        "200":
+          description: Daftar sekolah tersedia beserta status eligibilitas real-time
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SchoolAvailability"
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /periods/{id}/registrations/{registration_id}/school-choice:
+    post:
+      tags: [School Selection]
+      summary: Pilih sekolah (WAR)
+      description: |
+        Mahasiswa memilih sekolah yang diinginkan. Sistem memvalidasi secara real-time:
+        sisa kuota prodi, syarat gender, dan minimal IPK.
+
+        Jika berhasil, penempatan dibuat otomatis dengan `source: war`.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/RegistrationIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period_school_id]
+              properties:
+                period_school_id:
+                  type: string
+                  format: uuid
+                  description: UUID sekolah mitra pada periode ini yang dipilih
+            example:
+              period_school_id: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "201":
+          description: Sekolah berhasil dipilih, penempatan dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+        "400":
+          description: Validasi gagal — kuota habis, gender tidak sesuai, atau IPK tidak memenuhi syarat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                quota_full:
+                  value:
+                    message: Kuota prodi di sekolah ini sudah penuh
+                    errors: []
+                gender_mismatch:
+                  value:
+                    message: Sekolah ini hanya menerima mahasiswa laki-laki untuk prodi ini
+                    errors: []
+                ipk_below_minimum:
+                  value:
+                    message: IPK Anda (2.50) tidak memenuhi syarat minimal (3.00) untuk prodi ini di sekolah ini
+                    errors: []
+        "409":
+          description: Mahasiswa sudah memiliki penempatan di periode ini
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Mahasiswa sudah memiliki penempatan di periode ini
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    delete:
+      tags: [School Selection]
+      summary: Batalkan pilihan sekolah
+      description: |
+        Mahasiswa membatalkan pilihan sekolah selama periode masih berstatus `registration`.
+        Setelah dibatalkan, mahasiswa bisa memilih sekolah lain.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/RegistrationIdParam"
+      responses:
+        "204":
+          description: Pilihan sekolah berhasil dibatalkan
+        "400":
+          description: Penempatan tidak bisa dibatalkan karena periode sudah melewati masa registrasi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Pilihan sekolah hanya bisa dibatalkan selama periode pendaftaran aktif
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ---- Placements ----
+
+  /periods/{id}/placements:
+    get:
+      tags: [Placements]
+      summary: List semua penempatan pada periode
+      description: |
+        Admin dan DPL melihat semua penempatan. Mahasiswa hanya melihat penempatan milik sendiri.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - name: school_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter berdasarkan sekolah
+        - name: prodi_code
+          in: query
+          schema:
+            type: string
+          description: Filter berdasarkan kode prodi
+        - name: dpl_nidn
+          in: query
+          schema:
+            type: string
+          description: Filter berdasarkan NIDN DPL
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - $ref: "#/components/parameters/SortByParam"
+        - $ref: "#/components/parameters/SortDirectionParam"
+      responses:
+        "200":
+          description: Daftar penempatan mahasiswa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [Placements]
+      summary: Buat penempatan manual (admin)
+      description: |
+        Admin menempatkan mahasiswa yang tidak mendapatkan sekolah via WAR.
+        Sistem tetap memvalidasi syarat sekolah tujuan (kuota, gender, IPK).
+        Penempatan yang dibuat lewat endpoint ini memiliki `source: manual`.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlacementRequest"
+            example:
+              registration_id: "550e8400-e29b-41d4-a716-446655440002"
+              period_school_id: "550e8400-e29b-41d4-a716-446655440000"
+              prodi_code: PEND_INFORMATIKA
+      responses:
+        "201":
+          description: Penempatan berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+        "400":
+          description: Data tidak valid atau syarat sekolah tidak terpenuhi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Mahasiswa sudah memiliki penempatan di periode ini
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Mahasiswa sudah memiliki penempatan di periode ini
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /periods/{id}/placements/swap:
+    post:
+      tags: [Placements]
+      summary: Tukar penempatan dua mahasiswa (swap)
+      description: |
+        Admin menukar penempatan dua mahasiswa. Sistem memvalidasi bahwa syarat sekolah
+        tujuan masing-masing terpenuhi sebelum swap dilakukan.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SwapRequest"
+            example:
+              placement_id_a: "550e8400-e29b-41d4-a716-446655440003"
+              placement_id_b: "550e8400-e29b-41d4-a716-446655440004"
+      responses:
+        "200":
+          description: Penempatan berhasil ditukar
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      placement_a:
+                        $ref: "#/components/schemas/Placement"
+                      placement_b:
+                        $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+        "400":
+          description: Syarat sekolah tujuan tidak terpenuhi untuk salah satu atau kedua mahasiswa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Syarat sekolah tujuan tidak terpenuhi untuk mahasiswa A (IPK tidak memenuhi minimum)
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /periods/{id}/placements/{placement_id}:
+    get:
+      tags: [Placements]
+      summary: Detail penempatan
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/PlacementIdParam"
+      responses:
+        "200":
+          description: Detail penempatan mahasiswa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    put:
+      tags: [Placements]
+      summary: Override penempatan mahasiswa (admin)
+      description: |
+        Admin mengubah sekolah penempatan mahasiswa secara manual.
+        Sistem tetap memvalidasi syarat sekolah tujuan.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/PlacementIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period_school_id, prodi_code]
+              properties:
+                period_school_id:
+                  type: string
+                  format: uuid
+                  description: UUID sekolah tujuan baru
+                prodi_code:
+                  type: string
+                  example: PEND_INFORMATIKA
+      responses:
+        "200":
+          description: Penempatan berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Placement"
+                  message:
+                    type: string
+        "400":
+          description: Syarat sekolah tujuan tidak terpenuhi
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    delete:
+      tags: [Placements]
+      summary: Hapus penempatan (admin)
+      description: Menghapus penempatan mahasiswa. Kuota sekolah asal dikembalikan secara otomatis.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/PlacementIdParam"
+      responses:
+        "204":
+          description: Penempatan berhasil dihapus
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ---- Letters ----
+
+  /periods/{id}/registrations/{registration_id}/letter/observation:
+    get:
+      tags: [Letters]
+      summary: Generate surat pengantar observasi per mahasiswa (PDF)
+      description: |
+        Menghasilkan surat pengantar observasi dalam format PDF untuk satu mahasiswa.
+        Surat berisi data mahasiswa, sekolah tujuan, dan TTD digital pejabat.
+
+        Mahasiswa harus sudah memiliki penempatan aktif.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/RegistrationIdParam"
+      responses:
+        "200":
+          description: File PDF surat pengantar observasi
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Mahasiswa belum memiliki penempatan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Mahasiswa belum memiliki penempatan sekolah
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /periods/{id}/schools/{school_id}/letter/opening:
+    get:
+      tags: [Letters]
+      summary: Generate surat pembukaan per sekolah (PDF)
+      description: |
+        Menghasilkan surat pembukaan PPL dalam format PDF untuk satu sekolah.
+        Surat berisi daftar mahasiswa yang ditempatkan, data DPL, dan TTD digital pejabat.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/SchoolIdParam"
+      responses:
+        "200":
+          description: File PDF surat pembukaan PPL
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ---- DPL Assignments ----
+
+  /periods/{id}/dpl-assignments:
+    get:
+      tags: [DPL Assignments]
+      summary: List penugasan DPL pada periode
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - name: school_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+          description: Filter berdasarkan sekolah
+        - name: nidn
+          in: query
+          schema:
+            type: string
+          description: Filter berdasarkan NIDN DPL
+      responses:
+        "200":
+          description: Daftar penugasan DPL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DPLAssignment"
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    post:
+      tags: [DPL Assignments]
+      summary: Tugaskan DPL ke sekolah
+      description: Admin menugaskan satu DPL ke satu sekolah pada periode ini.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DPLAssignmentRequest"
+            example:
+              nidn: "0012345678"
+              period_school_id: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        "201":
+          description: Penugasan DPL berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DPLAssignment"
+                  message:
+                    type: string
+        "400":
+          description: DPL sudah ditugaskan ke sekolah ini atau data tidak valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: DPL ini sudah ditugaskan ke sekolah tersebut pada periode ini
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /periods/{id}/dpl-assignments/import:
+    post:
+      tags: [DPL Assignments]
+      summary: Import data penugasan DPL dari Excel
+      description: |
+        Mengimport data penugasan DPL dari file Excel (.xlsx).
+
+        **Format kolom yang diharapkan:** `nidn`, `nama_sekolah` atau `npsn`
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File Excel (.xlsx)
+                overwrite:
+                  type: boolean
+                  default: false
+                  description: Jika `true`, timpa penugasan yang sudah ada
+      responses:
+        "200":
+          description: Hasil import penugasan DPL
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DPLAssignmentImportResult"
+                  message:
+                    type: string
+        "400":
+          description: File tidak valid atau format kolom salah
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: File bukan format Excel yang valid atau kolom wajib tidak ditemukan
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /periods/{id}/dpl-assignments/auto-assign:
+    post:
+      tags: [DPL Assignments]
+      summary: Auto-assign DPL berbasis beban kerja
+      description: |
+        Sistem otomatis menugaskan DPL ke sekolah yang belum memiliki DPL berdasarkan
+        distribusi beban kerja (jumlah mahasiswa bimbingan) yang paling seimbang.
+        Penugasan yang sudah ada tidak akan diubah.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+      responses:
+        "200":
+          description: Hasil auto-assign
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      assigned:
+                        type: integer
+                        description: Jumlah penugasan baru yang dibuat
+                      skipped:
+                        type: integer
+                        description: Jumlah sekolah yang dilewati karena sudah ada DPL
+                      assignments:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/DPLAssignment"
+                  message:
+                    type: string
+        "400":
+          description: Tidak ada DPL tersedia untuk di-assign
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Tidak ada dosen yang tersedia untuk penugasan otomatis
+                errors: []
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /periods/{id}/dpl-assignments/{assignment_id}:
+    put:
+      tags: [DPL Assignments]
+      summary: Update penugasan DPL
+      description: Admin mengubah DPL yang bertugas di sekolah tertentu.
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AssignmentIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DPLAssignmentRequest"
+      responses:
+        "200":
+          description: Penugasan DPL berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/DPLAssignment"
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    delete:
+      tags: [DPL Assignments]
+      summary: Hapus penugasan DPL
+      parameters:
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AssignmentIdParam"
+      responses:
+        "204":
+          description: Penugasan berhasil dihapus
         "404":
           $ref: "#/components/responses/NotFound"
         "401":

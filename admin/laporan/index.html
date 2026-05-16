@@ -1,91 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rekap & Laporan - Admin PPL</title>
-  <link rel="stylesheet" href="../../assets/css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan &amp; Surat — PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <style>
+    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
+    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
+    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .letter-card { background: var(--white); border: 1px solid var(--border); border-radius: .5rem; padding: 1.25rem; }
+    .letter-icon { width: 48px; height: 48px; border-radius: .5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: .75rem; }
+  </style>
 </head>
 <body>
   <div class="app-container">
     <aside class="sidebar">
-      <div class="sidebar-header">PPL FTK Admin</div>
+      <div class="sidebar-header">PPL FTK — Admin</div>
       <nav class="sidebar-nav">
-        <a href="../dashboard/index.html" class="nav-item">Dashboard</a>
-        <a href="../periode/index.html" class="nav-item">Manajemen Periode</a>
-        <a href="../mitra/index.html" class="nav-item">Sekolah & DPL</a>
-        <a href="../laporan/index.html" class="nav-item active">Rekap & Laporan</a>
+        <a href="../dashboard/" class="nav-item">📊 Dashboard</a>
+        <div class="nav-section">M1 — SALAM &amp; SSO</div>
+        <a href="../salam/" class="nav-item">🔗 Integrasi SALAM</a>
+        <div class="nav-section">M2 — Periode PPL</div>
+        <a href="../periode/" class="nav-item">📅 Periode PPL</a>
+        <a href="../mitra/" class="nav-item">🏫 Sekolah Mitra</a>
+        <div class="nav-section">M3 — Pendaftaran</div>
+        <a href="../pendaftaran/" class="nav-item">📝 Pendaftaran</a>
+        <a href="../penempatan/" class="nav-item">📌 Penempatan &amp; DPL</a>
+        <a href="../laporan/" class="nav-item active">📄 Laporan &amp; Surat</a>
       </nav>
-      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
-        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
-      </div>
+      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
     </aside>
 
-    <main class="main-content">
+    <div class="main-content">
       <header class="top-bar">
-        <h1 style="font-size: 1.25rem; font-weight: 600;">Rekap Nilai & Laporan Akhir</h1>
+        <h1 style="font-size:1.125rem;font-weight:600">Laporan &amp; Surat</h1>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <span class="text-sm text-muted">Super Admin</span>
+          <div style="width:32px;height:32px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">SA</div>
+        </div>
       </header>
 
-      <div class="page-container">
-        <!-- Export Controls -->
-        <div class="card mb-4">
-          <div class="flex justify-between items-center">
-            <div class="flex gap-2">
-              <select class="form-input" style="width: 200px;">
-                <option>Semua Prodi</option>
-                <option>PAI</option>
-                <option>PBA</option>
-                <option>PGMI</option>
-              </select>
-              <select class="form-input" style="width: 200px;">
-                <option>Angkatan 2026 Ganjil</option>
+      <main class="page-container">
+        <p class="text-muted text-sm mb-4">Generate surat dan dokumen resmi PPL dengan tanda tangan digital pejabat.</p>
+
+        <div class="section-grid" style="margin-bottom:1.5rem">
+          <!-- Surat Observasi -->
+          <div class="letter-card">
+            <div class="letter-icon" style="background:#eff6ff">📋</div>
+            <h2 style="font-size:1rem;font-weight:600;margin-bottom:.375rem">Surat Pengantar Observasi</h2>
+            <p class="text-sm text-muted" style="margin-bottom:1rem">Per mahasiswa. Berisi data mahasiswa, sekolah tujuan, dan TTD digital pejabat.</p>
+            <div class="form-group">
+              <label class="form-label">Periode</label>
+              <select class="form-input">
+                <option>PPL Ganjil 2026/2027</option>
+                <option>PPL Internasional 2026</option>
               </select>
             </div>
-            <div class="flex gap-2">
-              <button class="btn btn-outline">Export Excel</button>
-              <button class="btn btn-outline">Generate Sertifikat (ZIP)</button>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Mahasiswa</label>
+              <select class="form-input" id="mhs-obs">
+                <option value="">— Pilih mahasiswa —</option>
+                <option>Siti Aminah (123002) — MAN 1 Bandung</option>
+                <option>Rizki Maulana (123005) — SMAN 8 Bandung</option>
+                <option>Fulan Al-Aziz (123006) — MTsN 2 Kota Bandung</option>
+              </select>
             </div>
+            <button class="btn btn-primary" style="width:100%" onclick="generateSurat('observasi')">📄 Generate PDF Surat Observasi</button>
+          </div>
+
+          <!-- Surat Pembukaan -->
+          <div class="letter-card">
+            <div class="letter-icon" style="background:#f0fdf4">🏫</div>
+            <h2 style="font-size:1rem;font-weight:600;margin-bottom:.375rem">Surat Pembukaan PPL</h2>
+            <p class="text-sm text-muted" style="margin-bottom:1rem">Per sekolah. Berisi daftar mahasiswa, data DPL, dan TTD digital pejabat.</p>
+            <div class="form-group">
+              <label class="form-label">Periode</label>
+              <select class="form-input">
+                <option>PPL Ganjil 2026/2027</option>
+                <option>PPL Internasional 2026</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:1rem">
+              <label class="form-label">Sekolah</label>
+              <select class="form-input" id="school-open">
+                <option value="">— Pilih sekolah —</option>
+                <option>MAN 1 Bandung (6 mahasiswa)</option>
+                <option>SMAN 8 Bandung (4 mahasiswa)</option>
+                <option>MTsN 2 Kota Bandung (5 mahasiswa)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="generateSurat('pembukaan')">📄 Generate PDF Surat Pembukaan</button>
           </div>
         </div>
 
-        <!-- Reports Table -->
-        <div class="card" style="padding: 0;">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Mahasiswa</th>
-                <th>Prodi</th>
-                <th>Sekolah</th>
-                <th>DPL</th>
-                <th>Nilai</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="report-table"></tbody>
-          </table>
+        <!-- Preview area -->
+        <div id="preview-area" style="display:none" class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 style="font-size:.9375rem;font-weight:600" id="preview-title">Preview Surat</h3>
+            <div style="display:flex;gap:.5rem">
+              <button class="btn btn-outline" onclick="document.getElementById('preview-area').style.display='none'">Tutup</button>
+              <button class="btn btn-primary" onclick="alert('Mengunduh PDF…')">⬇ Download PDF</button>
+            </div>
+          </div>
+          <div id="preview-content" style="border:1px solid var(--border);border-radius:.5rem;padding:2rem;background:#fafafa;font-family:Georgia,serif;line-height:1.8;font-size:.875rem">
+          </div>
         </div>
-      </div>
-    </main>
+
+        <!-- Bulk actions -->
+        <div class="card">
+          <h3 style="font-size:.9375rem;font-weight:600;margin-bottom:.75rem">Generate Massal</h3>
+          <p class="text-sm text-muted" style="margin-bottom:1rem">Generate semua surat sekaligus dan unduh sebagai ZIP.</p>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+            <div class="form-group" style="margin:0;flex:1;min-width:200px">
+              <label class="form-label">Periode</label>
+              <select class="form-input"><option>PPL Ganjil 2026/2027</option></select>
+            </div>
+            <div style="display:flex;gap:.5rem;align-items:flex-end">
+              <button class="btn btn-outline" onclick="alert('Menggenerate semua surat observasi...')">📋 Semua Surat Observasi (36 file)</button>
+              <button class="btn btn-outline" onclick="alert('Menggenerate semua surat pembukaan...')">🏫 Semua Surat Pembukaan (12 file)</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
 
-  <script src="../../assets/js/data.js"></script>
   <script>
-    const reportTable = document.getElementById('report-table');
-    const students = store.get('students');
-
-    reportTable.innerHTML = students.map(s => `
-      <tr>
-        <td>
-          <p style="font-weight: 500; margin-bottom: 0.25rem;">${s.name}</p>
-          <p class="text-xs text-muted">${s.id}</p>
-        </td>
-        <td>${s.prodi}</td>
-        <td>${s.school || '-'}</td>
-        <td>${s.dpl || '<span class="text-muted">Belum ada</span>'}</td>
-        <td style="font-weight: 700;">88.5</td>
-        <td><span class="badge badge-success">Lulus (A)</span></td>
-      </tr>
-    `).join('');
+    function generateSurat(type) {
+      const preview = document.getElementById('preview-area');
+      const title = document.getElementById('preview-title');
+      const content = document.getElementById('preview-content');
+      preview.style.display = 'block';
+      if (type === 'observasi') {
+        title.textContent = 'Preview — Surat Pengantar Observasi';
+        content.innerHTML = `
+          <div style="text-align:center;margin-bottom:1.5rem">
+            <div style="font-weight:700;font-size:1rem">UNIVERSITAS ISLAM NEGERI SUNAN GUNUNG DJATI BANDUNG</div>
+            <div style="font-size:.875rem">Fakultas Tarbiyah dan Keguruan</div>
+            <hr style="margin:.75rem 0;border-top:2px solid #000">
+          </div>
+          <div style="text-align:center;margin-bottom:1.25rem">
+            <div style="font-weight:700;text-decoration:underline">SURAT PENGANTAR OBSERVASI</div>
+            <div style="font-size:.8125rem">No: B.12345/Un.05/F.1/PP.06.9/VIII/2026</div>
+          </div>
+          <p style="margin-bottom:.875rem">Yth. Kepala MAN 1 Bandung</p>
+          <p style="margin-bottom:.875rem">Yang bertanda tangan di bawah ini, Dekan Fakultas Tarbiyah dan Keguruan UIN Sunan Gunung Djati Bandung, dengan ini menyampaikan bahwa:</p>
+          <table style="width:100%;font-size:.875rem;margin-bottom:.875rem">
+            <tr><td style="width:40%">Nama</td><td>: Siti Aminah</td></tr>
+            <tr><td>NIM</td><td>: 123002</td></tr>
+            <tr><td>Program Studi</td><td>: Pendidikan Bahasa Arab</td></tr>
+            <tr><td>Semester</td><td>: VII</td></tr>
+          </table>
+          <p style="margin-bottom:.875rem">adalah mahasiswa PPL Periode Ganjil 2026/2027 yang akan melaksanakan observasi di sekolah yang Bapak/Ibu pimpin.</p>
+          <div style="text-align:right;margin-top:2rem">
+            <p>Bandung, 5 Agustus 2026</p>
+            <p>Dekan FTK,</p>
+            <div style="height:60px;display:flex;align-items:center;justify-content:flex-end">
+              <span style="color:var(--primary);font-style:italic;font-size:.8125rem">[Tanda Tangan Digital]</span>
+            </div>
+            <p style="font-weight:600">Prof. Dr. H. Mahmud, M.Si.</p>
+            <p style="font-size:.8125rem">NIP. 196205311988031001</p>
+          </div>
+        `;
+      } else {
+        title.textContent = 'Preview — Surat Pembukaan PPL';
+        content.innerHTML = `
+          <div style="text-align:center;margin-bottom:1.5rem">
+            <div style="font-weight:700;font-size:1rem">UNIVERSITAS ISLAM NEGERI SUNAN GUNUNG DJATI BANDUNG</div>
+            <div style="font-size:.875rem">Fakultas Tarbiyah dan Keguruan</div>
+            <hr style="margin:.75rem 0;border-top:2px solid #000">
+          </div>
+          <div style="text-align:center;margin-bottom:1.25rem">
+            <div style="font-weight:700;text-decoration:underline">SURAT PEMBUKAAN PPL</div>
+            <div style="font-size:.8125rem">No: B.12346/Un.05/F.1/PP.06.9/VIII/2026</div>
+          </div>
+          <p style="margin-bottom:.875rem">Yth. Kepala MAN 1 Bandung</p>
+          <p style="margin-bottom:.875rem">Dengan hormat, bersama ini kami sampaikan bahwa mahasiswa berikut telah resmi ditempatkan di sekolah Bapak/Ibu untuk pelaksanaan PPL Periode Ganjil 2026/2027:</p>
+          <table style="width:100%;font-size:.8125rem;border-collapse:collapse;margin-bottom:.875rem">
+            <thead><tr style="border-bottom:1px solid #000"><th style="text-align:left;padding:.25rem">No</th><th style="text-align:left;padding:.25rem">Nama</th><th style="text-align:left;padding:.25rem">NIM</th><th style="text-align:left;padding:.25rem">Prodi</th></tr></thead>
+            <tbody>
+              <tr><td style="padding:.25rem">1</td><td>Siti Aminah</td><td>123002</td><td>PBA</td></tr>
+              <tr><td style="padding:.25rem">2</td><td>Mahasiswa B</td><td>123007</td><td>PAI</td></tr>
+            </tbody>
+          </table>
+          <p>Dosen Pembimbing Lapangan: <strong>Dr. Ahmad Fauzi, M.T.</strong></p>
+          <div style="text-align:right;margin-top:2rem">
+            <p>Bandung, 5 Agustus 2026</p>
+            <p>Dekan FTK,</p>
+            <div style="height:60px;display:flex;align-items:center;justify-content:flex-end">
+              <span style="color:var(--primary);font-style:italic;font-size:.8125rem">[Tanda Tangan Digital]</span>
+            </div>
+            <p style="font-weight:600">Prof. Dr. H. Mahmud, M.Si.</p>
+          </div>
+        `;
+      }
+      preview.scrollIntoView({ behavior: 'smooth' });
+    }
   </script>
 </body>
 </html>

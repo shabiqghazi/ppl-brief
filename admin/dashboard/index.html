@@ -1,104 +1,148 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - PPL FTK</title>
-  <link rel="stylesheet" href="../../assets/css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin — PPL FTK</title>
+  <link rel="stylesheet" href="../../assets/css/main.css" />
+  <style>
+    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
+    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
+    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--white); border: 1px solid var(--border); border-radius: .5rem; padding: 1.25rem 1.5rem; box-shadow: var(--shadow); }
+    .stat-label { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .25rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    .stat-sub { font-size: .75rem; color: var(--text-muted); margin-top: .25rem; }
+    .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-approved { background: #d1fae5; color: #065f46; }
+    .badge-rejected { background: #fee2e2; color: #991b1b; }
+    .badge-active { background: #dbeafe; color: #1e40af; }
+  </style>
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="sidebar-header">PPL FTK Admin</div>
+      <div class="sidebar-header">PPL FTK — Admin</div>
       <nav class="sidebar-nav">
-        <a href="../dashboard/index.html" class="nav-item active">Dashboard</a>
-        <a href="../periode/index.html" class="nav-item">Manajemen Periode</a>
-        <a href="../mitra/index.html" class="nav-item">Sekolah & DPL</a>
-        <a href="../laporan/index.html" class="nav-item">Rekap & Laporan</a>
+        <a href="../dashboard/" class="nav-item active">📊 Dashboard</a>
+        <div class="nav-section">M1 — SALAM &amp; SSO</div>
+        <a href="../salam/" class="nav-item">🔗 Integrasi SALAM</a>
+        <div class="nav-section">M2 — Periode PPL</div>
+        <a href="../periode/" class="nav-item">📅 Periode PPL</a>
+        <a href="../mitra/" class="nav-item">🏫 Sekolah Mitra</a>
+        <div class="nav-section">M3 — Pendaftaran</div>
+        <a href="../pendaftaran/" class="nav-item">📝 Pendaftaran</a>
+        <a href="../penempatan/" class="nav-item">📌 Penempatan &amp; DPL</a>
+        <a href="../laporan/" class="nav-item">📄 Laporan &amp; Surat</a>
       </nav>
-      <div style="padding: 1rem; border-top: 1px solid var(--sidebar-hover);">
-        <a href="../../index.html" class="nav-item" style="padding: 0.5rem 1rem;">Logout</a>
-      </div>
+      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <div class="main-content">
       <header class="top-bar">
-        <h1 style="font-size: 1.25rem; font-weight: 600;">Dashboard Overview</h1>
-        <div class="flex items-center gap-2">
+        <h1 style="font-size:1.125rem;font-weight:600">Dashboard</h1>
+        <div style="display:flex;align-items:center;gap:1rem">
           <span class="text-sm text-muted">Super Admin</span>
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">AD</div>
+          <div style="width:32px;height:32px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">SA</div>
         </div>
       </header>
 
-      <div class="page-container">
-        <!-- Stats Grid -->
-        <div class="flex gap-2 mb-4" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
-          <div class="card" style="margin-bottom: 0;">
-            <p class="text-sm text-muted">Total Mahasiswa</p>
-            <p style="font-size: 1.5rem; font-weight: 700;">1,240</p>
+      <main class="page-container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Mahasiswa Terdaftar</div>
+            <div class="stat-value" style="color:var(--primary)">47</div>
+            <div class="stat-sub">Periode Ganjil 2026/2027</div>
           </div>
-          <div class="card" style="margin-bottom: 0;">
-            <p class="text-sm text-muted">Mahasiswa Aktif</p>
-            <p style="font-size: 1.5rem; font-weight: 700;">856</p>
+          <div class="stat-card">
+            <div class="stat-label">Sekolah Mitra Aktif</div>
+            <div class="stat-value" style="color:var(--success)">12</div>
+            <div class="stat-sub">Total kuota: 58 mahasiswa</div>
           </div>
-          <div class="card" style="margin-bottom: 0;">
-            <p class="text-sm text-muted">Sekolah Mitra</p>
-            <p style="font-size: 1.5rem; font-weight: 700;">42</p>
+          <div class="stat-card">
+            <div class="stat-label">Menunggu Approval</div>
+            <div class="stat-value" style="color:var(--warning)">8</div>
+            <div class="stat-sub">Pendaftaran belum diproses</div>
           </div>
-          <div class="card" style="margin-bottom: 0;">
-            <p class="text-sm text-muted">DPL Bertugas</p>
-            <p style="font-size: 1.5rem; font-weight: 700;">28</p>
+          <div class="stat-card">
+            <div class="stat-label">Belum Ditempatkan</div>
+            <div class="stat-value" style="color:var(--danger)">3</div>
+            <div class="stat-sub">Perlu penempatan manual</div>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
-          <!-- Recent Activity -->
-          <div class="card">
-            <h3 class="mb-4">Periode PPL Saat Ini</h3>
+        <div class="content-grid">
+          <div class="card" style="margin-bottom:0">
+            <div class="flex justify-between items-center mb-4">
+              <h2 style="font-size:1rem;font-weight:600">Pendaftaran Terbaru</h2>
+              <a href="../pendaftaran/" class="btn btn-outline">Lihat Semua</a>
+            </div>
             <table class="table">
               <thead>
-                <tr>
-                  <th>Nama Periode</th>
-                  <th>Jenis</th>
-                  <th>Status</th>
-                  <th>Pendaftaran</th>
-                </tr>
+                <tr><th>Mahasiswa</th><th>Prodi</th><th>Jenis PPL</th><th>Status</th><th>Aksi</th></tr>
               </thead>
-              <tbody id="period-list">
-                <!-- Will be populated by JS -->
+              <tbody>
+                <tr>
+                  <td><div style="font-weight:500">Budi Santoso</div><div class="text-sm text-muted">123001</div></td>
+                  <td>PAI</td><td>Reguler</td>
+                  <td><span class="badge badge-pending">Menunggu</span></td>
+                  <td><a href="../pendaftaran/" class="btn btn-outline" style="padding:.25rem .625rem;font-size:.75rem">Review</a></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500">Siti Aminah</div><div class="text-sm text-muted">123002</div></td>
+                  <td>PBA</td><td>Reguler</td>
+                  <td><span class="badge badge-approved">Disetujui</span></td>
+                  <td><a href="../penempatan/" class="btn btn-outline" style="padding:.25rem .625rem;font-size:.75rem">Tempatkan</a></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500">Ahmad Rifa'i</div><div class="text-sm text-muted">123003</div></td>
+                  <td>PGMI</td><td>Reguler</td>
+                  <td><span class="badge badge-pending">Menunggu</span></td>
+                  <td><a href="../pendaftaran/" class="btn btn-outline" style="padding:.25rem .625rem;font-size:.75rem">Review</a></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500">Dewi Lestari</div><div class="text-sm text-muted">123004</div></td>
+                  <td>PAI</td><td>Internasional</td>
+                  <td><span class="badge badge-rejected">Ditolak</span></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500">Rizki Maulana</div><div class="text-sm text-muted">123005</div></td>
+                  <td>PGMI</td><td>Reguler</td>
+                  <td><span class="badge badge-approved">Disetujui</span></td>
+                  <td><a href="../penempatan/" class="btn btn-outline" style="padding:.25rem .625rem;font-size:.75rem">Tempatkan</a></td>
+                </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Quick Actions -->
-          <div class="card">
-            <h3 class="mb-4">Aksi Cepat</h3>
-            <div class="flex flex-direction-column gap-2" style="display: flex; flex-direction: column; gap: 0.75rem;">
-              <a href="../periode/index.html" class="btn btn-primary">Buat Periode Baru</a>
-              <a href="../mitra/index.html" class="btn btn-outline">Import Data Sekolah</a>
-              <a href="../laporan/index.html" class="btn btn-outline">Unduh Rekap Nilai</a>
+          <div>
+            <div class="card">
+              <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Periode Aktif</h3>
+              <div style="font-weight:600">PPL Ganjil 2026/2027</div>
+              <div class="text-sm text-muted" style="margin-top:.25rem">PPL Reguler</div>
+              <div style="margin-top:.75rem;display:flex;flex-direction:column;gap:.375rem">
+                <div class="flex justify-between text-sm"><span class="text-muted">Pendaftaran</span><span>1–15 Agu 2026</span></div>
+                <div class="flex justify-between text-sm"><span class="text-muted">Pelaksanaan</span><span>1 Sep – 30 Nov 2026</span></div>
+                <div class="flex justify-between text-sm"><span class="text-muted">Status</span><span class="badge badge-active">Registration</span></div>
+              </div>
+              <a href="../periode/" class="btn btn-outline" style="margin-top:1rem;width:100%;justify-content:center">Detail Periode</a>
+            </div>
+            <div class="card">
+              <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Aksi Cepat</h3>
+              <div style="display:flex;flex-direction:column;gap:.5rem">
+                <a href="../salam/" class="btn btn-outline" style="justify-content:flex-start">🔗 Sync Data SALAM</a>
+                <a href="../pendaftaran/" class="btn btn-outline" style="justify-content:flex-start">📝 Review Pendaftaran</a>
+                <a href="../penempatan/" class="btn btn-outline" style="justify-content:flex-start">📌 Atur Penempatan</a>
+                <a href="../laporan/" class="btn btn-outline" style="justify-content:flex-start">📄 Generate Surat</a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
   </div>
-
-  <script src="../../assets/js/data.js"></script>
-  <script>
-    const periods = store.get('periods');
-    const periodList = document.getElementById('period-list');
-    
-    periodList.innerHTML = periods.map(p => `
-      <tr>
-        <td style="font-weight: 500;">${p.name}</td>
-        <td><span class="badge ${p.type === 'Internasional' ? 'badge-warning' : 'badge-success'}">${p.type}</span></td>
-        <td><span class="badge ${p.status === 'Active' ? 'badge-success' : 'badge-danger'}">${p.status}</span></td>
-        <td class="text-muted">${p.regStart} s/d ${p.regEnd}</td>
-      </tr>
-    `).join('');
-  </script>
 </body>
 </html>
