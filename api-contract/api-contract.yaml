@@ -23,7 +23,7 @@ info:
     name: Tim Pengembang PPL FTK
 
 servers:
-  - url: /api/v1
+  - url: /api
     description: API base path
 
 tags:
@@ -132,7 +132,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: UNAUTHORIZED
             message: Token tidak valid atau sudah kadaluarsa
@@ -142,7 +142,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: FORBIDDEN
             message: Anda tidak memiliki izin untuk melakukan aksi ini
@@ -152,7 +152,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
           example:
             code: NOT_FOUND
             message: Resource tidak ditemukan
@@ -162,13 +162,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
 
   # ---------------------------------------------------------------------------
   # SCHEMAS
   # ---------------------------------------------------------------------------
   schemas:
-
     # ---- Common ----
 
     Error:
@@ -248,7 +247,7 @@ components:
           description: Durasi kedaluwarsa token dalam detik
           example: 3600
         user:
-          $ref: '#/components/schemas/UserProfile'
+          $ref: "#/components/schemas/UserProfile"
 
     UserProfile:
       type: object
@@ -509,7 +508,7 @@ components:
           type: string
           example: PPL Genap 2025/2026
         ppl_type:
-          $ref: '#/components/schemas/PPLType'
+          $ref: "#/components/schemas/PPLType"
         status:
           type: string
           enum: [draft, published, registration, active, closed]
@@ -699,11 +698,11 @@ components:
           type: string
           format: uuid
         school:
-          $ref: '#/components/schemas/School'
+          $ref: "#/components/schemas/School"
         prodi_slots:
           type: array
           items:
-            $ref: '#/components/schemas/ProdiSlot'
+            $ref: "#/components/schemas/ProdiSlot"
 
     PeriodSchoolRequest:
       type: object
@@ -717,7 +716,7 @@ components:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/ProdiSlot'
+            $ref: "#/components/schemas/ProdiSlot"
 
     SchoolImportResult:
       type: object
@@ -807,7 +806,7 @@ components:
         attachments:
           type: array
           items:
-            $ref: '#/components/schemas/AnnouncementAttachment'
+            $ref: "#/components/schemas/AnnouncementAttachment"
         published_at:
           type: string
           format: date-time
@@ -916,7 +915,6 @@ components:
 # PATHS
 # ===========================================================================
 paths:
-
   # =========================================================================
   # MODUL 1 — INTEGRASI SALAM & SSO
   # =========================================================================
@@ -937,32 +935,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
             example:
               username: "20212001"
               password: "rahasia123"
       responses:
-        '200':
+        "200":
           description: Login berhasil
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResponse'
-        '401':
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
           description: Kredensial tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: INVALID_CREDENTIALS
                 message: Username atau password salah
-        '503':
+        "503":
           description: Layanan LDAP SALAM tidak tersedia
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: SALAM_UNAVAILABLE
                 message: Layanan SALAM sedang tidak tersedia, coba beberapa saat lagi
@@ -973,10 +971,10 @@ paths:
       summary: Logout dan invalidasi token
       description: Menginvalidasi access token yang sedang digunakan.
       responses:
-        '204':
+        "204":
           description: Logout berhasil
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /auth/me:
     get:
@@ -984,14 +982,14 @@ paths:
       summary: Profil pengguna yang sedang login
       description: Mengembalikan data profil dan role pengguna yang terautentikasi.
       responses:
-        '200':
+        "200":
           description: Profil pengguna
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfile'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   # ---- SALAM Sync ----
 
@@ -1004,7 +1002,7 @@ paths:
         Data yang disinkronisasi: biodata, IPK, SKS lulus, status prasyarat.
         Proses berjalan secara asynchronous; gunakan `job_id` untuk memantau status.
       responses:
-        '202':
+        "202":
           description: Proses sinkronisasi berhasil dimulai
           content:
             application/json:
@@ -1017,10 +1015,10 @@ paths:
                   message:
                     type: string
                     example: Sinkronisasi dimulai. Pantau status di GET /salam/sync/jobs/{job_id}
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /salam/sync/mahasiswa/{nim}:
     post:
@@ -1038,31 +1036,31 @@ paths:
             type: string
           example: "20212001"
       responses:
-        '200':
+        "200":
           description: Data mahasiswa berhasil disinkronisasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MahasiswaData'
-        '404':
+                $ref: "#/components/schemas/MahasiswaData"
+        "404":
           description: NIM tidak ditemukan di SALAM
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: NOT_FOUND
                 message: Mahasiswa dengan NIM 20212001 tidak ditemukan di SALAM
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '503':
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
           description: Layanan SALAM tidak tersedia
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 
   /salam/sync/dosen:
     post:
@@ -1073,7 +1071,7 @@ paths:
         Data ini digunakan untuk kebutuhan penugasan DPL per periode.
         Proses berjalan secara asynchronous.
       responses:
-        '202':
+        "202":
           description: Proses sinkronisasi berhasil dimulai
           content:
             application/json:
@@ -1085,10 +1083,10 @@ paths:
                     format: uuid
                   message:
                     type: string
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /salam/sync/jobs/{job_id}:
     get:
@@ -1103,18 +1101,18 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Status job sinkronisasi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SyncJobStatus'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/SyncJobStatus"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /salam/push-nilai:
     post:
@@ -1131,33 +1129,33 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NilaiPushRequest'
+              $ref: "#/components/schemas/NilaiPushRequest"
       responses:
-        '200':
+        "200":
           description: Hasil push nilai ke SALAM
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NilaiPushResult'
-        '400':
+                $ref: "#/components/schemas/NilaiPushResult"
+        "400":
           description: Periode belum ditutup atau ada data tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: PERIOD_NOT_CLOSED
                 message: Nilai hanya bisa dipush setelah periode berstatus closed
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '503':
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "503":
           description: Layanan SALAM tidak tersedia
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 
   /salam/nilai-conversion:
     get:
@@ -1165,14 +1163,14 @@ paths:
       summary: Lihat tabel konversi nilai ke huruf mutu
       description: Tabel konversi yang digunakan saat push nilai ke SALAM.
       responses:
-        '200':
+        "200":
           description: Tabel konversi aktif
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NilaiConversionTable'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/NilaiConversionTable"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     put:
       tags: [SALAM Sync]
@@ -1215,18 +1213,18 @@ paths:
                 - min_score: 0
                   grade: E
       responses:
-        '200':
+        "200":
           description: Tabel konversi berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NilaiConversionTable'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/NilaiConversionTable"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /salam/eligibility/{nim}:
     get:
@@ -1250,20 +1248,20 @@ paths:
             format: uuid
           description: UUID periode PPL yang ingin didaftar
       responses:
-        '200':
+        "200":
           description: Status eligibilitas mahasiswa
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EligibilityStatus'
-        '404':
+                $ref: "#/components/schemas/EligibilityStatus"
+        "404":
           description: Mahasiswa tidak ditemukan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/Error"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /salam/eligibility/validate:
     post:
@@ -1288,7 +1286,7 @@ paths:
                     type: string
                   example: ["20212001", "20212002", "20212003"]
       responses:
-        '200':
+        "200":
           description: Hasil validasi eligibilitas
           content:
             application/json:
@@ -1298,13 +1296,13 @@ paths:
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/EligibilityStatus'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                      $ref: "#/components/schemas/EligibilityStatus"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # =========================================================================
   # MODUL 2 — MANAJEMEN PERIODE PPL
@@ -1320,7 +1318,7 @@ paths:
         Mengembalikan semua master jenis PPL yang tersedia sebagai pilihan
         saat membuat periode. Bisa ditambah secara inline saat buat periode.
       responses:
-        '200':
+        "200":
           description: Daftar jenis PPL
           content:
             application/json:
@@ -1330,9 +1328,9 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PPLType'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                      $ref: "#/components/schemas/PPLType"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       tags: [PPL Types]
@@ -1343,46 +1341,46 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PPLTypeRequest'
+              $ref: "#/components/schemas/PPLTypeRequest"
       responses:
-        '201':
+        "201":
           description: Jenis PPL berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PPLType'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/PPLType"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /ppl-types/{id}:
     put:
       tags: [PPL Types]
       summary: Update jenis PPL
       parameters:
-        - $ref: '#/components/parameters/IdParam'
+        - $ref: "#/components/parameters/IdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PPLTypeRequest'
+              $ref: "#/components/schemas/PPLTypeRequest"
       responses:
-        '200':
+        "200":
           description: Jenis PPL berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PPLType'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/PPLType"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
     delete:
       tags: [PPL Types]
@@ -1391,25 +1389,25 @@ paths:
         Menghapus jenis PPL dari master data.
         Gagal (409) jika masih digunakan oleh satu atau lebih periode.
       parameters:
-        - $ref: '#/components/parameters/IdParam'
+        - $ref: "#/components/parameters/IdParam"
       responses:
-        '204':
+        "204":
           description: Jenis PPL berhasil dihapus
-        '409':
+        "409":
           description: Jenis PPL masih digunakan oleh periode yang ada
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: IN_USE
                 message: Jenis PPL ini masih digunakan oleh 2 periode
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # ---- Periods ----
 
@@ -1427,10 +1425,10 @@ paths:
             type: string
             enum: [draft, published, registration, active, closed]
           description: Filter berdasarkan status periode
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
       responses:
-        '200':
+        "200":
           description: Daftar periode PPL
           content:
             application/json:
@@ -1440,11 +1438,11 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Period'
+                      $ref: "#/components/schemas/Period"
                   meta:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       tags: [Periods]
@@ -1460,7 +1458,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PeriodRequest'
+              $ref: "#/components/schemas/PeriodRequest"
             example:
               name: PPL Genap 2025/2026
               ppl_type_id: null
@@ -1477,64 +1475,64 @@ paths:
               reporting_end: "2026-06-30"
               registration_requirements: "## Syarat Pendaftaran\n- IPK minimal 2.75\n- Lulus mata kuliah Micro Teaching"
       responses:
-        '201':
+        "201":
           description: Periode berhasil dibuat (status awal `draft`)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Period'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Period"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}:
     get:
       tags: [Periods]
       summary: Detail periode PPL
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       responses:
-        '200':
+        "200":
           description: Detail periode PPL
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Period'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/Period"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     put:
       tags: [Periods]
       summary: Update periode PPL
       description: Perbarui seluruh data periode. Semua field dikirim ulang (full update).
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PeriodRequest'
+              $ref: "#/components/schemas/PeriodRequest"
       responses:
-        '200':
+        "200":
           description: Periode berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Period'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Period"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
     delete:
       tags: [Periods]
@@ -1543,25 +1541,25 @@ paths:
         Menghapus periode PPL. Hanya bisa dilakukan jika belum ada mahasiswa
         yang mendaftar ke periode tersebut.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       responses:
-        '204':
+        "204":
           description: Periode berhasil dihapus
-        '409':
+        "409":
           description: Periode sudah memiliki data pendaftaran mahasiswa
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: HAS_REGISTRATIONS
                 message: Periode tidak bisa dihapus karena sudah ada mahasiswa yang mendaftar
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/status:
     patch:
@@ -1571,7 +1569,7 @@ paths:
         Mengubah status periode mengikuti alur: `draft` → `published` → `registration` → `active` → `closed`.
         Transisi terbalik tidak diizinkan.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
@@ -1586,27 +1584,27 @@ paths:
             example:
               status: registration
       responses:
-        '200':
+        "200":
           description: Status berhasil diubah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Period'
-        '400':
+                $ref: "#/components/schemas/Period"
+        "400":
           description: Transisi status tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: INVALID_TRANSITION
                 message: Tidak bisa mengubah status dari active ke draft
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # ---- Period Schools ----
 
@@ -1616,14 +1614,14 @@ paths:
       summary: List sekolah mitra pada periode
       description: Mengembalikan semua sekolah mitra beserta kuota dan syarat per prodi untuk periode ini.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
         - name: prodi_code
           in: query
           schema:
             type: string
           description: Filter sekolah yang membuka slot untuk prodi tertentu
       responses:
-        '200':
+        "200":
           description: Daftar sekolah mitra
           content:
             application/json:
@@ -1633,23 +1631,23 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/PeriodSchool'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                      $ref: "#/components/schemas/PeriodSchool"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       tags: [Period Schools]
       summary: Tambah sekolah mitra ke periode
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PeriodSchoolRequest'
+              $ref: "#/components/schemas/PeriodSchoolRequest"
             example:
               school_id: "550e8400-e29b-41d4-a716-446655440000"
               prodi_slots:
@@ -1661,24 +1659,24 @@ paths:
                   quota: 2
                   gender_requirement: L
       responses:
-        '201':
+        "201":
           description: Sekolah berhasil ditambahkan ke periode
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeriodSchool'
-        '400':
+                $ref: "#/components/schemas/PeriodSchool"
+        "400":
           description: Sekolah sudah terdaftar di periode ini atau data tidak valid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Error"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/schools/import:
     post:
@@ -1690,7 +1688,7 @@ paths:
         **Format kolom yang diharapkan:**
         `nama_sekolah`, `npsn`, `prodi_code`, `quota`, `min_ipk` (opsional), `gender` (opsional)
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
@@ -1710,73 +1708,73 @@ paths:
                     Jika `true`, timpa data sekolah yang sudah ada di periode ini.
                     Jika `false`, baris yang sudah ada dilewati (skip).
       responses:
-        '200':
+        "200":
           description: Hasil import
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SchoolImportResult'
-        '400':
+                $ref: "#/components/schemas/SchoolImportResult"
+        "400":
           description: File tidak valid atau format kolom salah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: INVALID_FILE
                 message: File bukan format Excel yang valid atau kolom wajib tidak ditemukan
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/schools/{school_id}:
     get:
       tags: [Period Schools]
       summary: Detail sekolah mitra pada periode
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/SchoolIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/SchoolIdParam"
       responses:
-        '200':
+        "200":
           description: Detail sekolah mitra
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeriodSchool'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/PeriodSchool"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     put:
       tags: [Period Schools]
       summary: Update data sekolah mitra pada periode
       description: Memperbarui daftar prodi slot (kuota, syarat IPK, syarat gender) untuk sekolah ini.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/SchoolIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/SchoolIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PeriodSchoolRequest'
+              $ref: "#/components/schemas/PeriodSchoolRequest"
       responses:
-        '200':
+        "200":
           description: Data sekolah berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PeriodSchool'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/PeriodSchool"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
     delete:
       tags: [Period Schools]
@@ -1785,26 +1783,26 @@ paths:
         Menghapus sekolah dari daftar mitra periode.
         Gagal (409) jika sudah ada mahasiswa yang ditempatkan di sekolah ini.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/SchoolIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/SchoolIdParam"
       responses:
-        '204':
+        "204":
           description: Sekolah berhasil dihapus dari periode
-        '409':
+        "409":
           description: Ada mahasiswa yang sudah ditempatkan di sekolah ini
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               example:
                 code: HAS_PLACEMENTS
                 message: Sekolah tidak bisa dihapus karena sudah ada mahasiswa yang ditempatkan
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # ---- Rubrics ----
 
@@ -1817,9 +1815,9 @@ paths:
         Rubrik bersifat per-prodi; jika belum dikonfigurasi, default dari periode sebelumnya
         bisa dijadikan referensi.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       responses:
-        '200':
+        "200":
           description: Daftar rubrik
           content:
             application/json:
@@ -1829,18 +1827,18 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Rubric'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                      $ref: "#/components/schemas/Rubric"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /periods/{id}/rubrics/{prodi_code}:
     get:
       tags: [Period Rubrics]
       summary: Lihat rubrik untuk prodi tertentu
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
         - name: prodi_code
           in: path
           required: true
@@ -1848,16 +1846,16 @@ paths:
             type: string
           example: PEND_INFORMATIKA
       responses:
-        '200':
+        "200":
           description: Rubrik penilaian prodi ini
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rubric'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/Rubric"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     put:
       tags: [Period Rubrics]
@@ -1867,7 +1865,7 @@ paths:
         Jika rubrik belum ada, akan dibuat baru.
         Rubrik hanya untuk panduan DPL — perhitungan nilai sepenuhnya kewenangan DPL.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
         - name: prodi_code
           in: path
           required: true
@@ -1879,7 +1877,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RubricUpsertRequest'
+              $ref: "#/components/schemas/RubricUpsertRequest"
             example:
               content: |
                 ## Rubrik Penilaian PPL — Pendidikan Teknik Informatika
@@ -1891,18 +1889,18 @@ paths:
                 | Praktik Mengajar | 40% |
                 | Laporan PPL | 30% |
       responses:
-        '200':
+        "200":
           description: Rubrik berhasil disimpan
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rubric'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Rubric"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # ---- Announcements ----
 
@@ -1914,7 +1912,7 @@ paths:
         Admin melihat semua pengumuman (draft + published).
         Mahasiswa dan DPL hanya melihat yang sudah dipublikasikan.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
         - name: published
           in: query
           schema:
@@ -1923,10 +1921,10 @@ paths:
             `true` — hanya tampilkan yang sudah dipublikasikan.
             `false` — hanya tampilkan draft (admin only).
             Kosongkan untuk semua.
-        - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/PerPageParam"
       responses:
-        '200':
+        "200":
           description: Daftar pengumuman
           content:
             application/json:
@@ -1936,13 +1934,13 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Announcement'
+                      $ref: "#/components/schemas/Announcement"
                   meta:
-                    $ref: '#/components/schemas/PaginationMeta'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                    $ref: "#/components/schemas/PaginationMeta"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       tags: [Announcements]
@@ -1952,13 +1950,13 @@ paths:
         atau biarkan `false` untuk disimpan sebagai draft terlebih dahulu.
         Lampiran bisa berupa PDF, video embed (URL), atau link eksternal.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnnouncementRequest'
+              $ref: "#/components/schemas/AnnouncementRequest"
             example:
               title: Panduan Teknis Pendaftaran PPL Genap 2025/2026
               body: Berikut adalah panduan lengkap pendaftaran PPL. Silakan pelajari sebelum mendaftar.
@@ -1971,81 +1969,81 @@ paths:
                   title: Video Sosialisasi PPL
               publish: true
       responses:
-        '201':
+        "201":
           description: Pengumuman berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Announcement'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Announcement"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/announcements/{announcement_id}:
     get:
       tags: [Announcements]
       summary: Detail pengumuman
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/AnnouncementIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AnnouncementIdParam"
       responses:
-        '200':
+        "200":
           description: Detail pengumuman
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Announcement'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                $ref: "#/components/schemas/Announcement"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     put:
       tags: [Announcements]
       summary: Update pengumuman
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/AnnouncementIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AnnouncementIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AnnouncementRequest'
+              $ref: "#/components/schemas/AnnouncementRequest"
       responses:
-        '200':
+        "200":
           description: Pengumuman berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Announcement'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Announcement"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
     delete:
       tags: [Announcements]
       summary: Hapus pengumuman
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/AnnouncementIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AnnouncementIdParam"
       responses:
-        '204':
+        "204":
           description: Pengumuman berhasil dihapus
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/announcements/{announcement_id}/publish:
     patch:
@@ -2053,8 +2051,8 @@ paths:
       summary: Publikasikan atau cabut pengumuman
       description: Toggle status publikasi pengumuman antara draft dan published.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/AnnouncementIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/AnnouncementIdParam"
       requestBody:
         required: true
         content:
@@ -2065,20 +2063,20 @@ paths:
               properties:
                 publish:
                   type: boolean
-                  description: '`true` untuk publish, `false` untuk tarik kembali ke draft'
+                  description: "`true` untuk publish, `false` untuk tarik kembali ke draft"
       responses:
-        '200':
+        "200":
           description: Status publikasi berhasil diubah
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Announcement'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Announcement"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   # ---- Milestones ----
 
@@ -2090,9 +2088,9 @@ paths:
         Mengembalikan semua milestone periode. Setiap role hanya melihat
         milestone yang memiliki role mereka dalam `visible_to`.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       responses:
-        '200':
+        "200":
           description: Daftar milestone
           content:
             application/json:
@@ -2102,24 +2100,24 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Milestone'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
+                      $ref: "#/components/schemas/Milestone"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
     post:
       tags: [Milestones]
       summary: Tambah milestone baru
       description: Admin menambahkan milestone atau event ke kalender periode.
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MilestoneRequest'
+              $ref: "#/components/schemas/MilestoneRequest"
             example:
               title: Batas Akhir Upload Laporan PPL
               description: Seluruh dokumen laporan PPL harus sudah diunggah sebelum tanggal ini.
@@ -2130,60 +2128,60 @@ paths:
                 - dpl
                 - mahasiswa
       responses:
-        '201':
+        "201":
           description: Milestone berhasil dibuat
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Milestone'
-        '400':
-          $ref: '#/components/responses/UnprocessableEntity'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Milestone"
+        "400":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
   /periods/{id}/milestones/{milestone_id}:
     put:
       tags: [Milestones]
       summary: Update milestone
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/MilestoneIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/MilestoneIdParam"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MilestoneRequest'
+              $ref: "#/components/schemas/MilestoneRequest"
       responses:
-        '200':
+        "200":
           description: Milestone berhasil diupdate
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Milestone'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+                $ref: "#/components/schemas/Milestone"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
 
     delete:
       tags: [Milestones]
       summary: Hapus milestone
       parameters:
-        - $ref: '#/components/parameters/PeriodIdParam'
-        - $ref: '#/components/parameters/MilestoneIdParam'
+        - $ref: "#/components/parameters/PeriodIdParam"
+        - $ref: "#/components/parameters/MilestoneIdParam"
       responses:
-        '204':
+        "204":
           description: Milestone berhasil dihapus
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
