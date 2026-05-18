@@ -657,6 +657,34 @@ components:
           type: string
           description: Konten Markdown untuk syarat pendaftaran
           nullable: true
+        milestones:
+          type: array
+          description: Daftar milestone periode. Minimal 1 milestone (default "Pendaftaran").
+          minItems: 1
+          items:
+            type: object
+            required: [title, start_date, visible_to]
+            properties:
+              title:
+                type: string
+                example: Pendaftaran
+              description:
+                type: string
+                nullable: true
+              start_date:
+                type: string
+                format: date
+              end_date:
+                type: string
+                format: date
+                nullable: true
+              visible_to:
+                type: array
+                items:
+                  type: string
+                  enum: [admin, dpl, mahasiswa]
+                minItems: 1
+                example: [admin, dpl, mahasiswa]
 
     # ---- Period Schools ----
 
@@ -1785,6 +1813,15 @@ paths:
               reporting_start: "2026-06-01"
               reporting_end: "2026-06-30"
               registration_requirements: "## Syarat Pendaftaran\n- IPK minimal 2.75\n- Lulus mata kuliah Micro Teaching"
+              milestones:
+                - title: Pendaftaran
+                  start_date: "2026-01-10"
+                  end_date: "2026-01-31"
+                  visible_to: [admin, dpl, mahasiswa]
+                - title: Persiapan
+                  start_date: "2026-02-01"
+                  end_date: "2026-02-28"
+                  visible_to: [admin, dpl, mahasiswa]
       responses:
         "201":
           description: Periode berhasil dibuat (status awal `draft`)

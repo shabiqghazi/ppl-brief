@@ -1,0 +1,149 @@
+<!-- Base Confirm Dialog Component
+     Usage: <base-confirm-dialog type="confirm|success|error" icon="icon" title="Title" message="Message"></base-confirm-dialog>
+-->
+<style>
+  .confirm-dialog-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirm-dialog-overlay.open {
+    display: flex;
+  }
+
+  .confirm-dialog {
+    background: var(--white);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .confirm-dialog-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .confirm-dialog-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .confirm-dialog-message {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .confirm-dialog-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  .confirm-dialog-actions button {
+    flex: 1;
+  }
+
+  /* Type-specific styles */
+  .confirm-dialog.type-confirm .confirm-dialog-icon {
+    color: var(--primary);
+  }
+
+  .confirm-dialog.type-success .confirm-dialog-icon {
+    color: var(--success);
+  }
+
+  .confirm-dialog.type-error .confirm-dialog-icon {
+    color: var(--danger);
+  }
+</style>
+
+<div class="confirm-dialog-overlay" id="confirm-dialog-overlay">
+  <div class="confirm-dialog" id="confirm-dialog">
+    <div class="confirm-dialog-icon" id="confirm-dialog-icon"></div>
+    <div class="confirm-dialog-title" id="confirm-dialog-title"></div>
+    <div class="confirm-dialog-message" id="confirm-dialog-message"></div>
+    <div class="confirm-dialog-actions">
+      <button class="btn btn-outline" id="confirm-dialog-cancel">Batal</button>
+      <button class="btn btn-primary" id="confirm-dialog-confirm">
+        Lanjutkan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  class BaseConfirmDialog {
+    constructor() {
+      this.overlay = document.getElementById("confirm-dialog-overlay");
+      this.dialog = document.getElementById("confirm-dialog");
+      this.iconEl = document.getElementById("confirm-dialog-icon");
+      this.titleEl = document.getElementById("confirm-dialog-title");
+      this.messageEl = document.getElementById("confirm-dialog-message");
+      this.cancelBtn = document.getElementById("confirm-dialog-cancel");
+      this.confirmBtn = document.getElementById("confirm-dialog-confirm");
+
+      this.cancelBtn.addEventListener("click", () => this.close());
+      this.overlay.addEventListener("click", (e) => {
+        if (e.target === this.overlay) this.close();
+      });
+    }
+
+    show(options = {}) {
+      const {
+        type = "confirm",
+        icon = "",
+        title = "",
+        message = "",
+        onConfirm,
+        onCancel,
+      } = options;
+
+      this.dialog.className = `confirm-dialog type-${type}`;
+      this.iconEl.textContent = icon;
+      this.titleEl.textContent = title;
+      this.messageEl.textContent = message;
+
+      this.onConfirm = onConfirm;
+      this.onCancel = onCancel;
+
+      if (type === "success") {
+        this.cancelBtn.style.display = "none";
+        this.confirmBtn.textContent = "Tutup";
+      } else if (type === "error") {
+        this.cancelBtn.style.display = "none";
+        this.confirmBtn.textContent = "Tutup";
+      } else {
+        this.cancelBtn.style.display = "inline-block";
+        this.cancelBtn.textContent = "Batal";
+        this.confirmBtn.textContent = "Lanjutkan";
+      }
+
+      this.overlay.classList.add("open");
+    }
+
+    close() {
+      this.overlay.classList.remove("open");
+    }
+  }
+
+  window.confirmDialog = new BaseConfirmDialog();
+
+  document
+    .getElementById("confirm-dialog-confirm")
+    .addEventListener("click", function () {
+      if (window.confirmDialog.onConfirm) window.confirmDialog.onConfirm();
+      window.confirmDialog.close();
+    });
+</script>
