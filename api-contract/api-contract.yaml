@@ -506,9 +506,6 @@ components:
         name:
           type: string
           example: PPL Reguler
-        description:
-          type: string
-          nullable: true
         created_at:
           type: string
           format: date-time
@@ -523,9 +520,6 @@ components:
         name:
           type: string
           example: PPL Khusus Luar Daerah
-        description:
-          type: string
-          nullable: true
 
     # ---- Periods ----
 
