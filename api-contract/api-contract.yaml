@@ -1684,19 +1684,61 @@ paths:
       tags: [Periods]
       summary: List periode PPL
       description: |
-        Mengembalikan daftar periode PPL. Mahasiswa dan DPL hanya melihat
-        periode yang relevan dengan mereka; admin melihat semua.
+        Mengembalikan daftar periode PPL dengan dukungan filter dan paginasi.
+
+        **Status Periode:**
+        Status periode dihitung berdasarkan current date vs periode date range:
+        - `UPCOMING`: Periode belum dimulai (start_date > today)
+        - `ACTIVE`: Periode sedang berlangsung (start_date ≤ today ≤ end_date)
+        - `CLOSED`: Periode sudah berakhir (end_date < today)
+
+        **Default Filter:**
+        Jika parameter `statuses` tidak diberikan, default menampilkan status `UPCOMING` dan `ACTIVE`.
+
+        **Visibility:**
+        Mahasiswa dan DPL hanya melihat periode yang relevan dengan mereka; admin melihat semua.
       parameters:
-        - name: status
+        - name: statuses
+          in: query
+          description: |
+            Filter berdasarkan status periode (dapat multiple).
+            Format: `?statuses=UPCOMING&statuses=ACTIVE` atau `?statuses[]=UPCOMING&statuses[]=ACTIVE`
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [UPCOMING, ACTIVE, CLOSED]
+            default: [UPCOMING, ACTIVE]
+          style: form
+          explode: true
+        - name: ppl_type_ids
+          in: query
+          description: |
+            Filter berdasarkan UUID jenis PPL (dapat multiple).
+            Format: `?ppl_type_ids=uuid1&ppl_type_ids=uuid2`
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          style: form
+          explode: true
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/LimitParam"
+        - name: sort_by
           in: query
           schema:
             type: string
-            enum: [UPCOMING, ACTIVE, DONE]
-          description: Filter berdasarkan status periode
-        - $ref: "#/components/parameters/PageParam"
-        - $ref: "#/components/parameters/LimitParam"
-        - $ref: "#/components/parameters/SortByParam"
-        - $ref: "#/components/parameters/SortDirectionParam"
+            enum: [name, start_date, end_date, created_at]
+            default: start_date
+          description: Field yang digunakan untuk pengurutan
+        - name: sort_direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Arah pengurutan
       responses:
         "200":
           description: Daftar periode PPL
