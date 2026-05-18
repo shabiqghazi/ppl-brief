@@ -222,7 +222,7 @@ components:
           example:
             message: Validasi input gagal
             errors:
-              - "registration_end: Tanggal akhir pendaftaran harus setelah tanggal mulai"
+              - "milestones[1].start_date: Tanggal mulai milestone bentrok dengan milestone sebelumnya"
 
   # ---------------------------------------------------------------------------
   # SCHEMAS
@@ -540,54 +540,30 @@ components:
           example: PPL Genap 2025/2026
         ppl_type:
           $ref: "#/components/schemas/PPLType"
-        status:
-          type: string
-          enum: [draft, published, registration, active, closed]
-          description: |
-            Alur status: `draft` → `published` → `registration` → `active` → `closed`
         start_date:
           type: string
           format: date
-          description: Tanggal mulai periode PPL secara keseluruhan (wajib)
+          description: Tanggal mulai periode PPL secara keseluruhan
         end_date:
           type: string
           format: date
-          description: Tanggal akhir periode PPL secara keseluruhan (wajib)
-        registration_start:
-          type: string
-          format: date
-          description: Mulai pendaftaran (wajib)
-        registration_end:
-          type: string
-          format: date
-          description: Akhir pendaftaran (wajib)
-        preparation_start:
-          type: string
-          format: date
-          nullable: true
-        preparation_end:
-          type: string
-          format: date
-          nullable: true
-        implementation_start:
-          type: string
-          format: date
-          nullable: true
-        implementation_end:
-          type: string
-          format: date
-          nullable: true
-        reporting_start:
-          type: string
-          format: date
-          nullable: true
-        reporting_end:
-          type: string
-          format: date
-          nullable: true
+          description: Tanggal akhir periode PPL secara keseluruhan
+        milestones:
+          type: array
+          description: |
+            Daftar milestone periode PPL. Milestone pertama ("Pendaftaran") selalu ada
+            dan tidak dapat dihapus/diubah nama, hanya rentang waktunya yang dapat diubah.
+          items:
+            $ref: "#/components/schemas/Milestone"
+        has_registration_requirements:
+          type: boolean
+          description: Apakah periode ini menggunakan fitur upload syarat pendaftaran
+          example: true
         registration_requirements:
-          type: string
-          description: Syarat pendaftaran dalam format Markdown (opsional, dinamis per periode)
+          type: object
+          description: |
+            Konten syarat pendaftaran dalam format JSON output Editor.js (opsional).
+            Hanya relevan jika `has_registration_requirements` bernilai `true`.
           nullable: true
         created_at:
           type: string
@@ -600,91 +576,66 @@ components:
       type: object
       required:
         - name
+        - ppl_type_id
         - start_date
         - end_date
-        - registration_start
-        - registration_end
+        - milestones
       properties:
         name:
           type: string
-          example: PPL Genap 2025/2026
+          example: PPL Ganjil 2026/2027
+          description: Nama periode PPL
         ppl_type_id:
           type: string
           format: uuid
-          nullable: true
-          description: UUID jenis PPL yang sudah ada. Isi salah satu antara ini atau `new_ppl_type_name`.
-        new_ppl_type_name:
-          type: string
-          nullable: true
-          description: Nama jenis PPL baru yang akan dibuat otomatis jika `ppl_type_id` kosong.
+          description: UUID jenis PPL dari master data. Jenis PPL dikelola terpisah melalui endpoint /ppl-types.
         start_date:
           type: string
           format: date
+          description: Tanggal mulai periode PPL secara keseluruhan
         end_date:
           type: string
           format: date
-        registration_start:
-          type: string
-          format: date
-        registration_end:
-          type: string
-          format: date
-        preparation_start:
-          type: string
-          format: date
-          nullable: true
-        preparation_end:
-          type: string
-          format: date
-          nullable: true
-        implementation_start:
-          type: string
-          format: date
-          nullable: true
-        implementation_end:
-          type: string
-          format: date
-          nullable: true
-        reporting_start:
-          type: string
-          format: date
-          nullable: true
-        reporting_end:
-          type: string
-          format: date
-          nullable: true
+          description: Tanggal akhir periode PPL secara keseluruhan
+        has_registration_requirements:
+          type: boolean
+          default: false
+          description: |
+            Set `true` jika periode ini menggunakan fitur syarat pendaftaran.
+            Jika `false`, field `registration_requirements` diabaikan.
         registration_requirements:
-          type: string
-          description: Konten Markdown untuk syarat pendaftaran
+          type: object
+          description: |
+            Konten syarat pendaftaran dalam format JSON output Editor.js.
+            Hanya diproses jika `has_registration_requirements` bernilai `true`.
           nullable: true
         milestones:
           type: array
-          description: Daftar milestone periode. Minimal 1 milestone (default "Pendaftaran").
+          description: |
+            Daftar milestone periode PPL. Minimal 1 milestone.
+
+            **Aturan:**
+            - Milestone pertama **harus** memiliki `title: "Pendaftaran"` (milestone default, tidak bisa diubah nama atau dihapus dari form)
+            - Rentang waktu antar milestone tidak boleh saling bentrok (overlap)
+            - Start date milestone berikutnya minimal setelah end date milestone sebelumnya
+            - Milestone harus tersusun kronologis berdasarkan tanggal
           minItems: 1
           items:
             type: object
-            required: [title, start_date, visible_to]
+            required: [title, start_date, end_date]
             properties:
               title:
                 type: string
                 example: Pendaftaran
-              description:
-                type: string
-                nullable: true
+                description: Nama milestone. Milestone pertama harus bernilai "Pendaftaran".
               start_date:
                 type: string
                 format: date
+                description: Tanggal mulai milestone
               end_date:
                 type: string
                 format: date
-                nullable: true
-              visible_to:
-                type: array
-                items:
-                  type: string
-                  enum: [admin, dpl, mahasiswa]
-                minItems: 1
-                example: [admin, dpl, mahasiswa]
+                description: Tanggal akhir milestone
 
     # ---- Period Schools ----
 
@@ -924,51 +875,34 @@ components:
           format: uuid
         title:
           type: string
-          example: Batas Upload Laporan Akhir
-        description:
-          type: string
-          nullable: true
+          example: Pendaftaran
+        is_default:
+          type: boolean
+          description: |
+            `true` jika ini adalah milestone default "Pendaftaran" yang tidak dapat dihapus atau diubah nama.
+          example: true
         start_date:
           type: string
           format: date
         end_date:
           type: string
           format: date
-          nullable: true
-        visible_to:
-          type: array
-          description: Role yang dapat melihat milestone ini
-          items:
-            type: string
-            enum: [admin, dpl, mahasiswa]
-          example: [admin, dpl, mahasiswa]
         created_at:
           type: string
           format: date-time
 
     MilestoneRequest:
       type: object
-      required: [title, start_date, visible_to]
+      required: [title, start_date, end_date]
       properties:
         title:
           type: string
-        description:
-          type: string
-          nullable: true
         start_date:
           type: string
           format: date
         end_date:
           type: string
           format: date
-          nullable: true
-        visible_to:
-          type: array
-          minItems: 1
-          items:
-            type: string
-            enum: [admin, dpl, mahasiswa]
-          example: [admin, dpl, mahasiswa]
 
     # ---- Registrations (M3) ----
 
@@ -1757,7 +1691,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [draft, published, registration, active, closed]
+            enum: [UPCOMING, ACTIVE, DONE]
           description: Filter berdasarkan status periode
         - $ref: "#/components/parameters/PageParam"
         - $ref: "#/components/parameters/LimitParam"
@@ -1787,11 +1721,25 @@ paths:
       tags: [Periods]
       summary: Buat periode PPL baru
       description: |
-        Admin membuat periode PPL baru. Field wajib: nama, jenis PPL, rentang waktu
-        periode (start/end), dan rentang waktu pendaftaran.
+        Admin membuat periode PPL baru dengan data lengkap termasuk milestone.
 
-        Untuk jenis PPL, isi `ppl_type_id` (UUID existing) **atau** `new_ppl_type_name`
-        (nama baru yang akan dibuat otomatis) — tidak boleh keduanya kosong.
+        **Field wajib:**
+        - `name`: Nama periode PPL
+        - `ppl_type_id`: UUID jenis PPL dari master data (dikelola di `/ppl-types`)
+        - `start_date`, `end_date`: Rentang waktu periode PPL secara keseluruhan
+        - `milestones`: Minimal 1 milestone; milestone pertama harus bernama "Pendaftaran"
+
+        **Validasi Milestone:**
+        - Minimal 1 milestone
+        - Milestone pertama harus memiliki `title: "Pendaftaran"` (tidak dapat diubah nama atau dihapus)
+        - Setiap milestone harus memiliki `title`, `start_date`, dan `end_date`
+        - Rentang waktu antar milestone tidak boleh saling bentrok (overlap)
+        - Start date milestone berikutnya minimal setelah end date milestone sebelumnya
+        - Milestone harus tersusun kronologis berdasarkan tanggal
+
+        **Syarat Pendaftaran:**
+        - Set `has_registration_requirements: true` untuk mengaktifkan fitur upload syarat pendaftaran
+        - Isi `registration_requirements` dengan output JSON dari Editor.js
       requestBody:
         required: true
         content:
@@ -1799,32 +1747,35 @@ paths:
             schema:
               $ref: "#/components/schemas/PeriodRequest"
             example:
-              name: PPL Genap 2025/2026
-              ppl_type_id: null
-              new_ppl_type_name: PPL Reguler
-              start_date: "2026-02-01"
-              end_date: "2026-06-30"
-              registration_start: "2026-01-10"
-              registration_end: "2026-01-31"
-              preparation_start: "2026-02-01"
-              preparation_end: "2026-02-28"
-              implementation_start: "2026-03-01"
-              implementation_end: "2026-05-31"
-              reporting_start: "2026-06-01"
-              reporting_end: "2026-06-30"
-              registration_requirements: "## Syarat Pendaftaran\n- IPK minimal 2.75\n- Lulus mata kuliah Micro Teaching"
+              name: PPL Ganjil 2026/2027
+              ppl_type_id: "550e8400-e29b-41d4-a716-446655440000"
+              start_date: "2026-08-01"
+              end_date: "2026-11-30"
+              has_registration_requirements: true
+              registration_requirements:
+                time: 1716105600000
+                blocks:
+                  - id: "abc123"
+                    type: paragraph
+                    data:
+                      text: "IPK minimal 2.75, Lulus Micro Teaching, Minimal 100 SKS"
+                version: "2.28.2"
               milestones:
                 - title: Pendaftaran
-                  start_date: "2026-01-10"
-                  end_date: "2026-01-31"
-                  visible_to: [admin, dpl, mahasiswa]
+                  start_date: "2026-08-01"
+                  end_date: "2026-08-15"
                 - title: Persiapan
-                  start_date: "2026-02-01"
-                  end_date: "2026-02-28"
-                  visible_to: [admin, dpl, mahasiswa]
+                  start_date: "2026-08-16"
+                  end_date: "2026-08-31"
+                - title: Pelaksanaan
+                  start_date: "2026-09-01"
+                  end_date: "2026-10-31"
+                - title: Pelaporan
+                  start_date: "2026-11-01"
+                  end_date: "2026-11-30"
       responses:
         "201":
-          description: Periode berhasil dibuat (status awal `draft`)
+          description: Periode berhasil dibuat
           content:
             application/json:
               schema:
@@ -1919,57 +1870,6 @@ paths:
                 $ref: "#/components/schemas/Error"
               example:
                 message: Periode tidak bisa dihapus karena sudah ada mahasiswa yang mendaftar
-                errors: []
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "403":
-          $ref: "#/components/responses/Forbidden"
-
-  /periods/{id}/status:
-    patch:
-      tags: [Periods]
-      summary: Ubah status periode PPL
-      description: |
-        Mengubah status periode mengikuti alur: `draft` → `published` → `registration` → `active` → `closed`.
-        Transisi terbalik tidak diizinkan.
-      parameters:
-        - $ref: "#/components/parameters/PeriodIdParam"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [status]
-              properties:
-                status:
-                  type: string
-                  enum: [draft, published, registration, active, closed]
-            example:
-              status: registration
-      responses:
-        "200":
-          description: Status berhasil diubah
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [data, message]
-                properties:
-                  data:
-                    $ref: "#/components/schemas/Period"
-                  message:
-                    type: string
-        "400":
-          description: Transisi status tidak valid
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                message: Tidak bisa mengubah status dari active ke draft
                 errors: []
         "404":
           $ref: "#/components/responses/NotFound"
@@ -2528,8 +2428,7 @@ paths:
       tags: [Milestones]
       summary: List milestone & kalender periode
       description: |
-        Mengembalikan semua milestone periode. Setiap role hanya melihat
-        milestone yang memiliki role mereka dalam `visible_to`.
+        Mengembalikan semua milestone periode.
       parameters:
         - $ref: "#/components/parameters/PeriodIdParam"
       responses:
@@ -2569,10 +2468,6 @@ paths:
               description: Seluruh dokumen laporan PPL harus sudah diunggah sebelum tanggal ini.
               start_date: "2026-06-15"
               end_date: null
-              visible_to:
-                - admin
-                - dpl
-                - mahasiswa
       responses:
         "201":
           description: Milestone berhasil dibuat
