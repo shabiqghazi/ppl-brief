@@ -221,87 +221,110 @@
         <main class="page-container">
           <!-- LIST VIEW -->
           <div class="view active" id="view-list">
-            <div class="flex justify-between items-center mb-4">
-              <p class="text-sm text-muted">2 periode ditemukan</p>
-              <button class="btn btn-primary" onclick="openModal()">
-                + Buat Periode Baru
-              </button>
-            </div>
-            <div class="period-cards">
-              <div
-                class="period-card"
-                onclick="showDetail('Ganjil 2026/2027', 's-registration')"
-              >
-                <div
-                  class="flex justify-between items-center"
-                  style="margin-bottom: 0.75rem"
-                >
-                  <span class="badge s-registration">Registration</span>
-                  <span class="text-sm text-muted">PPL Reguler</span>
-                </div>
-                <div
-                  style="
-                    font-size: 1.125rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                  "
-                >
-                  PPL Ganjil 2026/2027
-                </div>
-                <div class="text-sm text-muted" style="margin-bottom: 0.75rem">
-                  1 Agu 2026 — 30 Nov 2026
-                </div>
-                <div style="display: flex; gap: 1rem; font-size: 0.8125rem">
-                  <div>
-                    <span class="text-muted">Mahasiswa</span>
-                    <div style="font-weight: 600">47</div>
+            <!-- Filter Section -->
+            <div class="card" style="margin-bottom: 1.5rem; padding: 1rem">
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start">
+                <!-- Filter Status -->
+                <div>
+                  <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block">Status Periode</label>
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
+                      <input type="checkbox" value="UPCOMING" class="filter-status" checked>
+                      <span>Belum Dimulai</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
+                      <input type="checkbox" value="ACTIVE" class="filter-status" checked>
+                      <span>Aktif</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
+                      <input type="checkbox" value="CLOSED" class="filter-status">
+                      <span>Selesai</span>
+                    </label>
                   </div>
-                  <div>
-                    <span class="text-muted">Sekolah</span>
-                    <div style="font-weight: 600">12</div>
+                </div>
+
+                <!-- Filter Jenis -->
+                <div>
+                  <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block">Jenis PPL</label>
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
+                      <input type="checkbox" value="reguler" class="filter-jenis">
+                      <span>PPL Reguler</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
+                      <input type="checkbox" value="internasional" class="filter-jenis">
+                      <span>PPL Internasional</span>
+                    </label>
                   </div>
-                  <div>
-                    <span class="text-muted">Kuota</span>
-                    <div style="font-weight: 600">58</div>
-                  </div>
+                </div>
+
+                <!-- Action -->
+                <div style="display: flex; align-items: flex-end; gap: 0.5rem">
+                  <button class="btn btn-primary" onclick="openModal()">
+                    + Buat Periode Baru
+                  </button>
                 </div>
               </div>
-              <div
-                class="period-card"
-                onclick="showDetail('Internasional 2026', 's-closed')"
-              >
-                <div
-                  class="flex justify-between items-center"
-                  style="margin-bottom: 0.75rem"
-                >
-                  <span class="badge s-closed">Closed</span>
-                  <span class="text-sm text-muted">PPL Internasional</span>
+            </div>
+
+            <!-- Result Info & Cards -->
+            <p class="text-sm text-muted" style="margin-bottom: 1rem">2 periode ditemukan</p>
+            <div class="period-cards">
+              <!-- Card 1: Aktif -->
+              <div class="period-card" onclick="showDetail('Ganjil 2026/2027')">
+                <div class="flex justify-between items-start" style="margin-bottom: 0.75rem">
+                  <span class="badge s-ongoing">Aktif</span>
+                  <button
+                    class="btn btn-link"
+                    style="padding: 0; font-size: 1.25rem; color: var(--text-muted); border: none; background: none; cursor: pointer"
+                    onclick="event.stopPropagation(); alert('Edit atau Hapus')"
+                  >
+                    ⋯
+                  </button>
                 </div>
-                <div
-                  style="
-                    font-size: 1.125rem;
-                    font-weight: 600;
-                    margin-bottom: 0.5rem;
-                  "
-                >
-                  PPL Internasional 2026
+                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                  PPL Ganjil 2026/2027
                 </div>
-                <div class="text-sm text-muted" style="margin-bottom: 0.75rem">
-                  10 Jan 2026 — 30 Jun 2026
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.5rem">
+                  <span class="text-muted">Jenis</span>
+                  <span>PPL Reguler</span>
                 </div>
-                <div style="display: flex; gap: 1rem; font-size: 0.8125rem">
-                  <div>
-                    <span class="text-muted">Mahasiswa</span>
-                    <div style="font-weight: 600">12</div>
-                  </div>
-                  <div>
-                    <span class="text-muted">Sekolah</span>
-                    <div style="font-weight: 600">3</div>
-                  </div>
-                  <div>
-                    <span class="text-muted">Kuota</span>
-                    <div style="font-weight: 600">15</div>
-                  </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem">
+                  <span class="text-muted">Rentang Waktu</span>
+                  <span>1 Agu — 30 Nov 2026</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem">
+                  <span class="text-muted">Milestone Aktif</span>
+                  <span style="font-weight: 500">Pelaksanaan</span>
+                </div>
+              </div>
+
+              <!-- Card 2: Belum Dimulai -->
+              <div class="period-card" onclick="showDetail('Genap 2026/2027')">
+                <div class="flex justify-between items-start" style="margin-bottom: 0.75rem">
+                  <span class="badge s-upcoming">Belum Dimulai</span>
+                  <button
+                    class="btn btn-link"
+                    style="padding: 0; font-size: 1.25rem; color: var(--text-muted); border: none; background: none; cursor: pointer"
+                    onclick="event.stopPropagation(); alert('Edit atau Hapus')"
+                  >
+                    ⋯
+                  </button>
+                </div>
+                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                  PPL Genap 2026/2027
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.5rem">
+                  <span class="text-muted">Jenis</span>
+                  <span>PPL Internasional</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem">
+                  <span class="text-muted">Rentang Waktu</span>
+                  <span>1 Des 2026 — 31 Mar 2027</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.875rem">
+                  <span class="text-muted">Milestone Aktif</span>
+                  <span style="font-weight: 500">Belum Dibuka</span>
                 </div>
               </div>
             </div>
@@ -1024,12 +1047,12 @@
         dtabPanels[i].classList.add("active");
       }
 
-      function showDetail(name, statusCls) {
+      function showDetail(name) {
         document.getElementById("view-list").classList.remove("active");
         document.getElementById("view-detail").classList.add("active");
         document.getElementById("btn-back").style.display = "inline";
-        document.getElementById("page-title").textContent = "PPL " + name;
-        document.getElementById("detail-name").textContent = "PPL " + name;
+        document.getElementById("page-title").textContent = name;
+        document.getElementById("detail-name").textContent = name;
       }
 
       function showList() {
@@ -1079,7 +1102,7 @@
         }
       }
 
-      async function createPPLType() {
+      function createPPLType() {
         const input = document.getElementById("new-ppl-type-input");
         const name = input.value.trim();
 
@@ -1088,50 +1111,28 @@
           return;
         }
 
-        try {
-          const response = await fetch("/api/ppl-types", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name }),
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            pplTypes.push(data.data);
-            input.value = "";
-            renderPPLTypeSelect();
-            renderPPLTypesList();
-            document.getElementById("field-ppl-type").value = data.data.id;
-            showSuccessDialog("Jenis PPL berhasil dibuat");
-          } else {
-            const error = await response.json();
-            showErrorDialog(error.message || "Gagal membuat jenis PPL");
-          }
-        } catch (error) {
-          showErrorDialog("Terjadi kesalahan: " + error.message);
-        }
+        // Mock: Add new type
+        const newType = {
+          id: String(pplTypes.length + 1),
+          name: name,
+        };
+        pplTypes.push(newType);
+        input.value = "";
+        renderPPLTypeSelect();
+        renderPPLTypesList();
+        document.getElementById("field-ppl-type").value = newType.id;
+        showSuccessDialog("Jenis PPL berhasil dibuat");
       }
 
-      async function deletePPLType(id) {
+      function deletePPLType(id) {
         if (!confirm("Apakah Anda yakin ingin menghapus jenis PPL ini?"))
           return;
 
-        try {
-          const response = await fetch(`/api/ppl-types/${id}`, {
-            method: "DELETE",
-          });
-          if (response.ok) {
-            pplTypes = pplTypes.filter((t) => t.id !== id);
-            renderPPLTypeSelect();
-            renderPPLTypesList();
-            showSuccessDialog("Jenis PPL berhasil dihapus");
-          } else {
-            const error = await response.json();
-            showErrorDialog(error.message || "Gagal menghapus jenis PPL");
-          }
-        } catch (error) {
-          showErrorDialog("Terjadi kesalahan: " + error.message);
-        }
+        // Mock: Remove type
+        pplTypes = pplTypes.filter((t) => t.id !== id);
+        renderPPLTypeSelect();
+        renderPPLTypesList();
+        showSuccessDialog("Jenis PPL berhasil dihapus");
       }
 
       function renderPPLTypeSelect() {
@@ -1351,50 +1352,22 @@
           milestones: milestonesData,
         };
 
-        // Show confirmation dialog
+        // Show confirmation dialog (Mock - no API call)
         window.confirmDialog.show({
           type: "confirm",
           icon: "❓",
           title: "Konfirmasi Pembuatan Periode",
           message: `Apakah Anda yakin ingin membuat periode "${name}"?`,
-          onConfirm: async () => {
-            try {
-              const response = await fetch("/api/periods", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-              });
-
-              if (response.ok) {
-                const data = await response.json();
-                window.confirmDialog.show({
-                  type: "success",
-                  icon: "✓",
-                  title: "Periode Berhasil Dibuat",
-                  message: `Periode "${name}" telah berhasil dibuat.`,
-                  onConfirm: () => {
-                    closeModal();
-                    location.reload();
-                  },
-                });
-              } else {
-                const error = await response.json();
-                window.confirmDialog.show({
-                  type: "error",
-                  icon: "✕",
-                  title: "Gagal Membuat Periode",
-                  message:
-                    error.message || "Terjadi kesalahan saat membuat periode",
-                });
-              }
-            } catch (error) {
-              window.confirmDialog.show({
-                type: "error",
-                icon: "✕",
-                title: "Gagal Membuat Periode",
-                message: "Terjadi kesalahan: " + error.message,
-              });
-            }
+          onConfirm: () => {
+            window.confirmDialog.show({
+              type: "success",
+              icon: "✓",
+              title: "Periode Berhasil Dibuat",
+              message: `Periode "${name}" telah berhasil dibuat.`,
+              onConfirm: () => {
+                closeModal();
+              },
+            });
           },
         });
       }
