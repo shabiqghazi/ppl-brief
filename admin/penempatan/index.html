@@ -148,61 +148,144 @@
         <!-- TAB: DPL -->
         <div class="tab-panel">
           <div class="filter-bar">
-            <select class="form-input" style="max-width:240px">
+            <select class="form-input" style="max-width: 240px">
               <option>PPL Ganjil 2026/2027</option>
             </select>
-            <select class="form-input" style="max-width:200px">
-              <option>Semua sekolah</option>
-              <option>MAN 1 Bandung</option>
-              <option>SMAN 8 Bandung</option>
+            <input
+              class="form-input"
+              placeholder="Cari mahasiswa…"
+              style="max-width: 200px"
+            />
+            <select class="form-input" style="max-width: 140px">
+              <option>Semua prodi</option>
+              <option>PAI</option>
+              <option>PBA</option>
+              <option>PGMI</option>
             </select>
-            <div style="margin-left:auto;display:flex;gap:.5rem">
-              <button class="btn btn-outline" onclick="alert('Upload Excel penugasan DPL')">⬆ Import Excel</button>
-              <button class="btn btn-outline" onclick="autoAssign()">⚡ Auto-Assign</button>
-              <button class="btn btn-primary" onclick="openAssign()">+ Tugaskan DPL</button>
+            <div style="margin-left: auto; display: flex; gap: 0.5rem">
+              <button
+                class="btn btn-outline"
+                onclick="alert('Upload Excel penugasan DPL')"
+              >
+                ⬆ Import Excel
+              </button>
+              <button class="btn btn-outline" onclick="autoAssign()">
+                ⚡ Auto-Assign
+              </button>
+              <button class="btn btn-primary" onclick="openAssign()">
+                + Tugaskan DPL
+              </button>
             </div>
           </div>
 
-          <div id="auto-result" style="display:none" class="chip-auto" style="margin-bottom:1rem">
-            ✓ Auto-assign selesai: 3 DPL berhasil ditugaskan ke sekolah yang belum memiliki DPL.
+          <div
+            id="auto-result"
+            style="display: none"
+            class="chip-auto"
+            style="margin-bottom: 1rem"
+          >
+            ✓ Auto-assign selesai: 3 DPL berhasil ditugaskan ke mahasiswa yang
+            belum memiliki DPL.
           </div>
 
-          <div class="card" style="padding:0;overflow:hidden">
+          <div class="card" style="padding: 0; overflow: hidden">
             <table class="table">
               <thead>
-                <tr><th>Sekolah</th><th>DPL</th><th>Prodi DPL</th><th>Jml Mahasiswa</th><th>Aksi</th></tr>
+                <tr>
+                  <th>Mahasiswa</th>
+                  <th>Prodi</th>
+                  <th>Sekolah</th>
+                  <th>DPL</th>
+                  <th>Aksi</th>
+                </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><div style="font-weight:500">MAN 1 Bandung</div></td>
-                  <td><div style="font-weight:500">Dr. Ahmad Fauzi</div><div class="text-sm text-muted">NIDN: 0012345678</div></td>
-                  <td>PAI</td>
-                  <td><span style="font-weight:600">6</span> mahasiswa</td>
                   <td>
-                    <div style="display:flex;gap:.375rem">
-                      <button class="btn btn-outline" style="padding:.25rem .5rem;font-size:.75rem" onclick="openAssign()">Ganti DPL</button>
-                      <button class="btn btn-outline" style="padding:.25rem .5rem;font-size:.75rem;color:var(--danger)" onclick="confirm('Hapus penugasan?')">Hapus</button>
+                    <div style="font-weight: 500">Siti Aminah</div>
+                    <div class="text-sm text-muted">123002</div>
+                  </td>
+                  <td>PBA</td>
+                  <td>MAN 1 Bandung</td>
+                  <td>
+                    <div style="font-weight: 500">Dr. Ahmad Fauzi</div>
+                    <div class="text-sm text-muted">NIDN: 0012345678</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 0.375rem">
+                      <button
+                        class="btn btn-outline"
+                        style="padding: 0.25rem 0.5rem; font-size: 0.75rem"
+                        onclick="openAssign()"
+                      >
+                        Ganti DPL
+                      </button>
+                      <button
+                        class="btn btn-outline"
+                        style="
+                          padding: 0.25rem 0.5rem;
+                          font-size: 0.75rem;
+                          color: var(--danger);
+                        "
+                        onclick="confirm('Hapus penugasan?')"
+                      >
+                        Hapus
+                      </button>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  <td><div style="font-weight:500">SMAN 8 Bandung</div></td>
-                  <td><div style="font-weight:500">Prof. Hasan Ibrahim</div><div class="text-sm text-muted">NIDN: 0011223344</div></td>
+                  <td>
+                    <div style="font-weight: 500">Rizki Maulana</div>
+                    <div class="text-sm text-muted">123005</div>
+                  </td>
                   <td>PGMI</td>
-                  <td><span style="font-weight:600">4</span> mahasiswa</td>
+                  <td>SMAN 8 Bandung</td>
                   <td>
-                    <div style="display:flex;gap:.375rem">
-                      <button class="btn btn-outline" style="padding:.25rem .5rem;font-size:.75rem" onclick="openAssign()">Ganti DPL</button>
-                      <button class="btn btn-outline" style="padding:.25rem .5rem;font-size:.75rem;color:var(--danger)">Hapus</button>
+                    <div style="font-weight: 500">Prof. Hasan Ibrahim</div>
+                    <div class="text-sm text-muted">NIDN: 0011223344</div>
+                  </td>
+                  <td>
+                    <div style="display: flex; gap: 0.375rem">
+                      <button
+                        class="btn btn-outline"
+                        style="padding: 0.25rem 0.5rem; font-size: 0.75rem"
+                        onclick="openAssign()"
+                      >
+                        Ganti DPL
+                      </button>
+                      <button
+                        class="btn btn-outline"
+                        style="
+                          padding: 0.25rem 0.5rem;
+                          font-size: 0.75rem;
+                          color: var(--danger);
+                        "
+                      >
+                        Hapus
+                      </button>
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  <td><div style="font-weight:500">MTsN 2 Kota Bandung</div></td>
-                  <td><span class="text-muted text-sm">Belum ditugaskan</span></td>
-                  <td>—</td>
-                  <td>5 mahasiswa</td>
-                  <td><button class="btn btn-primary" style="padding:.25rem .625rem;font-size:.75rem" onclick="openAssign()">Tugaskan DPL</button></td>
+                  <td>
+                    <div style="font-weight: 500">Fulan Al-Aziz</div>
+                    <div class="text-sm text-muted">123006</div>
+                  </td>
+                  <td>PAI</td>
+                  <td>MTsN 2 Kota Bandung</td>
+                  <td>
+                    <span class="text-muted text-sm">Belum ditugaskan</span>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-primary"
+                      style="padding: 0.25rem 0.625rem; font-size: 0.75rem"
+                      onclick="openAssign()"
+                    >
+                      Tugaskan DPL
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>

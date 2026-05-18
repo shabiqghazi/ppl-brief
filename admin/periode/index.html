@@ -153,6 +153,13 @@
         margin-top: 4px;
         flex-shrink: 0;
       }
+      .filter-bar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
     </style>
   </head>
   <body>
@@ -222,109 +229,144 @@
           <!-- LIST VIEW -->
           <div class="view active" id="view-list">
             <!-- Filter Section -->
-            <div class="card" style="margin-bottom: 1.5rem; padding: 1rem">
-              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; align-items: start">
-                <!-- Filter Status -->
-                <div>
-                  <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block">Status Periode</label>
-                  <div style="display: flex; flex-direction: column; gap: 0.5rem">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
-                      <input type="checkbox" value="UPCOMING" class="filter-status" checked>
-                      <span>Belum Dimulai</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
-                      <input type="checkbox" value="ACTIVE" class="filter-status" checked>
-                      <span>Aktif</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
-                      <input type="checkbox" value="CLOSED" class="filter-status">
-                      <span>Selesai</span>
-                    </label>
-                  </div>
-                </div>
-
-                <!-- Filter Jenis -->
-                <div>
-                  <label class="form-label" style="font-size: 0.875rem; margin-bottom: 0.5rem; display: block">Jenis PPL</label>
-                  <div style="display: flex; flex-direction: column; gap: 0.5rem">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
-                      <input type="checkbox" value="reguler" class="filter-jenis">
-                      <span>PPL Reguler</span>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem">
-                      <input type="checkbox" value="internasional" class="filter-jenis">
-                      <span>PPL Internasional</span>
-                    </label>
-                  </div>
-                </div>
-
-                <!-- Action -->
-                <div style="display: flex; align-items: flex-end; gap: 0.5rem">
-                  <button class="btn btn-primary" onclick="openModal()">
-                    + Buat Periode Baru
-                  </button>
-                </div>
+            <div class="filter-bar">
+              <input
+                class="form-input"
+                placeholder="Cari periode…"
+                style="max-width: 220px"
+              />
+              <select class="form-input" style="max-width: 180px">
+                <option value="">Semua Status</option>
+                <option value="UPCOMING">Belum Dimulai</option>
+                <option value="ACTIVE">Aktif</option>
+                <option value="CLOSED">Selesai</option>
+              </select>
+              <select class="form-input" style="max-width: 200px">
+                <option value="">Semua Jenis PPL</option>
+                <option value="reguler">PPL Reguler</option>
+                <option value="internasional">PPL Internasional</option>
+              </select>
+              <div style="margin-left: auto; display: flex; gap: 0.5rem">
+                <button class="btn btn-primary" onclick="openModal()">
+                  + Buat Periode Baru
+                </button>
               </div>
             </div>
 
             <!-- Result Info & Cards -->
-            <p class="text-sm text-muted" style="margin-bottom: 1rem">2 periode ditemukan</p>
+            <p class="text-sm text-muted" style="margin-bottom: 1rem">
+              2 periode ditemukan
+            </p>
             <div class="period-cards">
               <!-- Card 1: Aktif -->
               <div class="period-card" onclick="showDetail('Ganjil 2026/2027')">
-                <div class="flex justify-between items-start" style="margin-bottom: 0.75rem">
-                  <span class="badge s-ongoing">Aktif</span>
+                <div
+                  class="flex justify-between items-start"
+                  style="margin-bottom: 0.75rem"
+                >
+                  <span class="badge s-ongoing">Pendaftaran</span>
                   <button
                     class="btn btn-link"
-                    style="padding: 0; font-size: 1.25rem; color: var(--text-muted); border: none; background: none; cursor: pointer"
-                    onclick="event.stopPropagation(); alert('Edit atau Hapus')"
+                    style="
+                      padding: 0;
+                      font-size: 1.25rem;
+                      color: var(--text-muted);
+                      border: none;
+                      background: none;
+                      cursor: pointer;
+                    "
+                    onclick="
+                      event.stopPropagation();
+                      alert('Edit atau Hapus');
+                    "
                   >
                     ⋯
                   </button>
                 </div>
-                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                <div
+                  style="
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    margin-bottom: 0.75rem;
+                  "
+                >
                   PPL Ganjil 2026/2027
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.5rem">
-                  <span class="text-muted">Jenis</span>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.875rem;
+                    margin-bottom: 0.5rem;
+                  "
+                >
                   <span>PPL Reguler</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem">
-                  <span class="text-muted">Rentang Waktu</span>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.875rem;
+                    margin-bottom: 0.75rem;
+                  "
+                >
                   <span>1 Agu — 30 Nov 2026</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem">
-                  <span class="text-muted">Milestone Aktif</span>
-                  <span style="font-weight: 500">Pelaksanaan</span>
                 </div>
               </div>
 
               <!-- Card 2: Belum Dimulai -->
               <div class="period-card" onclick="showDetail('Genap 2026/2027')">
-                <div class="flex justify-between items-start" style="margin-bottom: 0.75rem">
+                <div
+                  class="flex justify-between items-start"
+                  style="margin-bottom: 0.75rem"
+                >
                   <span class="badge s-upcoming">Belum Dimulai</span>
                   <button
                     class="btn btn-link"
-                    style="padding: 0; font-size: 1.25rem; color: var(--text-muted); border: none; background: none; cursor: pointer"
-                    onclick="event.stopPropagation(); alert('Edit atau Hapus')"
+                    style="
+                      padding: 0;
+                      font-size: 1.25rem;
+                      color: var(--text-muted);
+                      border: none;
+                      background: none;
+                      cursor: pointer;
+                    "
+                    onclick="
+                      event.stopPropagation();
+                      alert('Edit atau Hapus');
+                    "
                   >
                     ⋯
                   </button>
                 </div>
-                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem">
+                <div
+                  style="
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    margin-bottom: 0.75rem;
+                  "
+                >
                   PPL Genap 2026/2027
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.5rem">
-                  <span class="text-muted">Jenis</span>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.875rem;
+                    margin-bottom: 0.5rem;
+                  "
+                >
                   <span>PPL Internasional</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem; margin-bottom: 0.75rem">
-                  <span class="text-muted">Rentang Waktu</span>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.875rem;
+                    margin-bottom: 0.75rem;
+                  "
+                >
                   <span>1 Des 2026 — 31 Mar 2027</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.875rem">
-                  <span class="text-muted">Milestone Aktif</span>
-                  <span style="font-weight: 500">Belum Dibuka</span>
                 </div>
               </div>
             </div>
@@ -1074,7 +1116,6 @@
 
       function openPPLTypeModal() {
         document.getElementById("ppl-type-modal-overlay").classList.add("open");
-        // loadPPLTypes();
         renderPPLTypesList();
       }
 
@@ -1088,18 +1129,10 @@
             .classList.remove("open");
       }
 
-      // API Functions
-      async function loadPPLTypes() {
-        try {
-          const response = await fetch("/api/ppl-types");
-          const data = await response.json();
-          pplTypes = data.data || [];
-          renderPPLTypeSelect();
-          renderPPLTypesList();
-        } catch (error) {
-          console.error("Error loading PPL types:", error);
-          pplTypes = [];
-        }
+      // API Functions (Mocked)
+      function loadPPLTypes() {
+        renderPPLTypeSelect();
+        renderPPLTypesList();
       }
 
       function createPPLType() {
@@ -1175,7 +1208,7 @@
           },
         ];
         renderMilestones();
-        // loadPPLTypes();
+        loadPPLTypes();
         document.getElementById("field-has-requirements").checked = false;
         document.getElementById("requirements-editor-section").style.display =
           "none";
