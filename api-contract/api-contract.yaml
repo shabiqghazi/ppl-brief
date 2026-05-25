@@ -36,6 +36,8 @@ tags:
     description: Sinkronisasi & integrasi data dengan sistem SALAM (Modul 1)
   - name: PPL Types
     description: Manajemen master jenis PPL (Modul 2)
+  - name: Study Programs
+    description: CRUD master data program studi (Modul 2)
   - name: Periods
     description: CRUD periode PPL (Modul 2)
   - name: Period Schools
@@ -79,6 +81,15 @@ components:
       in: path
       required: true
       description: UUID resource
+      schema:
+        type: string
+        format: uuid
+
+    StudyProgramIdParam:
+      name: id
+      in: path
+      required: true
+      description: UUID program studi
       schema:
         type: string
         format: uuid
@@ -520,6 +531,49 @@ components:
         name:
           type: string
           example: PPL Khusus Luar Daerah
+
+    # ---- Study Programs ----
+
+    StudyProgram:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Pendidikan Matematika
+        code:
+          type: string
+          example: PMAT
+        ppl_course_code:
+          type: string
+          nullable: true
+          example: PPLMAT
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    StudyProgramRequest:
+      type: object
+      required: [name, code]
+      properties:
+        name:
+          type: string
+          description: Nama program studi (harus unique)
+          example: Pendidikan Matematika
+        code:
+          type: string
+          description: Kode program studi (harus unique)
+          example: PMAT
+        ppl_course_code:
+          type: string
+          nullable: true
+          description: Kode MK PPL/PLP (opsional)
+          example: PPLMAT
 
     # ---- Periods ----
 
@@ -1162,7 +1216,7 @@ paths:
       summary: Signout dan invalidasi token
       description: Menginvalidasi access token yang sedang digunakan.
       responses:
-        "204":
+        "200":
           description: Signout berhasil
         "401":
           $ref: "#/components/responses/Unauthorized"
@@ -1653,7 +1707,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/IdParam"
       responses:
-        "204":
+        "200":
           description: Jenis PPL berhasil dihapus
         "409":
           description: Jenis PPL masih digunakan oleh periode yang ada
@@ -1666,6 +1720,202 @@ paths:
                 errors: []
         "404":
           $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ---- Study Programs ----
+
+  /study-programs:
+    get:
+      tags: [Study Programs]
+      summary: List program studi
+      description: |
+        Mengembalikan daftar program studi dengan dukungan pencarian dan pengurutan.
+      parameters:
+        - name: search
+          in: query
+          description: Pencarian berdasarkan nama, kode, atau ppl_course_code
+          schema:
+            type: string
+          example: Matematika
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            enum: [name, code, created_at]
+            default: name
+          description: Field yang digunakan untuk pengurutan
+        - name: sort_direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Arah pengurutan
+      responses:
+        "200":
+          description: Daftar program studi
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/StudyProgram"
+                  message:
+                    type: string
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [Study Programs]
+      summary: Buat program studi baru
+      description: Admin menambahkan program studi baru ke master data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudyProgramRequest"
+            example:
+              name: Pendidikan Matematika
+              code: PMAT
+              ppl_course_code: PPLMAT
+      responses:
+        "201":
+          description: Program studi berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/StudyProgram"
+                  message:
+                    type: string
+        "409":
+          description: Nama atau kode program studi sudah digunakan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                name_exists:
+                  value:
+                    message: Program studi dengan nama "Pendidikan Matematika" sudah ada
+                    errors: []
+                code_exists:
+                  value:
+                    message: Program studi dengan kode "PMAT" sudah ada
+                    errors: []
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /study-programs/{id}:
+    get:
+      tags: [Study Programs]
+      summary: Detail program studi
+      parameters:
+        - $ref: "#/components/parameters/StudyProgramIdParam"
+      responses:
+        "200":
+          description: Detail program studi
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/StudyProgram"
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    put:
+      tags: [Study Programs]
+      summary: Update program studi
+      description: Memperbarui data program studi.
+      parameters:
+        - $ref: "#/components/parameters/StudyProgramIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudyProgramRequest"
+      responses:
+        "200":
+          description: Program studi berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, message]
+                properties:
+                  data:
+                    $ref: "#/components/schemas/StudyProgram"
+                  message:
+                    type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Nama atau kode program studi sudah digunakan oleh program studi lain
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                name_exists:
+                  value:
+                    message: Program studi dengan nama "Pendidikan Matematika" sudah ada
+                    errors: []
+                code_exists:
+                  value:
+                    message: Program studi dengan kode "PMAT" sudah ada
+                    errors: []
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    delete:
+      tags: [Study Programs]
+      summary: Hapus program studi
+      description: |
+        Menghapus program studi dari master data.
+        Gagal (409) jika program studi sedang digunakan (misalnya di periode atau penempatan mahasiswa).
+      parameters:
+        - $ref: "#/components/parameters/StudyProgramIdParam"
+      responses:
+        "200":
+          description: Program studi berhasil dihapus
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Program studi sedang digunakan dan tidak dapat dihapus
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                message: Program studi ini sedang digunakan dan tidak dapat dihapus
+                errors: []
         "401":
           $ref: "#/components/responses/Unauthorized"
         "403":
@@ -1896,7 +2146,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/PeriodIdParam"
       responses:
-        "204":
+        "200":
           description: Periode berhasil dihapus
         "409":
           description: Periode sudah memiliki data pendaftaran mahasiswa
@@ -2121,7 +2371,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/SchoolIdParam"
       responses:
-        "204":
+        "200":
           description: Sekolah berhasil dihapus dari periode
         "409":
           description: Ada mahasiswa yang sudah ditempatkan di sekolah ini
@@ -2409,7 +2659,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/AnnouncementIdParam"
       responses:
-        "204":
+        "200":
           description: Pengumuman berhasil dihapus
         "404":
           $ref: "#/components/responses/NotFound"
@@ -2566,7 +2816,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/MilestoneIdParam"
       responses:
-        "204":
+        "200":
           description: Milestone berhasil dihapus
         "404":
           $ref: "#/components/responses/NotFound"
@@ -2875,7 +3125,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/RegistrationIdParam"
       responses:
-        "204":
+        "200":
           description: Pilihan sekolah berhasil dibatalkan
         "400":
           description: Penempatan tidak bisa dibatalkan karena periode sudah melewati masa registrasi
@@ -3132,7 +3382,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/PlacementIdParam"
       responses:
-        "204":
+        "200":
           description: Penempatan berhasil dihapus
         "404":
           $ref: "#/components/responses/NotFound"
@@ -3431,7 +3681,7 @@ paths:
         - $ref: "#/components/parameters/PeriodIdParam"
         - $ref: "#/components/parameters/AssignmentIdParam"
       responses:
-        "204":
+        "200":
           description: Penugasan berhasil dihapus
         "404":
           $ref: "#/components/responses/NotFound"
