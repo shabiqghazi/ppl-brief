@@ -193,7 +193,7 @@
       }
       .course-row {
         display: grid;
-        grid-template-columns: 1fr 1fr 32px;
+        grid-template-columns: 1.5fr 1.2fr 1.2fr 40px;
         gap: 0.5rem;
         align-items: flex-end;
         margin-bottom: 0.375rem;
@@ -205,6 +205,7 @@
         font-size: 0.75rem;
         color: var(--text-muted);
         margin-bottom: 0.25rem;
+        font-weight: 500;
       }
       .course-input-group {
         display: flex;
@@ -223,16 +224,62 @@
         border-color: var(--danger);
       }
       .add-course-btn {
-        padding: 0.375rem 0.625rem;
+        padding: 0.5rem 0.625rem;
         font-size: 0.75rem;
         color: var(--primary);
         background: none;
-        border: none;
+        border: 1px dashed var(--border);
         cursor: pointer;
         margin-top: 0.375rem;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
       }
       .add-course-btn:hover {
-        text-decoration: underline;
+        border-color: var(--primary);
+        background: rgba(79, 70, 229, 0.05);
+      }
+      .prerequisite-type-hidden {
+        display: none;
+      }
+      .prerequisite-program-header {
+        background: #f9fafb;
+        padding: 0.75rem 0.625rem;
+        margin: 0.75rem 0 0.375rem 0;
+        border-radius: 0.375rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-main);
+      }
+      .prerequisite-program-meta {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-left: auto;
+        font-weight: normal;
+      }
+      /* Prerequisites table header enhancement */
+      .prerequisites-table thead th {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      /* Delete button styling */
+      .delete-prereq-btn {
+        padding: 0.25rem;
+        font-size: 1rem;
+        color: var(--danger);
+        background: none;
+        border: none;
+        cursor: pointer;
+        height: 24px;
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .delete-prereq-btn:hover {
+        background: #fee2e2;
+        border-radius: 0.25rem;
       }
     </style>
   </head>
@@ -1440,10 +1487,11 @@
         const thead = document.createElement("thead");
         const headerRow = document.createElement("tr");
         headerRow.innerHTML = `
-          <th style="width: 25%">Program Studi</th>
-          <th style="width: 35%">Kode Mata Kuliah</th>
-          <th style="width: 25%">Nilai Minimum</th>
-          <th style="width: 15%; text-align: center">Aksi</th>
+          <th style="width: 20%">Program Studi</th>
+          <th style="width: 30%">Kode Mata Kuliah</th>
+          <th style="width: 20%">Tipe Prasyarat</th>
+          <th style="width: 20%">Nilai Minimum</th>
+          <th style="width: 10%; text-align: center">Aksi</th>
         `;
         thead.appendChild(headerRow);
         table.appendChild(thead);
@@ -1454,7 +1502,7 @@
           const courses =
             program.courses && program.courses.length > 0
               ? program.courses
-              : [{ course_code: "", minimum_grade: "" }];
+              : [{ course_code: "", prerequisite_type: "", minimum_grade: "" }];
 
           courses.forEach((course, courseIdx) => {
             const row = document.createElement("tr");
@@ -1493,9 +1541,47 @@
             courseInputGroup.appendChild(courseError);
             courseCell.appendChild(courseInputGroup);
 
+            // Prerequisite type cell
+            const typeCell = document.createElement("td");
+            typeCell.className = "course-cell";
+
+            const typeInputGroup = document.createElement("div");
+            typeInputGroup.className = "course-input-group";
+
+            const typeSelect = document.createElement("select");
+            typeSelect.className = "form-input";
+            typeSelect.dataset.programId = program.study_program_id;
+            typeSelect.dataset.index = courseIdx;
+            typeSelect.style.fontSize = "0.875rem";
+            typeSelect.onchange = function() {
+              toggleGradeField(program.study_program_id, courseIdx, this.value);
+            };
+
+            const typeOptions = [
+              { value: "", label: "Pilih…" },
+              { value: "completed", label: "Completed" },
+              { value: "enrolled", label: "Enrolled" },
+            ];
+            typeOptions.forEach((opt) => {
+              const optEl = document.createElement("option");
+              optEl.value = opt.value;
+              optEl.textContent = opt.label;
+              if (opt.value === (course.prerequisite_type || "")) optEl.selected = true;
+              typeSelect.appendChild(optEl);
+            });
+
+            const typeError = document.createElement("div");
+            typeError.className = "course-error";
+            typeError.textContent = "Harus dipilih";
+
+            typeInputGroup.appendChild(typeSelect);
+            typeInputGroup.appendChild(typeError);
+            typeCell.appendChild(typeInputGroup);
+
             // Grade cell
             const gradeCell = document.createElement("td");
             gradeCell.className = "course-cell";
+            gradeCell.id = `grade-cell-${program.study_program_id}-${courseIdx}`;
 
             const gradeInputGroup = document.createElement("div");
             gradeInputGroup.className = "course-input-group";
@@ -1505,6 +1591,7 @@
             gradeSelect.dataset.programId = program.study_program_id;
             gradeSelect.dataset.index = courseIdx;
             gradeSelect.style.fontSize = "0.875rem";
+            gradeSelect.id = `grade-select-${program.study_program_id}-${courseIdx}`;
 
             const options = ["", "A", "B", "C", "D", "E"];
             options.forEach((opt) => {
@@ -1523,16 +1610,20 @@
             gradeInputGroup.appendChild(gradeError);
             gradeCell.appendChild(gradeInputGroup);
 
+            // Hide grade field if type is "enrolled"
+            if (course.prerequisite_type === "enrolled") {
+              gradeCell.classList.add("prerequisite-type-hidden");
+              gradeSelect.disabled = true;
+            }
+
             // Action cell
             const actionCell = document.createElement("td");
             actionCell.style.textAlign = "center";
 
             const deleteBtn = document.createElement("button");
             deleteBtn.type = "button";
-            deleteBtn.className = "btn btn-link";
+            deleteBtn.className = "delete-prereq-btn";
             deleteBtn.textContent = "✕";
-            deleteBtn.style.cssText =
-              "padding:0;color:var(--danger);font-size:1rem;border:none;background:none;cursor:pointer;height:24px;width:24px";
             deleteBtn.onclick = (e) => {
               e.preventDefault();
               removeCourseRow(program.study_program_id, courseIdx);
@@ -1541,6 +1632,7 @@
             actionCell.appendChild(deleteBtn);
 
             row.appendChild(courseCell);
+            row.appendChild(typeCell);
             row.appendChild(gradeCell);
             row.appendChild(actionCell);
             tbody.appendChild(row);
@@ -1580,6 +1672,20 @@
             : "Atur sebagai default mata kuliah prasyarat untuk -";
         setDefaultBtn.textContent = buttonText;
         setDefaultBtn.disabled = false;
+      }
+
+      function toggleGradeField(programId, courseIdx, typeValue) {
+        const gradeCell = document.getElementById(`grade-cell-${programId}-${courseIdx}`);
+        const gradeSelect = document.getElementById(`grade-select-${programId}-${courseIdx}`);
+
+        if (typeValue === "enrolled") {
+          gradeCell.classList.add("prerequisite-type-hidden");
+          gradeSelect.disabled = true;
+          gradeSelect.value = "";
+        } else if (typeValue === "completed") {
+          gradeCell.classList.remove("prerequisite-type-hidden");
+          gradeSelect.disabled = false;
+        }
       }
 
       function addCourseRow(programId) {
@@ -1622,9 +1728,46 @@
         courseInputGroup.appendChild(courseError);
         courseCell.appendChild(courseInputGroup);
 
+        // Prerequisite type cell
+        const typeCell = document.createElement("td");
+        typeCell.className = "course-cell";
+
+        const typeInputGroup = document.createElement("div");
+        typeInputGroup.className = "course-input-group";
+
+        const typeSelect = document.createElement("select");
+        typeSelect.className = "form-input";
+        typeSelect.dataset.programId = programId;
+        typeSelect.dataset.index = newIndex;
+        typeSelect.style.fontSize = "0.875rem";
+        typeSelect.onchange = function() {
+          toggleGradeField(programId, newIndex, this.value);
+        };
+
+        const typeOptions = [
+          { value: "", label: "Pilih…" },
+          { value: "completed", label: "Completed" },
+          { value: "enrolled", label: "Enrolled" },
+        ];
+        typeOptions.forEach((opt) => {
+          const optEl = document.createElement("option");
+          optEl.value = opt.value;
+          optEl.textContent = opt.label;
+          typeSelect.appendChild(optEl);
+        });
+
+        const typeError = document.createElement("div");
+        typeError.className = "course-error";
+        typeError.textContent = "Harus dipilih";
+
+        typeInputGroup.appendChild(typeSelect);
+        typeInputGroup.appendChild(typeError);
+        typeCell.appendChild(typeInputGroup);
+
         // Grade cell
         const gradeCell = document.createElement("td");
         gradeCell.className = "course-cell";
+        gradeCell.id = `grade-cell-${programId}-${newIndex}`;
 
         const gradeInputGroup = document.createElement("div");
         gradeInputGroup.className = "course-input-group";
@@ -1634,6 +1777,7 @@
         gradeSelect.dataset.programId = programId;
         gradeSelect.dataset.index = newIndex;
         gradeSelect.style.fontSize = "0.875rem";
+        gradeSelect.id = `grade-select-${programId}-${newIndex}`;
 
         const options = ["", "A", "B", "C", "D", "E"];
         options.forEach((opt) => {
@@ -1657,10 +1801,8 @@
 
         const deleteBtn = document.createElement("button");
         deleteBtn.type = "button";
-        deleteBtn.className = "btn btn-link";
+        deleteBtn.className = "delete-prereq-btn";
         deleteBtn.textContent = "✕";
-        deleteBtn.style.cssText =
-          "padding:0;color:var(--danger);font-size:1rem;border:none;background:none;cursor:pointer;height:24px;width:24px";
         deleteBtn.onclick = (e) => {
           e.preventDefault();
           removeCourseRow(programId, newIndex);
@@ -1669,6 +1811,7 @@
         actionCell.appendChild(deleteBtn);
 
         row.appendChild(courseCell);
+        row.appendChild(typeCell);
         row.appendChild(gradeCell);
         row.appendChild(actionCell);
 
@@ -1719,19 +1862,23 @@
 
         rows.forEach((row) => {
           const courseInput = row.querySelector("input[type='text']");
-          const gradeSelect = row.querySelector("select");
+          const selects = row.querySelectorAll("select");
+          const typeSelect = selects[0];
+          const gradeSelect = selects[1];
 
-          if (!courseInput || !gradeSelect) return;
+          if (!courseInput || !typeSelect || !gradeSelect) return;
 
           const programId = courseInput.dataset.programId;
           const courseCode = courseInput.value.trim();
+          const typeValue = typeSelect.value;
           const gradeValue = gradeSelect.value;
 
           // Only validate rows with data
-          if (!courseCode && !gradeValue) return;
+          if (!courseCode && !typeValue && !gradeValue) return;
 
-          const courseError = row.querySelector(".course-error:nth-of-type(1)");
-          const gradeError = row.querySelector(".course-error:nth-of-type(2)");
+          const courseError = row.querySelectorAll(".course-error")[0];
+          const typeError = row.querySelectorAll(".course-error")[1];
+          const gradeError = row.querySelectorAll(".course-error")[2];
 
           let rowValid = true;
 
@@ -1742,7 +1889,15 @@
             if (courseError) courseError.classList.remove("show");
           }
 
-          if (!gradeValue) {
+          if (!typeValue) {
+            if (typeError) typeError.classList.add("show");
+            rowValid = false;
+          } else {
+            if (typeError) typeError.classList.remove("show");
+          }
+
+          // Only require grade if type is "completed"
+          if (typeValue === "completed" && !gradeValue) {
             if (gradeError) gradeError.classList.add("show");
             rowValid = false;
           } else {
@@ -1944,23 +2099,34 @@
 
         rows.forEach((row) => {
           const courseInput = row.querySelector("input[type='text']");
-          const gradeSelect = row.querySelector("select");
+          const selects = row.querySelectorAll("select");
+          const typeSelect = selects[0];
+          const gradeSelect = selects[1];
 
-          if (!courseInput || !gradeSelect) return;
+          if (!courseInput || !typeSelect || !gradeSelect) return;
 
           const programId = courseInput.dataset.programId;
           const courseCode = courseInput.value.trim();
+          const typeValue = typeSelect.value;
           const gradeValue = gradeSelect.value;
 
-          // Only include rows with both values filled
-          if (courseCode && gradeValue) {
+          // Only include rows with course code and type
+          if (courseCode && typeValue) {
             if (!programMap.has(programId)) {
               programMap.set(programId, []);
             }
-            programMap.get(programId).push({
+
+            const courseData = {
               course_code: courseCode,
-              minimum_grade: gradeValue,
-            });
+              prerequisite_type: typeValue,
+            };
+
+            // Only include minimum_grade if type is "completed"
+            if (typeValue === "completed") {
+              courseData.minimum_grade = gradeValue || "";
+            }
+
+            programMap.get(programId).push(courseData);
           }
         });
 
