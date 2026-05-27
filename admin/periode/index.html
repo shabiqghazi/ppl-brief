@@ -281,6 +281,145 @@
         background: #fee2e2;
         border-radius: 0.25rem;
       }
+      /* Program studi section styling */
+      .prerequisites-program-section {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+      .prerequisites-program-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .prerequisites-program-header input[type="checkbox"] {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+      }
+      .prerequisites-program-title {
+        font-weight: 600;
+        font-size: 0.9375rem;
+        color: var(--text-main);
+        flex: 1;
+      }
+      .prerequisites-program-courses {
+        display: none;
+      }
+      .prerequisites-program-courses.active {
+        display: block;
+      }
+      .prerequisite-course-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .prerequisite-course-row {
+        display: grid;
+        grid-template-columns: 1.5fr 1.2fr 1.2fr 40px;
+        gap: 0.75rem;
+        align-items: flex-end;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-radius: 0.375rem;
+        border: 1px solid var(--border);
+      }
+      .prerequisite-course-row.empty-state {
+        grid-template-columns: 1fr;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        padding: 1rem;
+      }
+      .prerequisite-course-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .prerequisite-course-field label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+      .prerequisite-course-field input,
+      .prerequisite-course-field select {
+        font-size: 0.875rem;
+      }
+      .add-prerequisite-row-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        color: var(--primary);
+        background: none;
+        border: 1px dashed var(--border);
+        cursor: pointer;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        width: 100%;
+        text-align: center;
+      }
+      .add-prerequisite-row-btn:hover {
+        border-color: var(--primary);
+        background: rgba(79, 70, 229, 0.05);
+      }
+      .prerequisites-select-all {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        align-items: center;
+      }
+      .prerequisites-select-all input[type="checkbox"] {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+      }
+      .prerequisites-select-all label {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .prerequisites-info {
+        background: #dbeafe;
+        border: 1px solid #93c5fd;
+        color: #0369a1;
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.8125rem;
+        margin-bottom: 1rem;
+      }
+      .set-default-checkbox-group {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .set-default-checkbox-group input[type="checkbox"] {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+      }
+      .set-default-checkbox-group label {
+        margin: 0;
+        font-size: 0.875rem;
+        cursor: pointer;
+        flex: 1;
+      }
+      .set-default-checkbox-group input[type="checkbox"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .set-default-checkbox-group input[type="checkbox"]:disabled + label {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     </style>
   </head>
   <body>
@@ -1084,38 +1223,8 @@
           <!-- Mata Kuliah Prasyarat Section -->
           <div class="form-group">
             <label class="form-label">Mata Kuliah Prasyarat</label>
-            <div
-              id="prerequisites-loading"
-              style="
-                text-align: center;
-                padding: 1.5rem;
-                color: var(--text-muted);
-                display: none;
-              "
-            >
-              ⏳ Memuat data prasyarat...
-            </div>
-            <div id="prerequisites-container" style="display: none">
-              <div id="study-programs-list"></div>
-              <div
-                style="
-                  margin-top: 1rem;
-                  padding-top: 1rem;
-                  border-top: 1px solid var(--border);
-                "
-              >
-                <button
-                  type="button"
-                  class="btn btn-outline"
-                  id="set-default-btn"
-                  onclick="setDefaultPrerequisites()"
-                  disabled
-                  style="width: 100%; font-size: 0.875rem"
-                >
-                  Atur sebagai default mata kuliah prasyarat untuk -
-                </button>
-              </div>
-            </div>
+
+            <!-- Empty state -->
             <div
               id="prerequisites-empty"
               style="
@@ -1127,6 +1236,52 @@
             >
               Pilih jenis PPL terlebih dahulu untuk melihat mata kuliah
               prasyarat per program studi
+            </div>
+
+            <!-- Loading state -->
+            <div
+              id="prerequisites-loading"
+              style="
+                text-align: center;
+                padding: 1.5rem;
+                color: var(--text-muted);
+                display: none;
+              "
+            >
+              ⏳ Memuat data prasyarat...
+            </div>
+
+            <!-- Prerequisites container -->
+            <div id="prerequisites-container" style="display: none">
+              <!-- Info message -->
+              <div class="prerequisites-info">
+                ℹ️ Atur mata kuliah prasyarat yang diperlukan untuk setiap program studi. Ubah jenis PPL untuk memuat default prasyarat.
+              </div>
+
+              <!-- Select all -->
+              <div class="prerequisites-select-all">
+                <input
+                  type="checkbox"
+                  id="select-all-programs"
+                  onchange="toggleAllPrograms(this)"
+                >
+                <label for="select-all-programs">Centang semua program studi</label>
+              </div>
+
+              <!-- Programs list -->
+              <div id="study-programs-list"></div>
+
+              <!-- Set as default checkbox -->
+              <div class="set-default-checkbox-group">
+                <input
+                  type="checkbox"
+                  id="set-default-checkbox"
+                  disabled
+                >
+                <label for="set-default-checkbox" id="set-default-label">
+                  Atur sebagai default mata kuliah prasyarat untuk jenis PPL
+                </label>
+              </div>
             </div>
           </div>
 
@@ -1388,7 +1543,9 @@
         document.getElementById("prerequisites-empty").style.display = "block";
         document.getElementById("prerequisites-loading").style.display = "none";
         document.getElementById("study-programs-list").innerHTML = "";
-        document.getElementById("set-default-btn").disabled = true;
+        document.getElementById("select-all-programs").checked = false;
+        document.getElementById("set-default-checkbox").checked = false;
+        document.getElementById("set-default-checkbox").disabled = true;
       }
 
       function toggleRequirementsEditor() {
@@ -1434,48 +1591,485 @@
           1: [
             {
               study_program_id: "sp-001",
-              study_program_name: "Pendidikan Agama Islam (PAI)",
+              study_program_name: "Pendidikan Matematika",
               department_name: "Fakutas Tarbiyah dan Keguruan",
-              courses: [{ course_code: "PAI101", minimum_grade: "B" }],
+              courses: [
+                { course_code: "MAT101", type: "completed", minimum_grade: "B" },
+                { course_code: "PPL-MAT-2024", type: "enrolled", minimum_grade: null },
+              ],
             },
             {
               study_program_id: "sp-002",
-              study_program_name: "Pendidikan Bahasa Arab (PBA)",
+              study_program_name: "Pendidikan IPA",
               department_name: "Fakutas Tarbiyah dan Keguruan",
-              courses: [{ course_code: "PBA101", minimum_grade: "B" }],
+              courses: [],
             },
             {
               study_program_id: "sp-003",
-              study_program_name: "PGMI",
+              study_program_name: "Pendidikan Agama Islam (PAI)",
               department_name: "Fakutas Tarbiyah dan Keguruan",
-              courses: [],
+              courses: [
+                { course_code: "PAI101", type: "completed", minimum_grade: "A" },
+              ],
             },
           ],
           2: [
             {
               study_program_id: "sp-001",
-              study_program_name: "Pendidikan Agama Islam (PAI)",
+              study_program_name: "Pendidikan Matematika",
               department_name: "Fakutas Tarbiyah dan Keguruan",
               courses: [],
             },
             {
               study_program_id: "sp-002",
-              study_program_name: "Pendidikan Bahasa Arab (PBA)",
+              study_program_name: "Pendidikan IPA",
               department_name: "Fakutas Tarbiyah dan Keguruan",
-              courses: [],
+              courses: [
+                { course_code: "IPA101", type: "completed", minimum_grade: "B" },
+                { course_code: "IPA102", type: "enrolled", minimum_grade: null },
+              ],
             },
             {
               study_program_id: "sp-003",
-              study_program_name: "PGMI",
+              study_program_name: "Pendidikan Agama Islam (PAI)",
               department_name: "Fakutas Tarbiyah dan Keguruan",
-              courses: [{ course_code: "PGMI101", minimum_grade: "A" }],
+              courses: [],
             },
           ],
         };
 
         const prerequisites = mockDefaultPrerequisites[pplTypeId] || [];
-        renderPrerequisites(prerequisites, pplTypeId);
+        renderPrerequisitesV2(prerequisites, pplTypeId);
       }
+
+      // ============================================================================
+      // NEW PREREQUISITES RENDERING (V2)
+      // ============================================================================
+
+      function renderPrerequisitesV2(prerequisites, pplTypeId) {
+        const container = document.getElementById("study-programs-list");
+        container.innerHTML = "";
+
+        prerequisites.forEach((program) => {
+          const programSection = document.createElement("div");
+          programSection.className = "prerequisites-program-section";
+          programSection.dataset.programId = program.study_program_id;
+
+          // Header with checkbox
+          const header = document.createElement("div");
+          header.className = "prerequisites-program-header";
+
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.dataset.programId = program.study_program_id;
+          checkbox.onchange = () => toggleProgramCourses(program.study_program_id, checkbox.checked);
+
+          // Auto-check if has courses
+          if (program.courses && program.courses.length > 0) {
+            checkbox.checked = true;
+          }
+
+          const title = document.createElement("div");
+          title.className = "prerequisites-program-title";
+          title.textContent = program.study_program_name;
+
+          header.appendChild(checkbox);
+          header.appendChild(title);
+          programSection.appendChild(header);
+
+          // Courses section
+          const coursesContainer = document.createElement("div");
+          coursesContainer.className = "prerequisites-program-courses";
+          if (program.courses && program.courses.length > 0) {
+            coursesContainer.classList.add("active");
+          }
+          coursesContainer.dataset.programId = program.study_program_id;
+
+          // Render existing courses
+          const courseRows = document.createElement("div");
+          courseRows.className = "prerequisite-course-rows";
+          courseRows.dataset.programId = program.study_program_id;
+
+          if (program.courses && program.courses.length > 0) {
+            program.courses.forEach((course, idx) => {
+              const row = createCourseRow(program.study_program_id, idx, course);
+              courseRows.appendChild(row);
+            });
+          } else {
+            const emptyRow = document.createElement("div");
+            emptyRow.className = "prerequisite-course-row empty-state";
+            emptyRow.dataset.programId = program.study_program_id;
+            emptyRow.textContent = "Belum ada mata kuliah prasyarat";
+            courseRows.appendChild(emptyRow);
+          }
+
+          coursesContainer.appendChild(courseRows);
+
+          // Add button
+          const addBtn = document.createElement("button");
+          addBtn.type = "button";
+          addBtn.className = "add-prerequisite-row-btn";
+          addBtn.textContent = "+ Tambah Mata Kuliah Prasyarat";
+          addBtn.onclick = () => addPrerequisiteRowV2(program.study_program_id);
+          coursesContainer.appendChild(addBtn);
+
+          programSection.appendChild(coursesContainer);
+          container.appendChild(programSection);
+        });
+
+        // Update set default button label
+        updateSetDefaultLabel(pplTypeId);
+        updateSelectAllState();
+      }
+
+      function createCourseRow(programId, index, course = {}) {
+        const row = document.createElement("div");
+        row.className = "prerequisite-course-row";
+        row.dataset.programId = programId;
+        row.dataset.courseIndex = index;
+
+        // Course code field
+        const codeField = document.createElement("div");
+        codeField.className = "prerequisite-course-field";
+        const codeLabel = document.createElement("label");
+        codeLabel.textContent = "Kode Mata Kuliah";
+        const codeInput = document.createElement("input");
+        codeInput.type = "text";
+        codeInput.className = "form-input";
+        codeInput.placeholder = "Contoh: MAT101";
+        codeInput.value = course.course_code || "";
+        codeInput.dataset.field = "course_code";
+        codeField.appendChild(codeLabel);
+        codeField.appendChild(codeInput);
+
+        // Type field
+        const typeField = document.createElement("div");
+        typeField.className = "prerequisite-course-field";
+        const typeLabel = document.createElement("label");
+        typeLabel.textContent = "Tipe Prasyarat";
+        const typeSelect = document.createElement("select");
+        typeSelect.className = "form-input";
+        typeSelect.innerHTML = `
+          <option value="">Pilih…</option>
+          <option value="completed" ${course.type === "completed" ? "selected" : ""}>Completed</option>
+          <option value="enrolled" ${course.type === "enrolled" ? "selected" : ""}>Enrolled</option>
+        `;
+        typeSelect.dataset.field = "type";
+        typeSelect.onchange = () => toggleGradeFieldV2(programId, index, typeSelect.value);
+        typeField.appendChild(typeLabel);
+        typeField.appendChild(typeSelect);
+
+        // Grade field (conditional)
+        const gradeField = document.createElement("div");
+        gradeField.className = "prerequisite-course-field";
+        if (course.type === "enrolled") {
+          gradeField.classList.add("prerequisite-type-hidden");
+        }
+        gradeField.dataset.gradeField = true;
+        const gradeLabel = document.createElement("label");
+        gradeLabel.textContent = "Nilai Minimum";
+        const gradeSelect = document.createElement("select");
+        gradeSelect.className = "form-input";
+        gradeSelect.innerHTML = `
+          <option value="">Pilih…</option>
+          <option value="A" ${course.minimum_grade === "A" ? "selected" : ""}>A</option>
+          <option value="B" ${course.minimum_grade === "B" ? "selected" : ""}>B</option>
+          <option value="C" ${course.minimum_grade === "C" ? "selected" : ""}>C</option>
+          <option value="D" ${course.minimum_grade === "D" ? "selected" : ""}>D</option>
+          <option value="E" ${course.minimum_grade === "E" ? "selected" : ""}>E</option>
+        `;
+        gradeSelect.dataset.field = "minimum_grade";
+        if (course.type === "enrolled") {
+          gradeSelect.disabled = true;
+        }
+        gradeField.appendChild(gradeLabel);
+        gradeField.appendChild(gradeSelect);
+
+        // Delete button
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "delete-prereq-btn";
+        deleteBtn.textContent = "×";
+        deleteBtn.onclick = () => deletePrerequisiteRowV2(programId, index);
+
+        row.appendChild(codeField);
+        row.appendChild(typeField);
+        row.appendChild(gradeField);
+        row.appendChild(deleteBtn);
+
+        return row;
+      }
+
+      function toggleProgramCourses(programId, isChecked) {
+        const section = document.querySelector(
+          `.prerequisites-program-section[data-program-id="${programId}"]`
+        );
+        const coursesContainer = section.querySelector(
+          `.prerequisites-program-courses[data-program-id="${programId}"]`
+        );
+        const courseRows = section.querySelector(
+          `.prerequisite-course-rows[data-program-id="${programId}"]`
+        );
+
+        if (isChecked) {
+          coursesContainer.classList.add("active");
+          // Add empty row if no courses exist
+          const existingRows = courseRows.querySelectorAll(
+            ".prerequisite-course-row:not(.empty-state)"
+          );
+          if (existingRows.length === 0) {
+            const emptyRow = courseRows.querySelector(".empty-state");
+            if (emptyRow) emptyRow.remove();
+            const newRow = createCourseRow(programId, 0);
+            courseRows.appendChild(newRow);
+          }
+        } else {
+          coursesContainer.classList.remove("active");
+          // Clear all courses for this program
+          const rows = courseRows.querySelectorAll(".prerequisite-course-row");
+          rows.forEach((row) => row.remove());
+          // Show empty state
+          const emptyRow = document.createElement("div");
+          emptyRow.className = "prerequisite-course-row empty-state";
+          emptyRow.dataset.programId = programId;
+          emptyRow.textContent = "Belum ada mata kuliah prasyarat";
+          courseRows.appendChild(emptyRow);
+        }
+
+        updateSelectAllState();
+      }
+
+      function addPrerequisiteRowV2(programId) {
+        const section = document.querySelector(
+          `.prerequisites-program-section[data-program-id="${programId}"]`
+        );
+        const courseRows = section.querySelector(
+          `.prerequisite-course-rows[data-program-id="${programId}"]`
+        );
+
+        // Remove empty state if exists
+        const emptyRow = courseRows.querySelector(".empty-state");
+        if (emptyRow) emptyRow.remove();
+
+        // Find max index
+        const existingRows = courseRows.querySelectorAll(".prerequisite-course-row");
+        const maxIndex = Math.max(
+          -1,
+          ...Array.from(existingRows).map((r) => parseInt(r.dataset.courseIndex) || 0)
+        );
+        const newIndex = maxIndex + 1;
+
+        const newRow = createCourseRow(programId, newIndex);
+        courseRows.appendChild(newRow);
+      }
+
+      function deletePrerequisiteRowV2(programId, index) {
+        const section = document.querySelector(
+          `.prerequisites-program-section[data-program-id="${programId}"]`
+        );
+        const courseRows = section.querySelector(
+          `.prerequisite-course-rows[data-program-id="${programId}"]`
+        );
+        const row = courseRows.querySelector(
+          `.prerequisite-course-row[data-course-index="${index}"]`
+        );
+
+        if (row) row.remove();
+
+        // Show empty state if no rows left
+        const remaining = courseRows.querySelectorAll(
+          ".prerequisite-course-row:not(.empty-state)"
+        );
+        if (remaining.length === 0) {
+          const emptyRow = document.createElement("div");
+          emptyRow.className = "prerequisite-course-row empty-state";
+          emptyRow.dataset.programId = programId;
+          emptyRow.textContent = "Belum ada mata kuliah prasyarat";
+          courseRows.appendChild(emptyRow);
+        }
+      }
+
+      function toggleGradeFieldV2(programId, courseIndex, typeValue) {
+        const section = document.querySelector(
+          `.prerequisites-program-section[data-program-id="${programId}"]`
+        );
+        const row = section.querySelector(
+          `.prerequisite-course-row[data-course-index="${courseIndex}"]`
+        );
+        const gradeField = row.querySelector("[data-grade-field='true']");
+        const gradeSelect = gradeField.querySelector("select");
+
+        if (typeValue === "enrolled") {
+          gradeField.classList.add("prerequisite-type-hidden");
+          gradeSelect.disabled = true;
+          gradeSelect.value = "";
+        } else if (typeValue === "completed") {
+          gradeField.classList.remove("prerequisite-type-hidden");
+          gradeSelect.disabled = false;
+        }
+      }
+
+      function toggleAllPrograms(checkbox) {
+        const programCheckboxes = document.querySelectorAll(
+          '.prerequisites-program-section input[type="checkbox"]'
+        );
+        programCheckboxes.forEach((cb) => {
+          cb.checked = checkbox.checked;
+          cb.dispatchEvent(new Event("change"));
+        });
+      }
+
+      function updateSelectAllState() {
+        const selectAllBtn = document.getElementById("select-all-programs");
+        const programCheckboxes = document.querySelectorAll(
+          '.prerequisites-program-section input[type="checkbox"]'
+        );
+
+        if (programCheckboxes.length === 0) return;
+
+        const checked = Array.from(programCheckboxes).filter((cb) => cb.checked);
+
+        if (checked.length === 0) {
+          selectAllBtn.indeterminate = false;
+          selectAllBtn.checked = false;
+        } else if (checked.length === programCheckboxes.length) {
+          selectAllBtn.indeterminate = false;
+          selectAllBtn.checked = true;
+        } else {
+          selectAllBtn.indeterminate = true;
+        }
+      }
+
+      function updateSetDefaultLabel(pplTypeId) {
+        const setDefaultCheckbox = document.getElementById("set-default-checkbox");
+        const setDefaultLabel = document.getElementById("set-default-label");
+        const selectedPPLType = pplTypes.find((t) => t.id === pplTypeId);
+
+        setDefaultCheckbox.disabled = !pplTypeId;
+
+        if (selectedPPLType) {
+          setDefaultLabel.textContent = `Atur sebagai default mata kuliah prasyarat untuk "${selectedPPLType.name}" mendatang`;
+        } else {
+          setDefaultLabel.textContent = "Atur sebagai default mata kuliah prasyarat untuk jenis PPL";
+        }
+      }
+
+      function collectPrerequisitesDataV2() {
+        const data = [];
+        const sections = document.querySelectorAll(".prerequisites-program-section");
+
+        sections.forEach((section) => {
+          const programId = section.dataset.programId;
+          const checkbox = section.querySelector('input[type="checkbox"]');
+
+          if (!checkbox.checked) return;
+
+          const courseRows = section.querySelectorAll(
+            ".prerequisite-course-row:not(.empty-state)"
+          );
+          const courses = [];
+
+          courseRows.forEach((row) => {
+            const courseCodeInput = row.querySelector('input[data-field="course_code"]');
+            const typeSelect = row.querySelector('select[data-field="type"]');
+            const gradeSelect = row.querySelector('select[data-field="minimum_grade"]');
+
+            const courseCode = courseCodeInput?.value.trim() || "";
+            const type = typeSelect?.value || "";
+            const grade = gradeSelect?.value || null;
+
+            if (courseCode && type) {
+              const courseData = {
+                course_code: courseCode,
+                type: type,
+              };
+
+              if (type === "completed" && grade) {
+                courseData.minimum_grade = grade;
+              }
+
+              courses.push(courseData);
+            }
+          });
+
+          if (courses.length > 0) {
+            data.push({
+              study_program_id: programId,
+              courses: courses,
+            });
+          }
+        });
+
+        return data;
+      }
+
+      function validatePrerequisitesV2() {
+        const errors = [];
+        const sections = document.querySelectorAll(".prerequisites-program-section");
+
+        sections.forEach((section) => {
+          const programId = section.dataset.programId;
+          const checkbox = section.querySelector('input[type="checkbox"]');
+
+          if (!checkbox.checked) return;
+
+          const courseRows = section.querySelectorAll(
+            ".prerequisite-course-row:not(.empty-state)"
+          );
+          const seenCodes = new Set();
+
+          courseRows.forEach((row, rowIdx) => {
+            const courseCodeInput = row.querySelector('input[data-field="course_code"]');
+            const typeSelect = row.querySelector('select[data-field="type"]');
+            const gradeSelect = row.querySelector('select[data-field="minimum_grade"]');
+
+            const courseCode = courseCodeInput?.value.trim() || "";
+            const type = typeSelect?.value || "";
+            const grade = gradeSelect?.value || "";
+
+            // Validate course code
+            if (!courseCode) {
+              courseCodeInput?.classList.add("has-error");
+              errors.push("Kode mata kuliah tidak boleh kosong");
+            } else {
+              courseCodeInput?.classList.remove("has-error");
+
+              // Check for duplicates
+              if (seenCodes.has(courseCode)) {
+                errors.push(`Kode mata kuliah "${courseCode}" duplikat dalam program studi ini`);
+              } else {
+                seenCodes.add(courseCode);
+              }
+            }
+
+            // Validate type
+            if (!type) {
+              typeSelect?.classList.add("has-error");
+              errors.push("Tipe prasyarat harus dipilih");
+            } else {
+              typeSelect?.classList.remove("has-error");
+            }
+
+            // Validate grade if type is completed
+            if (type === "completed" && !grade) {
+              gradeSelect?.classList.add("has-error");
+              errors.push(`Nilai minimum harus dipilih untuk mata kuliah "${courseCode}"`);
+            } else {
+              gradeSelect?.classList.remove("has-error");
+            }
+          });
+        });
+
+        if (errors.length > 0) {
+          console.error("Validation errors:", errors);
+        }
+
+        return errors.length === 0;
+      }
+
+      // ============================================================================
+      // END NEW PREREQUISITES RENDERING (V2)
+      // ============================================================================
 
       function renderPrerequisites(prerequisites, pplTypeId) {
         const list = document.getElementById("study-programs-list");
@@ -2153,6 +2747,7 @@
         const has_requirements = document.getElementById(
           "field-has-requirements",
         ).checked;
+        const set_as_default = document.getElementById("set-default-checkbox").checked;
 
         if (!ppl_type_id) {
           alert("Pilih atau buat jenis PPL terlebih dahulu");
@@ -2160,7 +2755,7 @@
         }
 
         // Validate prerequisites if any were added
-        if (!validatePrerequisites()) {
+        if (!validatePrerequisitesV2()) {
           showErrorDialog(
             "Mohon perbaiki data prasyarat sebelum menyimpan periode",
           );
@@ -2183,7 +2778,7 @@
         }
 
         // Collect prerequisites data
-        const study_program_prerequisites = collectPrerequisitesData();
+        const study_program_prerequisites = collectPrerequisitesDataV2();
 
         const payload = {
           name,
@@ -2195,6 +2790,7 @@
           registration_requirements,
           milestones: milestonesData,
           study_program_prerequisites,
+          set_as_default,
         };
 
         // Show confirmation dialog (Mock - no API call)
