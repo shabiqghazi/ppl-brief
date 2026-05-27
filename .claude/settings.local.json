@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:\\\\Users\\\\sgark\\\\Work\\\\Andromeda Teknologi\\\\2026\\\\SI PPL\\\\\" && node -c admin/periode/index.html 2>&1 | head -20)",
+      "Read(//c/Users/sgark/Work/Andromeda Teknologi/2026/SI PPL\" && node -c admin/periode/**)"
+    ]
+  }
+}
