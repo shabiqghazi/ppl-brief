@@ -420,6 +420,103 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
+
+      /* ── Prerequisites Table ─────────────────────────── */
+      .prereq-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+      .prereq-table thead th {
+        background: #f3f4f6;
+        padding: 0.625rem 0.75rem;
+        text-align: left;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 2px solid var(--border);
+        white-space: nowrap;
+      }
+      .prereq-td {
+        padding: 0.5rem 0.75rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      .prereq-td--checkbox {
+        text-align: center;
+        vertical-align: middle;
+        background: #fafafa;
+        border-right: 1px solid var(--border);
+      }
+      .prereq-td--name {
+        font-weight: 500;
+        color: #1a202c;
+        vertical-align: middle;
+        background: #fafafa;
+        border-right: 1px solid var(--border);
+        min-width: 160px;
+      }
+      .prereq-td--action {
+        text-align: center;
+        white-space: nowrap;
+      }
+      .prereq-td--empty {
+        color: var(--text-muted);
+      }
+      .prereq-row--hidden {
+        display: none;
+      }
+      .prereq-table tbody tr:hover .prereq-td:not(.prereq-td--checkbox):not(.prereq-td--name) {
+        background: #f9fafb;
+      }
+      .prereq-input {
+        width: 100%;
+        min-width: 80px;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8125rem;
+      }
+      .prereq-empty-msg {
+        color: var(--text-muted);
+        font-size: 0.8125rem;
+        margin-right: 1rem;
+      }
+      .prereq-add-btn {
+        background: none;
+        border: 1px dashed var(--border);
+        color: var(--primary);
+        font-size: 0.8125rem;
+        padding: 0.3rem 0.75rem;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .prereq-add-btn:hover {
+        border-color: var(--primary);
+        background: rgba(79,70,229,0.04);
+      }
+      .prereq-row--add td {
+        padding: 0.25rem 0.75rem;
+        border-bottom: 2px solid var(--border);
+      }
+      .prereq-del-btn {
+        background: none;
+        border: none;
+        color: #dc2626;
+        font-size: 1.125rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        transition: background 0.15s;
+      }
+      .prereq-del-btn:hover {
+        background: #fee2e2;
+      }
+      .prereq-program-cb {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -1660,139 +1757,168 @@
       }
 
       // ============================================================================
-      // NEW PREREQUISITES RENDERING (V2)
+      // PREREQUISITES TABLE RENDERING
       // ============================================================================
 
+      // State: { programId -> { checked, courses: [{course_code, type, minimum_grade}] } }
+      let prereqState = {};
+
       function renderPrerequisitesV2(prerequisites, pplTypeId) {
-        const container = document.getElementById("study-programs-list");
-        container.innerHTML = "";
-
-        prerequisites.forEach((program) => {
-          const programSection = document.createElement("div");
-          programSection.className = "prerequisites-program-section";
-          programSection.dataset.programId = program.study_program_id;
-
-          // Header with checkbox
-          const header = document.createElement("div");
-          header.className = "prerequisites-program-header";
-
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.dataset.programId = program.study_program_id;
-          checkbox.onchange = () =>
-            toggleProgramCourses(program.study_program_id, checkbox.checked);
-
-          // Auto-check if has courses
-          if (program.courses && program.courses.length > 0) {
-            checkbox.checked = true;
-          }
-
-          const title = document.createElement("div");
-          title.className = "prerequisites-program-title";
-          title.textContent = program.study_program_name;
-
-          header.appendChild(checkbox);
-          header.appendChild(title);
-          programSection.appendChild(header);
-
-          // Courses section
-          const coursesContainer = document.createElement("div");
-          coursesContainer.className = "prerequisites-program-courses";
-          if (program.courses && program.courses.length > 0) {
-            coursesContainer.classList.add("active");
-          }
-          coursesContainer.dataset.programId = program.study_program_id;
-
-          // Render existing courses
-          const courseRows = document.createElement("div");
-          courseRows.className = "prerequisite-course-rows";
-          courseRows.dataset.programId = program.study_program_id;
-
-          if (program.courses && program.courses.length > 0) {
-            program.courses.forEach((course, idx) => {
-              const row = createCourseRow(
-                program.study_program_id,
-                idx,
-                course,
-              );
-              courseRows.appendChild(row);
-            });
-          } else {
-            const emptyRow = document.createElement("div");
-            emptyRow.className = "prerequisite-course-row empty-state";
-            emptyRow.dataset.programId = program.study_program_id;
-            emptyRow.textContent = "Belum ada mata kuliah prasyarat";
-            courseRows.appendChild(emptyRow);
-          }
-
-          coursesContainer.appendChild(courseRows);
-
-          // Add button
-          const addBtn = document.createElement("button");
-          addBtn.type = "button";
-          addBtn.className = "add-prerequisite-row-btn";
-          addBtn.textContent = "+ Tambah Mata Kuliah Prasyarat";
-          addBtn.onclick = () => addPrerequisiteRowV2(program.study_program_id);
-          coursesContainer.appendChild(addBtn);
-
-          programSection.appendChild(coursesContainer);
-          container.appendChild(programSection);
+        // Build initial state from loaded data
+        prereqState = {};
+        prerequisites.forEach((p) => {
+          prereqState[p.study_program_id] = {
+            name: p.study_program_name,
+            checked: p.courses && p.courses.length > 0,
+            courses: p.courses && p.courses.length > 0
+              ? p.courses.map((c) => ({ course_code: c.course_code || "", type: c.type || "", minimum_grade: c.minimum_grade || "" }))
+              : [],
+          };
         });
 
-        // Update set default button label
+        rebuildTable(prerequisites);
         updateSetDefaultLabel(pplTypeId);
         updateSelectAllState();
       }
 
-      function createCourseRow(programId, index, course = {}) {
-        const row = document.createElement("div");
-        row.className = "prerequisite-course-row";
-        row.dataset.programId = programId;
-        row.dataset.courseIndex = index;
+      function rebuildTable(programList) {
+        const container = document.getElementById("study-programs-list");
+        container.innerHTML = "";
 
-        // Course code field
-        const codeField = document.createElement("div");
-        codeField.className = "prerequisite-course-field";
-        const codeLabel = document.createElement("label");
-        codeLabel.textContent = "Kode Mata Kuliah";
+        const table = document.createElement("table");
+        table.className = "prereq-table";
+
+        // Header
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th style="width:44px"></th>
+              <th>Program Studi</th>
+              <th>Kode Mata Kuliah</th>
+              <th>Tipe Prasyarat</th>
+              <th>Nilai Minimum</th>
+              <th style="width:56px"></th>
+            </tr>
+          </thead>
+        `;
+
+        const tbody = document.createElement("tbody");
+
+        programList.forEach((program) => {
+          const pid = program.study_program_id;
+          const state = prereqState[pid];
+          const courses = state.courses;
+          const isChecked = state.checked;
+
+          if (courses.length === 0) {
+            // Single row: empty state
+            const tr = document.createElement("tr");
+            tr.dataset.programId = pid;
+            tr.className = "prereq-row";
+            if (!isChecked) tr.classList.add("prereq-row--hidden");
+
+            tr.innerHTML = `
+              <td class="prereq-td prereq-td--checkbox" rowspan="1">
+                <input type="checkbox" class="prereq-program-cb" data-program-id="${pid}" ${isChecked ? "checked" : ""}>
+              </td>
+              <td class="prereq-td prereq-td--name" rowspan="1">${program.study_program_name}</td>
+              <td class="prereq-td prereq-td--empty" colspan="4">
+                <span class="prereq-empty-msg">Belum ada mata kuliah prasyarat</span>
+                <button type="button" class="prereq-add-btn" data-program-id="${pid}">+ Tambah</button>
+              </td>
+            `;
+
+            tr.querySelector(".prereq-program-cb").onchange = (e) => onProgramCbChange(pid, e.target.checked);
+            tr.querySelector(".prereq-add-btn").onclick = () => addCourseToProgram(pid);
+            tbody.appendChild(tr);
+          } else {
+            courses.forEach((course, idx) => {
+              const tr = buildCourseRow(pid, program.study_program_name, idx, course, courses.length, isChecked);
+              tbody.appendChild(tr);
+            });
+
+            // Add button row
+            const addTr = document.createElement("tr");
+            addTr.dataset.programId = pid;
+            addTr.dataset.rowType = "add";
+            addTr.className = "prereq-row prereq-row--add";
+            if (!isChecked) addTr.classList.add("prereq-row--hidden");
+            addTr.innerHTML = `<td colspan="6" style="padding:0.25rem 0.75rem">
+              <button type="button" class="prereq-add-btn" data-program-id="${pid}">+ Tambah Mata Kuliah</button>
+            </td>`;
+            addTr.querySelector(".prereq-add-btn").onclick = () => addCourseToProgram(pid);
+            tbody.appendChild(addTr);
+          }
+        });
+
+        table.appendChild(tbody);
+        container.appendChild(table);
+      }
+
+      function buildCourseRow(pid, programName, idx, course, totalCourses, isChecked) {
+        const tr = document.createElement("tr");
+        tr.dataset.programId = pid;
+        tr.dataset.courseIndex = String(idx);
+        tr.className = "prereq-row";
+        if (!isChecked) tr.classList.add("prereq-row--hidden");
+
+        // Col 1: checkbox (rowspan, only on first row)
+        if (idx === 0) {
+          const tdCb = document.createElement("td");
+          tdCb.className = "prereq-td prereq-td--checkbox";
+          tdCb.rowSpan = totalCourses + 1; // +1 for add-btn row
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.className = "prereq-program-cb";
+          cb.dataset.programId = pid;
+          cb.checked = isChecked;
+          cb.onchange = (e) => onProgramCbChange(pid, e.target.checked);
+          tdCb.appendChild(cb);
+          tr.appendChild(tdCb);
+        }
+
+        // Col 2: program name (rowspan, only on first row)
+        if (idx === 0) {
+          const tdName = document.createElement("td");
+          tdName.className = "prereq-td prereq-td--name";
+          tdName.rowSpan = totalCourses + 1;
+          tdName.textContent = programName;
+          tr.appendChild(tdName);
+        }
+
+        // Col 3: course code
+        const tdCode = document.createElement("td");
+        tdCode.className = "prereq-td";
         const codeInput = document.createElement("input");
         codeInput.type = "text";
-        codeInput.className = "form-input";
+        codeInput.className = "form-input prereq-input";
         codeInput.placeholder = "Contoh: MAT101";
         codeInput.value = course.course_code || "";
         codeInput.dataset.field = "course_code";
-        codeField.appendChild(codeLabel);
-        codeField.appendChild(codeInput);
+        tdCode.appendChild(codeInput);
+        tr.appendChild(tdCode);
 
-        // Type field
-        const typeField = document.createElement("div");
-        typeField.className = "prerequisite-course-field";
-        const typeLabel = document.createElement("label");
-        typeLabel.textContent = "Tipe Prasyarat";
+        // Col 4: type
+        const tdType = document.createElement("td");
+        tdType.className = "prereq-td";
         const typeSelect = document.createElement("select");
-        typeSelect.className = "form-input";
+        typeSelect.className = "form-input prereq-input";
+        typeSelect.dataset.field = "type";
         typeSelect.innerHTML = `
           <option value="">Pilih…</option>
           <option value="completed" ${course.type === "completed" ? "selected" : ""}>Completed</option>
           <option value="enrolled" ${course.type === "enrolled" ? "selected" : ""}>Enrolled</option>
         `;
-        typeSelect.dataset.field = "type";
-        typeSelect.onchange = () =>
-          toggleGradeFieldV2(programId, index, typeSelect.value);
-        typeField.appendChild(typeLabel);
-        typeField.appendChild(typeSelect);
+        typeSelect.onchange = () => onTypeChange(tr, typeSelect.value);
+        tdType.appendChild(typeSelect);
+        tr.appendChild(tdType);
 
-        // Grade field (conditional)
-        const gradeField = document.createElement("div");
-        gradeField.className = "prerequisite-course-field";
-        if (course.type === "enrolled") {
-          gradeField.classList.add("prerequisite-type-hidden");
-        }
-        gradeField.dataset.gradeField = true;
-        const gradeLabel = document.createElement("label");
-        gradeLabel.textContent = "Nilai Minimum";
+        // Col 5: minimum grade
+        const tdGrade = document.createElement("td");
+        tdGrade.className = "prereq-td";
         const gradeSelect = document.createElement("select");
-        gradeSelect.className = "form-input";
+        gradeSelect.className = "form-input prereq-input";
+        gradeSelect.dataset.field = "minimum_grade";
         gradeSelect.innerHTML = `
           <option value="">Pilih…</option>
           <option value="A" ${course.minimum_grade === "A" ? "selected" : ""}>A</option>
@@ -1801,167 +1927,122 @@
           <option value="D" ${course.minimum_grade === "D" ? "selected" : ""}>D</option>
           <option value="E" ${course.minimum_grade === "E" ? "selected" : ""}>E</option>
         `;
-        gradeSelect.dataset.field = "minimum_grade";
-        if (course.type === "enrolled") {
-          gradeSelect.disabled = true;
+        if (course.type !== "completed") {
+          gradeSelect.style.visibility = "hidden";
         }
-        gradeField.appendChild(gradeLabel);
-        gradeField.appendChild(gradeSelect);
+        tdGrade.appendChild(gradeSelect);
+        tr.appendChild(tdGrade);
 
-        // Delete button
-        const deleteBtn = document.createElement("button");
-        deleteBtn.type = "button";
-        deleteBtn.className = "delete-prereq-btn";
-        deleteBtn.textContent = "×";
-        deleteBtn.onclick = () => deletePrerequisiteRowV2(programId, index);
+        // Col 6: delete
+        const tdDel = document.createElement("td");
+        tdDel.className = "prereq-td prereq-td--action";
+        const delBtn = document.createElement("button");
+        delBtn.type = "button";
+        delBtn.className = "prereq-del-btn";
+        delBtn.textContent = "×";
+        delBtn.onclick = () => deleteCourseFromProgram(pid, idx);
+        tdDel.appendChild(delBtn);
+        tr.appendChild(tdDel);
 
-        row.appendChild(codeField);
-        row.appendChild(typeField);
-        row.appendChild(gradeField);
-        row.appendChild(deleteBtn);
-
-        return row;
+        return tr;
       }
 
-      function toggleProgramCourses(programId, isChecked) {
-        const section = document.querySelector(
-          `.prerequisites-program-section[data-program-id="${programId}"]`,
-        );
-        const coursesContainer = section.querySelector(
-          `.prerequisites-program-courses[data-program-id="${programId}"]`,
-        );
-        const courseRows = section.querySelector(
-          `.prerequisite-course-rows[data-program-id="${programId}"]`,
-        );
-
-        if (isChecked) {
-          coursesContainer.classList.add("active");
-          // Add empty row if no courses exist
-          const existingRows = courseRows.querySelectorAll(
-            ".prerequisite-course-row:not(.empty-state)",
-          );
-          if (existingRows.length === 0) {
-            const emptyRow = courseRows.querySelector(".empty-state");
-            if (emptyRow) emptyRow.remove();
-            const newRow = createCourseRow(programId, 0);
-            courseRows.appendChild(newRow);
-          }
+      function onTypeChange(tr, typeValue) {
+        const gradeSelect = tr.querySelector('[data-field="minimum_grade"]');
+        if (typeValue === "completed") {
+          gradeSelect.style.visibility = "";
         } else {
-          coursesContainer.classList.remove("active");
-          // Clear all courses for this program
-          const rows = courseRows.querySelectorAll(".prerequisite-course-row");
-          rows.forEach((row) => row.remove());
-          // Show empty state
-          const emptyRow = document.createElement("div");
-          emptyRow.className = "prerequisite-course-row empty-state";
-          emptyRow.dataset.programId = programId;
-          emptyRow.textContent = "Belum ada mata kuliah prasyarat";
-          courseRows.appendChild(emptyRow);
+          gradeSelect.style.visibility = "hidden";
+          gradeSelect.value = "";
         }
+      }
 
+      function onProgramCbChange(pid, isChecked) {
+        prereqState[pid].checked = isChecked;
+        const table = document.querySelector(".prereq-table");
+        table.querySelectorAll(`tr[data-program-id="${pid}"]`).forEach((tr) => {
+          if (isChecked) {
+            tr.classList.remove("prereq-row--hidden");
+          } else {
+            tr.classList.add("prereq-row--hidden");
+          }
+        });
         updateSelectAllState();
       }
 
-      function addPrerequisiteRowV2(programId) {
-        const section = document.querySelector(
-          `.prerequisites-program-section[data-program-id="${programId}"]`,
-        );
-        const courseRows = section.querySelector(
-          `.prerequisite-course-rows[data-program-id="${programId}"]`,
-        );
+      function addCourseToProgram(pid) {
+        const programList = Object.keys(prereqState).map((id) => ({
+          study_program_id: id,
+          study_program_name: prereqState[id].name,
+        }));
 
-        // Remove empty state if exists
-        const emptyRow = courseRows.querySelector(".empty-state");
-        if (emptyRow) emptyRow.remove();
+        // Save current input values back to state
+        syncStateFromTable();
 
-        // Find max index
-        const existingRows = courseRows.querySelectorAll(
-          ".prerequisite-course-row",
-        );
-        const maxIndex = Math.max(
-          -1,
-          ...Array.from(existingRows).map(
-            (r) => parseInt(r.dataset.courseIndex) || 0,
-          ),
-        );
-        const newIndex = maxIndex + 1;
+        prereqState[pid].courses.push({ course_code: "", type: "", minimum_grade: "" });
+        prereqState[pid].checked = true;
 
-        const newRow = createCourseRow(programId, newIndex);
-        courseRows.appendChild(newRow);
+        rebuildTable(programList);
+        updateSelectAllState();
       }
 
-      function deletePrerequisiteRowV2(programId, index) {
-        const section = document.querySelector(
-          `.prerequisites-program-section[data-program-id="${programId}"]`,
-        );
-        const courseRows = section.querySelector(
-          `.prerequisite-course-rows[data-program-id="${programId}"]`,
-        );
-        const row = courseRows.querySelector(
-          `.prerequisite-course-row[data-course-index="${index}"]`,
-        );
+      function deleteCourseFromProgram(pid, idx) {
+        syncStateFromTable();
+        prereqState[pid].courses.splice(idx, 1);
 
-        if (row) row.remove();
-
-        // Show empty state if no rows left
-        const remaining = courseRows.querySelectorAll(
-          ".prerequisite-course-row:not(.empty-state)",
-        );
-        if (remaining.length === 0) {
-          const emptyRow = document.createElement("div");
-          emptyRow.className = "prerequisite-course-row empty-state";
-          emptyRow.dataset.programId = programId;
-          emptyRow.textContent = "Belum ada mata kuliah prasyarat";
-          courseRows.appendChild(emptyRow);
-        }
+        const programList = Object.keys(prereqState).map((id) => ({
+          study_program_id: id,
+          study_program_name: prereqState[id].name,
+        }));
+        rebuildTable(programList);
+        updateSelectAllState();
       }
 
-      function toggleGradeFieldV2(programId, courseIndex, typeValue) {
-        const section = document.querySelector(
-          `.prerequisites-program-section[data-program-id="${programId}"]`,
-        );
-        const row = section.querySelector(
-          `.prerequisite-course-row[data-course-index="${courseIndex}"]`,
-        );
-        const gradeField = row.querySelector("[data-grade-field]");
-        const gradeSelect = gradeField.querySelector("select");
+      function syncStateFromTable() {
+        const table = document.querySelector(".prereq-table");
+        if (!table) return;
 
-        if (typeValue === "enrolled") {
-          gradeField.classList.add("prerequisite-type-hidden");
-          gradeSelect.disabled = true;
-          gradeSelect.value = "";
-        } else if (typeValue === "completed") {
-          gradeField.classList.remove("prerequisite-type-hidden");
-          gradeSelect.disabled = false;
-        }
+        Object.keys(prereqState).forEach((pid) => {
+          const courseRows = Array.from(
+            table.querySelectorAll(`tr[data-program-id="${pid}"][data-course-index]`)
+          );
+          if (courseRows.length > 0) {
+            prereqState[pid].courses = courseRows.map((tr) => ({
+              course_code: tr.querySelector('[data-field="course_code"]')?.value || "",
+              type: tr.querySelector('[data-field="type"]')?.value || "",
+              minimum_grade: tr.querySelector('[data-field="minimum_grade"]')?.value || "",
+            }));
+          }
+          const cb = table.querySelector(`.prereq-program-cb[data-program-id="${pid}"]`);
+          if (cb) prereqState[pid].checked = cb.checked;
+        });
       }
 
       function toggleAllPrograms(checkbox) {
-        const programCheckboxes = document.querySelectorAll(
-          '.prerequisites-program-section input[type="checkbox"]',
-        );
-        programCheckboxes.forEach((cb) => {
-          cb.checked = checkbox.checked;
-          cb.dispatchEvent(new Event("change"));
+        syncStateFromTable();
+        Object.keys(prereqState).forEach((pid) => {
+          prereqState[pid].checked = checkbox.checked;
         });
+        document.querySelectorAll(".prereq-program-cb").forEach((cb) => {
+          cb.checked = checkbox.checked;
+          onProgramCbChange(cb.dataset.programId, checkbox.checked);
+        });
+        updateSelectAllState();
       }
 
       function updateSelectAllState() {
         const selectAllBtn = document.getElementById("select-all-programs");
-        const programCheckboxes = document.querySelectorAll(
-          '.prerequisites-program-section input[type="checkbox"]',
-        );
-
-        if (programCheckboxes.length === 0) return;
-
-        const checked = Array.from(programCheckboxes).filter(
-          (cb) => cb.checked,
-        );
-
-        if (checked.length === 0) {
+        const cbs = document.querySelectorAll(".prereq-program-cb");
+        if (cbs.length === 0) {
           selectAllBtn.indeterminate = false;
           selectAllBtn.checked = false;
-        } else if (checked.length === programCheckboxes.length) {
+          return;
+        }
+        const checkedCount = Array.from(cbs).filter((cb) => cb.checked).length;
+        if (checkedCount === 0) {
+          selectAllBtn.indeterminate = false;
+          selectAllBtn.checked = false;
+        } else if (checkedCount === cbs.length) {
           selectAllBtn.indeterminate = false;
           selectAllBtn.checked = true;
         } else {
@@ -1970,9 +2051,7 @@
       }
 
       function updateSetDefaultLabel(pplTypeId) {
-        const setDefaultCheckbox = document.getElementById(
-          "set-default-checkbox",
-        );
+        const setDefaultCheckbox = document.getElementById("set-default-checkbox");
         const setDefaultLabel = document.getElementById("set-default-label");
         const selectedPPLType = pplTypes.find((t) => t.id === pplTypeId);
 
@@ -1981,68 +2060,51 @@
         if (selectedPPLType) {
           setDefaultLabel.textContent = `Atur sebagai default mata kuliah prasyarat untuk "${selectedPPLType.name}" mendatang`;
         } else {
-          setDefaultLabel.textContent =
-            "Atur sebagai default mata kuliah prasyarat untuk jenis PPL";
+          setDefaultLabel.textContent = "Atur sebagai default mata kuliah prasyarat untuk jenis PPL";
         }
       }
 
       function collectPrerequisitesDataV2() {
+        syncStateFromTable();
         const data = [];
-        const sections = document.querySelectorAll(
-          ".prerequisites-program-section",
-        );
-
-        sections.forEach((section) => {
-          const programId = section.dataset.programId;
-          const checkbox = section.querySelector('input[type="checkbox"]');
-
-          if (!checkbox.checked) return;
-
-          const courseRows = section.querySelectorAll(
-            ".prerequisite-course-row:not(.empty-state)",
-          );
-          const courses = [];
-
-          courseRows.forEach((row) => {
-            const courseCodeInput = row.querySelector(
-              'input[data-field="course_code"]',
-            );
-            const typeSelect = row.querySelector('select[data-field="type"]');
-            const gradeSelect = row.querySelector(
-              'select[data-field="minimum_grade"]',
-            );
-
-            const courseCode = courseCodeInput?.value.trim() || "";
-            const type = typeSelect?.value || "";
-            const grade = gradeSelect?.value || null;
-
-            if (courseCode && type) {
-              const courseData = {
-                course_code: courseCode,
-                type: type,
-              };
-
-              if (type === "completed" && grade) {
-                courseData.minimum_grade = grade;
-              }
-
-              courses.push(courseData);
-            }
-          });
-
-          if (courses.length > 0) {
-            data.push({
-              study_program_id: programId,
-              courses: courses,
+        Object.keys(prereqState).forEach((pid) => {
+          const s = prereqState[pid];
+          if (!s.checked) return;
+          const courses = s.courses
+            .filter((c) => c.course_code && c.type)
+            .map((c) => {
+              const obj = { course_code: c.course_code, type: c.type };
+              if (c.type === "completed" && c.minimum_grade) obj.minimum_grade = c.minimum_grade;
+              return obj;
             });
+          if (courses.length > 0) {
+            data.push({ study_program_id: pid, courses });
           }
         });
-
         return data;
       }
 
+      function validatePrerequisitesV2() {
+        syncStateFromTable();
+        const errors = [];
+        Object.keys(prereqState).forEach((pid) => {
+          const s = prereqState[pid];
+          if (!s.checked) return;
+          const seen = new Set();
+          s.courses.forEach((c, idx) => {
+            if (!c.course_code) errors.push(`${s.name}: kode mata kuliah baris ${idx + 1} kosong`);
+            if (!c.type) errors.push(`${s.name}: tipe prasyarat baris ${idx + 1} belum dipilih`);
+            if (c.type === "completed" && !c.minimum_grade) errors.push(`${s.name}: nilai minimum baris ${idx + 1} belum dipilih`);
+            if (c.course_code && seen.has(c.course_code)) errors.push(`${s.name}: kode "${c.course_code}" duplikat`);
+            if (c.course_code) seen.add(c.course_code);
+          });
+        });
+        if (errors.length > 0) console.error("Prerequisite errors:", errors);
+        return errors.length === 0;
+      }
+
       // ============================================================================
-      // END NEW PREREQUISITES RENDERING (V2)
+      // END PREREQUISITES TABLE RENDERING
       // ============================================================================
 
       function renderPrerequisites(prerequisites, pplTypeId) {
