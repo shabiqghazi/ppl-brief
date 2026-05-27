@@ -463,8 +463,8 @@
       .prereq-td--empty {
         color: var(--text-muted);
       }
-      .prereq-row--hidden {
-        display: none;
+      .prereq-row--unchecked td:not(.prereq-td--checkbox) {
+        opacity: 0.4;
       }
       .prereq-table tbody tr:hover .prereq-td:not(.prereq-td--checkbox):not(.prereq-td--name) {
         background: #f9fafb;
@@ -1815,7 +1815,7 @@
             const tr = document.createElement("tr");
             tr.dataset.programId = pid;
             tr.className = "prereq-row";
-            if (!isChecked) tr.classList.add("prereq-row--hidden");
+            if (!isChecked) tr.classList.add("prereq-row--unchecked");
 
             tr.innerHTML = `
               <td class="prereq-td prereq-td--checkbox" rowspan="1">
@@ -1842,7 +1842,7 @@
             addTr.dataset.programId = pid;
             addTr.dataset.rowType = "add";
             addTr.className = "prereq-row prereq-row--add";
-            if (!isChecked) addTr.classList.add("prereq-row--hidden");
+            if (!isChecked) addTr.classList.add("prereq-row--unchecked");
             addTr.innerHTML = `<td colspan="6" style="padding:0.25rem 0.75rem">
               <button type="button" class="prereq-add-btn" data-program-id="${pid}">+ Tambah Mata Kuliah</button>
             </td>`;
@@ -1860,7 +1860,7 @@
         tr.dataset.programId = pid;
         tr.dataset.courseIndex = String(idx);
         tr.className = "prereq-row";
-        if (!isChecked) tr.classList.add("prereq-row--hidden");
+        if (!isChecked) tr.classList.add("prereq-row--unchecked");
 
         // Col 1: checkbox (rowspan, only on first row)
         if (idx === 0) {
@@ -1962,9 +1962,9 @@
         const table = document.querySelector(".prereq-table");
         table.querySelectorAll(`tr[data-program-id="${pid}"]`).forEach((tr) => {
           if (isChecked) {
-            tr.classList.remove("prereq-row--hidden");
+            tr.classList.remove("prereq-row--unchecked");
           } else {
-            tr.classList.add("prereq-row--hidden");
+            tr.classList.add("prereq-row--unchecked");
           }
         });
         updateSelectAllState();
