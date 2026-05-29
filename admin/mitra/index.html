@@ -423,6 +423,45 @@
         color: var(--text-muted);
         font-size: 0.875rem;
       }
+
+      /* ── Kuota tooltip ───────────────────────────── */
+      .kuota-cell {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        cursor: default;
+      }
+      .kuota-tip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1f2937;
+        color: #f9fafb;
+        font-size: 0.75rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s;
+        z-index: 50;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      }
+      .kuota-tip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #1f2937;
+      }
+      .kuota-tip-row { display: flex; gap: 1rem; justify-content: space-between; line-height: 1.75; }
+      .kuota-tip-label { color: #d1d5db; }
+      .kuota-tip-val { font-weight: 600; color: #f9fafb; }
+      .kuota-cell:hover .kuota-tip { opacity: 1; }
     </style>
   </head>
   <body>
@@ -504,6 +543,13 @@
               <option value="SMA/SMK/MA">SMA/SMK/MA</option>
               <option value="SLB">SLB</option>
             </select>
+            <select
+              id="filter-prodi"
+              class="form-input"
+              onchange="applyFilters()"
+            >
+              <option value="">Semua Prodi</option>
+            </select>
           </div>
 
           <!-- Table -->
@@ -525,9 +571,9 @@
                       <span class="sort-icon" id="sort-jenjang">▲▼</span>
                     </th>
                     <th>PIC</th>
-                    <th class="sortable-th" onclick="sortBy('jumlahProdi')">
-                      Jumlah Prodi
-                      <span class="sort-icon" id="sort-jumlahProdi">▲▼</span>
+                    <th class="sortable-th" onclick="sortBy('totalKuota')">
+                      Kuota
+                      <span class="sort-icon" id="sort-totalKuota">▲▼</span>
                     </th>
                     <th style="width: 120px">Aksi</th>
                   </tr>
@@ -834,28 +880,26 @@
       // ═══════════════════════════════════════════════════════
       // RENDER TABLE
       // ═══════════════════════════════════════════════════════
+      function totalKuota(s) {
+        return s.prodiKuota.reduce((sum, p) => sum + (p.kuota || 0), 0);
+      }
+
       function applyFilters() {
-        const q = document
-          .getElementById("search-input")
-          .value.toLowerCase()
-          .trim();
+        const q = document.getElementById("search-input").value.toLowerCase().trim();
         const jenjang = document.getElementById("filter-jenjang").value;
+        const prodi = document.getElementById("filter-prodi").value;
 
         filtered = schools.filter((s) => {
-          const matchQ =
-            !q || s.namaSekolah.toLowerCase().includes(q) || s.npsn.includes(q);
+          const matchQ = !q || s.namaSekolah.toLowerCase().includes(q) || s.npsn.includes(q);
           const matchJ = !jenjang || s.jenjang === jenjang;
-          return matchQ && matchJ;
+          const matchP = !prodi || s.prodiKuota.some((p) => p.prodiId === prodi);
+          return matchQ && matchJ && matchP;
         });
 
         if (sortField) {
           filtered.sort((a, b) => {
-            let av = a[sortField],
-              bv = b[sortField];
-            if (sortField === "jumlahProdi") {
-              av = a.prodiKuota.length;
-              bv = b.prodiKuota.length;
-            }
+            let av = a[sortField], bv = b[sortField];
+            if (sortField === "totalKuota") { av = totalKuota(a); bv = totalKuota(b); }
             if (typeof av === "string") return sortDir * av.localeCompare(bv);
             return sortDir * (av - bv);
           });
@@ -904,10 +948,22 @@
           .map((s, i) => {
             const no = start + i + 1;
             const badge = jenjangBadge(s.jenjang);
-            const prodiCount = s.prodiKuota.length;
+            const total = totalKuota(s);
             const pic = s.picNama
               ? `<div style="font-size:.875rem">${s.picNama}</div><div class="text-sm text-muted">${s.picKontak || ""}</div>`
               : `<span class="text-muted">—</span>`;
+
+            const tipRows = s.prodiKuota.map((p) => {
+              const label = PRODI_OPTIONS.find((o) => o.id === p.prodiId)?.label || p.prodiId;
+              return `<div class="kuota-tip-row"><span class="kuota-tip-label">${label}</span><span class="kuota-tip-val">${p.kuota}</span></div>`;
+            }).join("");
+
+            const kuotaCell = `
+              <div class="kuota-cell">
+                <span style="font-weight:600">${total}</span>
+                <span style="font-size:.75rem;color:var(--text-muted)">slot</span>
+                <div class="kuota-tip">${tipRows}</div>
+              </div>`;
 
             return `<tr>
             <td style="color:var(--text-muted);font-size:.8rem">${no}</td>
@@ -918,7 +974,7 @@
             <td style="font-family:monospace;font-size:.875rem">${s.npsn}</td>
             <td>${badge}</td>
             <td>${pic}</td>
-            <td><span style="font-weight:600">${prodiCount}</span> prodi</td>
+            <td>${kuotaCell}</td>
             <td>
               <div style="display:flex;gap:.375rem">
                 <button class="btn-icon" onclick="openDrawer('edit', ${s.id})">Edit</button>
@@ -1281,6 +1337,16 @@
       // ═══════════════════════════════════════════════════════
       // INIT
       // ═══════════════════════════════════════════════════════
+      (function populateProdiFilter() {
+        const sel = document.getElementById("filter-prodi");
+        PRODI_OPTIONS.forEach((p) => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.label;
+          sel.appendChild(opt);
+        });
+      })();
+
       renderTable(true);
       setTimeout(() => {
         applyFilters();
