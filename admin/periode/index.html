@@ -3749,10 +3749,12 @@
 
       function selectSchool(sekolah) {
         // Populate form with selected school
-        document.getElementById("mode-pilih-sekolah").style.display = "none";
+        const searchSekolahInput = document.getElementById("pilih-search");
+        searchSekolahInput.value = `${sekolah.nama} - ${sekolah.npsn}`;
         const kuotaRows = document.getElementById("kuota-rows");
         kuotaRows.innerHTML = "";
-
+        const resultsDiv = document.getElementById("school-results");
+        resultsDiv.classList.remove("open");
         // Show kuota form
         sekolah.kuota.forEach((k) => {
           addKuotaRow(k.prodi, k.kuota, k.ipk_min);
