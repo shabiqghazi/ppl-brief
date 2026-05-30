@@ -466,7 +466,10 @@
       .prereq-row--unchecked td:not(.prereq-td--checkbox) {
         opacity: 0.4;
       }
-      .prereq-table tbody tr:hover .prereq-td:not(.prereq-td--checkbox):not(.prereq-td--name) {
+      .prereq-table
+        tbody
+        tr:hover
+        .prereq-td:not(.prereq-td--checkbox):not(.prereq-td--name) {
         background: #f9fafb;
       }
       .prereq-input {
@@ -492,7 +495,7 @@
       }
       .prereq-add-btn:hover {
         border-color: var(--primary);
-        background: rgba(79,70,229,0.04);
+        background: rgba(79, 70, 229, 0.04);
       }
       .prereq-row--add td {
         padding: 0.25rem 0.75rem;
@@ -516,6 +519,215 @@
         width: 16px;
         height: 16px;
         cursor: pointer;
+      }
+
+      /* ── Drawer Styles ─────────────────────────── */
+      .drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 50;
+      }
+      .drawer-overlay.open {
+        display: block;
+      }
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: 100%;
+        max-width: 500px;
+        background: var(--white);
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        z-index: 51;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+      }
+      .drawer-overlay.open .drawer {
+        transform: translateX(0);
+      }
+      .drawer-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .drawer-header h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .drawer-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.25rem;
+        color: var(--text-muted);
+      }
+      .drawer-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+      }
+      .drawer-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      /* Toggle Mode Button */
+      .toggle-mode-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1rem;
+      }
+      .toggle-mode-btn {
+        flex: 1;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: all 0.2s;
+      }
+      .toggle-mode-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+      .toggle-mode-btn:hover {
+        border-color: var(--primary);
+      }
+
+      /* Dynamic Array for Kuota */
+      .kuota-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .kuota-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 40px;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-radius: 0.375rem;
+        border: 1px solid var(--border);
+      }
+      .kuota-row-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .kuota-row-field label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+      .kuota-row-delete {
+        padding: 0.25rem;
+        font-size: 1rem;
+        color: var(--danger);
+        background: none;
+        border: none;
+        cursor: pointer;
+        height: 24px;
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        margin-top: auto;
+      }
+      .kuota-row-delete:hover {
+        background: #fee2e2;
+        border-radius: 0.25rem;
+      }
+      .add-kuota-row-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        color: var(--primary);
+        background: none;
+        border: 1px dashed var(--border);
+        cursor: pointer;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        width: 100%;
+        text-align: center;
+      }
+      .add-kuota-row-btn:hover {
+        border-color: var(--primary);
+        background: rgba(79, 70, 229, 0.05);
+      }
+
+      /* School Search Results */
+      .school-search-results {
+        display: none;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+      }
+      .school-search-results.open {
+        display: block;
+      }
+      .school-item {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .school-item:last-child {
+        border-bottom: none;
+      }
+      .school-item:hover {
+        background: #f9fafb;
+      }
+      .school-item.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .school-item-name {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: var(--text-main);
+      }
+      .school-item-meta {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+      .school-item-badge {
+        display: inline-block;
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+        font-size: 0.65rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+      }
+
+      /* Confirmation Modal */
+      .confirm-modal-text {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: var(--text-main);
+        margin-bottom: 1.5rem;
       }
     </style>
   </head>
@@ -832,97 +1044,135 @@
               </div>
             </div>
 
-            <!-- Sekolah tab -->
+            <!-- Sekolah Mitra tab -->
             <div class="dtab-panel">
               <div class="flex justify-between items-center mb-4">
-                <p class="text-sm text-muted">12 sekolah mitra terdaftar</p>
+                <p class="text-sm text-muted" id="sekolah-count">
+                  12 sekolah mitra terdaftar
+                </p>
                 <div style="display: flex; gap: 0.5rem">
                   <button class="btn btn-outline">⬆ Import Excel</button>
-                  <button class="btn btn-primary">+ Tambah Sekolah</button>
+                  <button
+                    class="btn btn-primary"
+                    onclick="openAddSekolahDrawer()"
+                  >
+                    + Tambah Sekolah Mitra
+                  </button>
                 </div>
               </div>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Sekolah</th>
-                    <th>Prodi &amp; Kuota</th>
-                    <th>Syarat</th>
-                    <th>Terisi</th>
-                    <th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      <div style="font-weight: 500">MAN 1 Bandung</div>
-                      <div class="text-sm text-muted">NPSN: 40300001</div>
-                    </td>
-                    <td>
-                      <span style="font-size: 0.75rem">PAI: 5 | PBA: 3</span>
-                    </td>
-                    <td class="text-sm text-muted">IPK ≥ 3.0 | Semua gender</td>
-                    <td>
-                      <span style="color: var(--success); font-weight: 500"
-                        >6/8</span
+
+              <!-- Filter & Search Bar -->
+              <div class="filter-bar">
+                <input
+                  type="text"
+                  class="form-input"
+                  placeholder="Cari nama sekolah atau NPSN..."
+                  id="sekolah-search"
+                  style="max-width: 250px"
+                  onkeyup="filterSekolahTable()"
+                />
+                <select
+                  class="form-input"
+                  id="sekolah-jenjang"
+                  style="max-width: 180px"
+                  onchange="filterSekolahTable()"
+                >
+                  <option value="">Semua Jenjang</option>
+                  <option value="PAUD/TK">PAUD/TK</option>
+                  <option value="SD/MI">SD/MI</option>
+                  <option value="SMP/MTs">SMP/MTs</option>
+                  <option value="SMA/SMK/MA">SMA/SMK/MA</option>
+                  <option value="SLB">SLB</option>
+                </select>
+                <select
+                  class="form-input"
+                  id="sekolah-prodi"
+                  style="max-width: 200px"
+                  onchange="filterSekolahTable()"
+                >
+                  <option value="">Semua Program Studi</option>
+                  <option value="PAI">Pendidikan Agama Islam (PAI)</option>
+                  <option value="PBA">Pendidikan Bahasa Arab (PBA)</option>
+                  <option value="PGMI">PGMI</option>
+                  <option value="PG Paud">PG PAUD</option>
+                </select>
+              </div>
+
+              <!-- Table -->
+              <div style="overflow-x: auto">
+                <table class="table" style="width: 100%; min-width: 900px">
+                  <thead>
+                    <tr>
+                      <th
+                        style="width: 4%; cursor: pointer"
+                        onclick="sortSekolahTable('no')"
                       >
-                    </td>
-                    <td>
-                      <button
-                        class="btn btn-outline"
-                        style="padding: 0.25rem 0.625rem; font-size: 0.75rem"
+                        No
+                      </th>
+                      <th
+                        style="width: 20%; cursor: pointer"
+                        onclick="sortSekolahTable('nama')"
                       >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="font-weight: 500">SMAN 8 Bandung</div>
-                      <div class="text-sm text-muted">NPSN: 40300002</div>
-                    </td>
-                    <td>
-                      <span style="font-size: 0.75rem">PAI: 4 | PGMI: 2</span>
-                    </td>
-                    <td class="text-sm text-muted">Semua prodi</td>
-                    <td>
-                      <span style="color: var(--warning); font-weight: 500"
-                        >4/6</span
+                        Nama Sekolah
+                      </th>
+                      <th
+                        style="width: 12%; cursor: pointer"
+                        onclick="sortSekolahTable('npsn')"
                       >
-                    </td>
-                    <td>
-                      <button
-                        class="btn btn-outline"
-                        style="padding: 0.25rem 0.625rem; font-size: 0.75rem"
+                        NPSN
+                      </th>
+                      <th
+                        style="width: 14%; cursor: pointer"
+                        onclick="sortSekolahTable('jenjang')"
                       >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div style="font-weight: 500">MTsN 2 Kota Bandung</div>
-                      <div class="text-sm text-muted">NPSN: 40300003</div>
-                    </td>
-                    <td>
-                      <span style="font-size: 0.75rem">PAI: 3 | PBA: 2</span>
-                    </td>
-                    <td class="text-sm text-muted">IPK ≥ 2.75</td>
-                    <td>
-                      <span style="color: var(--danger); font-weight: 500"
-                        >5/5</span
+                        Jenjang
+                      </th>
+                      <th
+                        style="width: 15%; cursor: pointer"
+                        onclick="sortSekolahTable('pic')"
                       >
-                    </td>
-                    <td>
-                      <button
-                        class="btn btn-outline"
-                        style="padding: 0.25rem 0.625rem; font-size: 0.75rem"
+                        PIC
+                      </th>
+                      <th
+                        style="width: 20%; cursor: pointer"
+                        onclick="sortSekolahTable('kuota')"
                       >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                        Kuota
+                      </th>
+                      <th style="width: 15%">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sekolah-tbody">
+                    <!-- Akan diisi oleh JavaScript -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              <div
+                class="flex justify-between items-center"
+                style="margin-top: 1.5rem"
+              >
+                <div class="text-sm text-muted" id="sekolah-page-info">
+                  Halaman 1 dari 1
+                </div>
+                <div style="display: flex; gap: 0.5rem">
+                  <button
+                    class="btn btn-outline"
+                    onclick="prevSekolahPage()"
+                    style="padding: 0.375rem 0.625rem"
+                  >
+                    ← Sebelumnya
+                  </button>
+                  <button
+                    class="btn btn-outline"
+                    onclick="nextSekolahPage()"
+                    style="padding: 0.375rem 0.625rem"
+                  >
+                    Berikutnya →
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Rubrik tab -->
@@ -1145,6 +1395,295 @@
             </div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- Drawer: Tambah Sekolah Mitra -->
+    <div
+      class="drawer-overlay"
+      id="add-sekolah-drawer-overlay"
+      onclick="closeAddSekolahDrawer(event)"
+    >
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+          <h2>Tambah Sekolah Mitra</h2>
+          <button class="drawer-close" onclick="closeAddSekolahDrawer()">
+            ✕
+          </button>
+        </div>
+        <div class="drawer-content">
+          <!-- Toggle Mode -->
+          <div class="toggle-mode-group">
+            <button
+              class="toggle-mode-btn active"
+              onclick="switchAddSekolahMode('pilih')"
+            >
+              Pilih Sekolah
+            </button>
+            <button
+              class="toggle-mode-btn"
+              onclick="switchAddSekolahMode('baru')"
+            >
+              Buat Sekolah Baru
+            </button>
+          </div>
+
+          <!-- Mode: Pilih Sekolah -->
+          <div id="mode-pilih-sekolah">
+            <div class="form-group">
+              <label class="form-label">Cari Sekolah</label>
+              <input
+                type="text"
+                class="form-input"
+                id="pilih-search"
+                placeholder="Nama sekolah atau NPSN..."
+                onkeyup="searchSekolah()"
+              />
+            </div>
+            <div class="school-search-results" id="school-results"></div>
+          </div>
+
+          <!-- Mode: Buat Sekolah Baru -->
+          <div id="mode-buat-sekolah" style="display: none">
+            <div class="form-group">
+              <label class="form-label">Nama Sekolah *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="new-sekolah-nama"
+                placeholder="Nama sekolah..."
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Alamat *</label>
+              <textarea
+                class="form-input"
+                id="new-sekolah-alamat"
+                placeholder="Alamat sekolah..."
+                style="min-height: 80px"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Jenjang *</label>
+              <select class="form-input" id="new-sekolah-jenjang">
+                <option value="">Pilih jenjang...</option>
+                <option value="PAUD/TK">PAUD/TK</option>
+                <option value="SD/MI">SD/MI</option>
+                <option value="SMP/MTs">SMP/MTs</option>
+                <option value="SMA/SMK/MA">SMA/SMK/MA</option>
+                <option value="SLB">SLB</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">NPSN *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="new-sekolah-npsn"
+                placeholder="NPSN..."
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Nama PIC</label>
+              <input
+                type="text"
+                class="form-input"
+                id="new-sekolah-pic-nama"
+                placeholder="Nama PIC..."
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kontak PIC</label>
+              <input
+                type="text"
+                class="form-input"
+                id="new-sekolah-pic-kontak"
+                placeholder="Nomor telepon atau email..."
+              />
+            </div>
+          </div>
+
+          <!-- Form Kuota -->
+          <div class="form-group">
+            <label class="form-label">Kuota Program Studi *</label>
+            <div class="kuota-rows" id="kuota-rows">
+              <div class="kuota-row">
+                <div class="kuota-row-field">
+                  <label>Program Studi</label>
+                  <select class="form-input" onchange="validateKuotaRow()">
+                    <option value="">Pilih...</option>
+                    <option value="PAI">Pendidikan Agama Islam (PAI)</option>
+                    <option value="PBA">Pendidikan Bahasa Arab (PBA)</option>
+                    <option value="PGMI">PGMI</option>
+                    <option value="PG Paud">PG PAUD</option>
+                  </select>
+                </div>
+                <div class="kuota-row-field">
+                  <label>Kuota</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    min="1"
+                    placeholder="1"
+                  />
+                </div>
+                <div class="kuota-row-field">
+                  <label>Syarat Min IPK</label>
+                  <input
+                    type="number"
+                    class="form-input"
+                    min="0"
+                    max="4"
+                    step="0.01"
+                    placeholder="Opsional"
+                  />
+                </div>
+                <button
+                  class="kuota-row-delete"
+                  onclick="deleteKuotaRow(this)"
+                  style="visibility: hidden"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="add-kuota-row-btn"
+              onclick="addKuotaRow()"
+            >
+              + Tambah Baris Kuota
+            </button>
+          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-outline" onclick="closeAddSekolahDrawer()">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="saveAddSekolah()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer: Edit Kuota -->
+    <div
+      class="drawer-overlay"
+      id="edit-kuota-drawer-overlay"
+      onclick="closeEditKuotaDrawer(event)"
+    >
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+          <h2>Edit Kuota Sekolah</h2>
+          <button class="drawer-close" onclick="closeEditKuotaDrawer()">
+            ✕
+          </button>
+        </div>
+        <div class="drawer-content">
+          <!-- School Info (Read-only) -->
+          <div class="form-group">
+            <label class="form-label">Nama Sekolah</label>
+            <input
+              type="text"
+              class="form-input"
+              id="edit-sekolah-nama"
+              readonly
+              style="background: #f9fafb; cursor: not-allowed"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">NPSN</label>
+            <input
+              type="text"
+              class="form-input"
+              id="edit-sekolah-npsn"
+              readonly
+              style="background: #f9fafb; cursor: not-allowed"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jenjang</label>
+            <input
+              type="text"
+              class="form-input"
+              id="edit-sekolah-jenjang"
+              readonly
+              style="background: #f9fafb; cursor: not-allowed"
+            />
+          </div>
+
+          <!-- Kuota Rows -->
+          <div class="form-group">
+            <label class="form-label">Kuota Program Studi *</label>
+            <div class="kuota-rows" id="edit-kuota-rows">
+              <!-- Akan diisi saat drawer dibuka -->
+            </div>
+            <button
+              type="button"
+              class="add-kuota-row-btn"
+              onclick="addEditKuotaRow()"
+            >
+              + Tambah Baris Kuota
+            </button>
+          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-outline" onclick="closeEditKuotaDrawer()">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="saveEditKuota()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Konfirmasi Cabut Sekolah -->
+    <div
+      class="overlay"
+      id="confirm-cabut-overlay"
+      onclick="closeConfirmCabut(event)"
+    >
+      <div
+        class="modal"
+        onclick="event.stopPropagation()"
+        style="max-width: 400px"
+      >
+        <div class="modal-head">
+          <h2 style="font-size: 1rem; font-weight: 600">
+            Konfirmasi Cabut Sekolah
+          </h2>
+          <button
+            onclick="closeConfirmCabut()"
+            style="
+              background: none;
+              border: none;
+              cursor: pointer;
+              font-size: 1.25rem;
+              color: var(--text-muted);
+            "
+          >
+            ✕
+          </button>
+        </div>
+        <div class="confirm-modal-text">
+          Apakah Anda yakin ingin mencabut
+          <strong id="confirm-sekolah-nama">nama sekolah</strong> sebagai
+          sekolah mitra?
+        </div>
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end">
+          <button class="btn btn-outline" onclick="closeConfirmCabut()">
+            Batal
+          </button>
+          <button
+            class="btn btn-primary"
+            style="background: var(--danger); border-color: var(--danger)"
+            onclick="confirmCabut()"
+          >
+            Cabut
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1770,9 +2309,14 @@
           prereqState[p.study_program_id] = {
             name: p.study_program_name,
             checked: p.courses && p.courses.length > 0,
-            courses: p.courses && p.courses.length > 0
-              ? p.courses.map((c) => ({ course_code: c.course_code || "", type: c.type || "", minimum_grade: c.minimum_grade || "" }))
-              : [],
+            courses:
+              p.courses && p.courses.length > 0
+                ? p.courses.map((c) => ({
+                    course_code: c.course_code || "",
+                    type: c.type || "",
+                    minimum_grade: c.minimum_grade || "",
+                  }))
+                : [],
           };
         });
 
@@ -1828,12 +2372,21 @@
               </td>
             `;
 
-            tr.querySelector(".prereq-program-cb").onchange = (e) => onProgramCbChange(pid, e.target.checked);
-            tr.querySelector(".prereq-add-btn").onclick = () => addCourseToProgram(pid);
+            tr.querySelector(".prereq-program-cb").onchange = (e) =>
+              onProgramCbChange(pid, e.target.checked);
+            tr.querySelector(".prereq-add-btn").onclick = () =>
+              addCourseToProgram(pid);
             tbody.appendChild(tr);
           } else {
             courses.forEach((course, idx) => {
-              const tr = buildCourseRow(pid, program.study_program_name, idx, course, courses.length, isChecked);
+              const tr = buildCourseRow(
+                pid,
+                program.study_program_name,
+                idx,
+                course,
+                courses.length,
+                isChecked,
+              );
               tbody.appendChild(tr);
             });
 
@@ -1846,7 +2399,8 @@
             addTr.innerHTML = `<td colspan="6" style="padding:0.25rem 0.75rem">
               <button type="button" class="prereq-add-btn" data-program-id="${pid}">+ Tambah Mata Kuliah</button>
             </td>`;
-            addTr.querySelector(".prereq-add-btn").onclick = () => addCourseToProgram(pid);
+            addTr.querySelector(".prereq-add-btn").onclick = () =>
+              addCourseToProgram(pid);
             tbody.appendChild(addTr);
           }
         });
@@ -1855,7 +2409,14 @@
         container.appendChild(table);
       }
 
-      function buildCourseRow(pid, programName, idx, course, totalCourses, isChecked) {
+      function buildCourseRow(
+        pid,
+        programName,
+        idx,
+        course,
+        totalCourses,
+        isChecked,
+      ) {
         const tr = document.createElement("tr");
         tr.dataset.programId = pid;
         tr.dataset.courseIndex = String(idx);
@@ -1979,7 +2540,11 @@
         // Save current input values back to state
         syncStateFromTable();
 
-        prereqState[pid].courses.push({ course_code: "", type: "", minimum_grade: "" });
+        prereqState[pid].courses.push({
+          course_code: "",
+          type: "",
+          minimum_grade: "",
+        });
         prereqState[pid].checked = true;
 
         rebuildTable(programList);
@@ -2004,16 +2569,22 @@
 
         Object.keys(prereqState).forEach((pid) => {
           const courseRows = Array.from(
-            table.querySelectorAll(`tr[data-program-id="${pid}"][data-course-index]`)
+            table.querySelectorAll(
+              `tr[data-program-id="${pid}"][data-course-index]`,
+            ),
           );
           if (courseRows.length > 0) {
             prereqState[pid].courses = courseRows.map((tr) => ({
-              course_code: tr.querySelector('[data-field="course_code"]')?.value || "",
+              course_code:
+                tr.querySelector('[data-field="course_code"]')?.value || "",
               type: tr.querySelector('[data-field="type"]')?.value || "",
-              minimum_grade: tr.querySelector('[data-field="minimum_grade"]')?.value || "",
+              minimum_grade:
+                tr.querySelector('[data-field="minimum_grade"]')?.value || "",
             }));
           }
-          const cb = table.querySelector(`.prereq-program-cb[data-program-id="${pid}"]`);
+          const cb = table.querySelector(
+            `.prereq-program-cb[data-program-id="${pid}"]`,
+          );
           if (cb) prereqState[pid].checked = cb.checked;
         });
       }
@@ -2051,7 +2622,9 @@
       }
 
       function updateSetDefaultLabel(pplTypeId) {
-        const setDefaultCheckbox = document.getElementById("set-default-checkbox");
+        const setDefaultCheckbox = document.getElementById(
+          "set-default-checkbox",
+        );
         const setDefaultLabel = document.getElementById("set-default-label");
         const selectedPPLType = pplTypes.find((t) => t.id === pplTypeId);
 
@@ -2060,7 +2633,8 @@
         if (selectedPPLType) {
           setDefaultLabel.textContent = `Atur sebagai default mata kuliah prasyarat untuk "${selectedPPLType.name}" mendatang`;
         } else {
-          setDefaultLabel.textContent = "Atur sebagai default mata kuliah prasyarat untuk jenis PPL";
+          setDefaultLabel.textContent =
+            "Atur sebagai default mata kuliah prasyarat untuk jenis PPL";
         }
       }
 
@@ -2074,7 +2648,8 @@
             .filter((c) => c.course_code && c.type)
             .map((c) => {
               const obj = { course_code: c.course_code, type: c.type };
-              if (c.type === "completed" && c.minimum_grade) obj.minimum_grade = c.minimum_grade;
+              if (c.type === "completed" && c.minimum_grade)
+                obj.minimum_grade = c.minimum_grade;
               return obj;
             });
           if (courses.length > 0) {
@@ -2092,10 +2667,20 @@
           if (!s.checked) return;
           const seen = new Set();
           s.courses.forEach((c, idx) => {
-            if (!c.course_code) errors.push(`${s.name}: kode mata kuliah baris ${idx + 1} kosong`);
-            if (!c.type) errors.push(`${s.name}: tipe prasyarat baris ${idx + 1} belum dipilih`);
-            if (c.type === "completed" && !c.minimum_grade) errors.push(`${s.name}: nilai minimum baris ${idx + 1} belum dipilih`);
-            if (c.course_code && seen.has(c.course_code)) errors.push(`${s.name}: kode "${c.course_code}" duplikat`);
+            if (!c.course_code)
+              errors.push(
+                `${s.name}: kode mata kuliah baris ${idx + 1} kosong`,
+              );
+            if (!c.type)
+              errors.push(
+                `${s.name}: tipe prasyarat baris ${idx + 1} belum dipilih`,
+              );
+            if (c.type === "completed" && !c.minimum_grade)
+              errors.push(
+                `${s.name}: nilai minimum baris ${idx + 1} belum dipilih`,
+              );
+            if (c.course_code && seen.has(c.course_code))
+              errors.push(`${s.name}: kode "${c.course_code}" duplikat`);
             if (c.course_code) seen.add(c.course_code);
           });
         });
@@ -2883,8 +3468,505 @@
 
       function loadRubrik(v) {}
 
+      // ============================================================================
+      // SEKOLAH MITRA SECTION
+      // ============================================================================
+
+      // Mock data
+      const mockSekolahData = [
+        {
+          id: "1",
+          nama: "MAN 1 Bandung",
+          npsn: "40300001",
+          jenjang: "SMA/SMK/MA",
+          pic_nama: "Drs. Ahmad Hidayat",
+          pic_kontak: "0821-1234-5678",
+          kuota: [
+            { prodi: "PAI", kuota: 5, ipk_min: 3.0, jenis_kelamin: "" },
+            { prodi: "PBA", kuota: 3, ipk_min: null, jenis_kelamin: "" },
+          ],
+        },
+        {
+          id: "2",
+          nama: "SMAN 8 Bandung",
+          npsn: "40300002",
+          jenjang: "SMA/SMK/MA",
+          pic_nama: "Hj. Siti Nurhaliza",
+          pic_kontak: "0822-5678-9012",
+          kuota: [
+            { prodi: "PAI", kuota: 4, ipk_min: null, jenis_kelamin: "" },
+            { prodi: "PGMI", kuota: 2, ipk_min: 2.75, jenis_kelamin: "" },
+          ],
+        },
+        {
+          id: "3",
+          nama: "MTsN 2 Kota Bandung",
+          npsn: "40300003",
+          jenjang: "SMP/MTs",
+          pic_nama: "Rina Suyani, S.Pd",
+          pic_kontak: "0823-9012-3456",
+          kuota: [
+            { prodi: "PAI", kuota: 3, ipk_min: 2.75, jenis_kelamin: "" },
+            { prodi: "PBA", kuota: 2, ipk_min: null, jenis_kelamin: "" },
+          ],
+        },
+        {
+          id: "4",
+          nama: "SDN Cigondewah",
+          npsn: "40300004",
+          jenjang: "SD/MI",
+          pic_nama: "Bapak Mahmud",
+          pic_kontak: "0824-3456-7890",
+          kuota: [
+            { prodi: "PGMI", kuota: 4, ipk_min: null, jenis_kelamin: "" },
+          ],
+        },
+        {
+          id: "5",
+          nama: "TK Islam Terpadu",
+          npsn: "40300005",
+          jenjang: "PAUD/TK",
+          pic_nama: "Ibu Eka Prasetya",
+          pic_kontak: "0825-7890-1234",
+          kuota: [
+            { prodi: "PG Paud", kuota: 2, ipk_min: null, jenis_kelamin: "" },
+          ],
+        },
+      ];
+
+      let sekolahTableData = [...mockSekolahData];
+      let sekolahCurrentPage = 1;
+      const sekolahPerPage = 5;
+      let sekolahSortBy = "nama";
+      let sekolahSortOrder = "asc";
+      let currentEditingSekolahId = null;
+
+      // Initialize table on page load
+      function initSekolahTable() {
+        renderSekolahTable();
+      }
+
+      function renderSekolahTable() {
+        const tbody = document.getElementById("sekolah-tbody");
+        const start = (sekolahCurrentPage - 1) * sekolahPerPage;
+        const end = start + sekolahPerPage;
+        const paginatedData = sekolahTableData.slice(start, end);
+
+        tbody.innerHTML = "";
+        paginatedData.forEach((sekolah, idx) => {
+          const rowNum = start + idx + 1;
+          const kuotaText = sekolah.kuota
+            .map((k) => `${k.prodi}: ${k.kuota}`)
+            .join(" | ");
+          const totalKuota = sekolah.kuota.reduce((sum, k) => sum + k.kuota, 0);
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td style="text-align: center">${rowNum}</td>
+            <td>
+              <div style="font-weight: 500">${sekolah.nama}</div>
+              <div class="text-sm text-muted">NPSN: ${sekolah.npsn}</div>
+            </td>
+            <td>${sekolah.npsn}</td>
+            <td>${sekolah.jenjang}</td>
+            <td>
+              <div style="font-size: 0.875rem">${sekolah.pic_nama || "-"}</div>
+              <div class="text-sm text-muted">${sekolah.pic_kontak || "-"}</div>
+            </td>
+            <td>
+              <span title="${kuotaText}" style="cursor: help; font-weight: 500">${totalKuota}</span>
+            </td>
+            <td style="text-align: center">
+              <button class="btn btn-outline" style="padding: 0.25rem 0.625rem; font-size: 0.75rem; margin-right: 0.25rem" onclick="openEditKuotaDrawer('${sekolah.id}')">
+                ✏ Edit Kuota
+              </button>
+              <button class="btn btn-outline" style="padding: 0.25rem 0.625rem; font-size: 0.75rem; color: var(--danger); border-color: var(--danger)" onclick="openConfirmCabut('${sekolah.id}')">
+                🗑 Cabut
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        updateSekolahPagination();
+      }
+
+      function updateSekolahPagination() {
+        const totalPages = Math.ceil(sekolahTableData.length / sekolahPerPage);
+        document.getElementById("sekolah-page-info").textContent =
+          `Halaman ${sekolahCurrentPage} dari ${totalPages}`;
+        document.getElementById("sekolah-count").textContent =
+          `${sekolahTableData.length} sekolah mitra terdaftar`;
+      }
+
+      function filterSekolahTable() {
+        const searchTerm = document
+          .getElementById("sekolah-search")
+          .value.toLowerCase();
+        const jenjangFilter = document.getElementById("sekolah-jenjang").value;
+        const prodiFilter = document.getElementById("sekolah-prodi").value;
+
+        sekolahTableData = mockSekolahData.filter((sekolah) => {
+          const matchSearch =
+            sekolah.nama.toLowerCase().includes(searchTerm) ||
+            sekolah.npsn.includes(searchTerm);
+          const matchJenjang =
+            !jenjangFilter || sekolah.jenjang === jenjangFilter;
+          const matchProdi =
+            !prodiFilter || sekolah.kuota.some((k) => k.prodi === prodiFilter);
+          return matchSearch && matchJenjang && matchProdi;
+        });
+
+        sekolahCurrentPage = 1;
+        sortSekolahTable(sekolahSortBy);
+      }
+
+      function sortSekolahTable(column) {
+        if (sekolahSortBy === column) {
+          sekolahSortOrder = sekolahSortOrder === "asc" ? "desc" : "asc";
+        } else {
+          sekolahSortBy = column;
+          sekolahSortOrder = "asc";
+        }
+
+        sekolahTableData.sort((a, b) => {
+          let aVal, bVal;
+          if (column === "nama") {
+            aVal = a.nama;
+            bVal = b.nama;
+          } else if (column === "npsn") {
+            aVal = a.npsn;
+            bVal = b.npsn;
+          } else if (column === "jenjang") {
+            aVal = a.jenjang;
+            bVal = b.jenjang;
+          } else if (column === "pic") {
+            aVal = a.pic_nama || "";
+            bVal = b.pic_nama || "";
+          } else if (column === "kuota") {
+            aVal = a.kuota.reduce((sum, k) => sum + k.kuota, 0);
+            bVal = b.kuota.reduce((sum, k) => sum + k.kuota, 0);
+          }
+
+          if (typeof aVal === "string") {
+            return sekolahSortOrder === "asc"
+              ? aVal.localeCompare(bVal)
+              : bVal.localeCompare(aVal);
+          } else {
+            return sekolahSortOrder === "asc" ? aVal - bVal : bVal - aVal;
+          }
+        });
+
+        sekolahCurrentPage = 1;
+        renderSekolahTable();
+      }
+
+      function nextSekolahPage() {
+        const maxPage = Math.ceil(sekolahTableData.length / sekolahPerPage);
+        if (sekolahCurrentPage < maxPage) {
+          sekolahCurrentPage++;
+          renderSekolahTable();
+        }
+      }
+
+      function prevSekolahPage() {
+        if (sekolahCurrentPage > 1) {
+          sekolahCurrentPage--;
+          renderSekolahTable();
+        }
+      }
+
+      // Drawer: Add Sekolah
+      function openAddSekolahDrawer() {
+        resetAddSekolahForm();
+        document
+          .getElementById("add-sekolah-drawer-overlay")
+          .classList.add("open");
+      }
+
+      function closeAddSekolahDrawer(e) {
+        if (
+          !e ||
+          e.target === document.getElementById("add-sekolah-drawer-overlay")
+        ) {
+          document
+            .getElementById("add-sekolah-drawer-overlay")
+            .classList.remove("open");
+        }
+      }
+
+      function switchAddSekolahMode(mode) {
+        const buttons = document.querySelectorAll(
+          ".toggle-mode-group .toggle-mode-btn",
+        );
+        buttons.forEach((btn) => btn.classList.remove("active"));
+
+        if (mode === "pilih") {
+          buttons[0].classList.add("active");
+          document.getElementById("mode-pilih-sekolah").style.display = "block";
+          document.getElementById("mode-buat-sekolah").style.display = "none";
+        } else {
+          buttons[1].classList.add("active");
+          document.getElementById("mode-pilih-sekolah").style.display = "none";
+          document.getElementById("mode-buat-sekolah").style.display = "block";
+        }
+      }
+
+      function searchSekolah() {
+        const searchTerm = document
+          .getElementById("pilih-search")
+          .value.toLowerCase();
+        const resultsDiv = document.getElementById("school-results");
+
+        if (searchTerm.length === 0) {
+          resultsDiv.classList.remove("open");
+          return;
+        }
+
+        const results = mockSekolahData.filter(
+          (s) =>
+            s.nama.toLowerCase().includes(searchTerm) ||
+            s.npsn.includes(searchTerm),
+        );
+
+        resultsDiv.innerHTML = "";
+        results.forEach((sekolah) => {
+          const div = document.createElement("div");
+          div.className = "school-item";
+
+          div.innerHTML = `
+            <div class="school-item-name">${sekolah.nama}</div>
+            <div class="school-item-meta">NPSN: ${sekolah.npsn} · ${sekolah.jenjang}</div>
+          `;
+          div.onclick = () => {
+            selectSchool(sekolah);
+          };
+          resultsDiv.appendChild(div);
+        });
+
+        resultsDiv.classList.add("open");
+      }
+
+      function selectSchool(sekolah) {
+        // Populate form with selected school
+        document.getElementById("mode-pilih-sekolah").style.display = "none";
+        const kuotaRows = document.getElementById("kuota-rows");
+        kuotaRows.innerHTML = "";
+
+        // Show kuota form
+        sekolah.kuota.forEach((k) => {
+          addKuotaRow(k.prodi, k.kuota, k.ipk_min);
+        });
+      }
+
+      function addKuotaRow(prodi = "", kuota = "", ipkMin = "") {
+        const container = document.getElementById("kuota-rows");
+        const row = document.createElement("div");
+        row.className = "kuota-row";
+        const rowIndex = container.children.length;
+
+        row.innerHTML = `
+          <div class="kuota-row-field">
+            <label>Program Studi</label>
+            <select class="form-input" onchange="validateKuotaRow()">
+              <option value="">Pilih...</option>
+              <option value="PAI" ${prodi === "PAI" ? "selected" : ""}>Pendidikan Agama Islam (PAI)</option>
+              <option value="PBA" ${prodi === "PBA" ? "selected" : ""}>Pendidikan Bahasa Arab (PBA)</option>
+              <option value="PGMI" ${prodi === "PGMI" ? "selected" : ""}>PGMI</option>
+              <option value="PG Paud" ${prodi === "PG Paud" ? "selected" : ""}>PG PAUD</option>
+            </select>
+          </div>
+          <div class="kuota-row-field">
+            <label>Kuota</label>
+            <input type="number" class="form-input" min="1" placeholder="1" value="${kuota}" />
+          </div>
+          <div class="kuota-row-field">
+            <label>Syarat Min IPK</label>
+            <input type="number" class="form-input" min="0" max="4" step="0.01" placeholder="Opsional" value="${ipkMin || ""}" />
+          </div>
+          <button class="kuota-row-delete" onclick="deleteKuotaRow(this)" ${container.children.length > 0 ? "" : 'style="visibility: hidden"'}>×</button>
+        `;
+        container.appendChild(row);
+        updateKuotaDeleteButtons();
+      }
+
+      function deleteKuotaRow(btn) {
+        btn.closest(".kuota-row").remove();
+        updateKuotaDeleteButtons();
+      }
+
+      function updateKuotaDeleteButtons() {
+        const container = document.getElementById("kuota-rows");
+        const buttons = container.querySelectorAll(".kuota-row-delete");
+        buttons.forEach((btn, idx) => {
+          btn.style.visibility = buttons.length > 1 ? "visible" : "hidden";
+        });
+      }
+
+      function validateKuotaRow() {
+        // Simple validation - all kuota rows must have prodi and kuota
+      }
+
+      function addEditKuotaRow() {
+        const container = document.getElementById("edit-kuota-rows");
+        const row = document.createElement("div");
+        row.className = "kuota-row";
+
+        row.innerHTML = `
+          <div class="kuota-row-field">
+            <label>Program Studi</label>
+            <select class="form-input">
+              <option value="">Pilih...</option>
+              <option value="PAI">Pendidikan Agama Islam (PAI)</option>
+              <option value="PBA">Pendidikan Bahasa Arab (PBA)</option>
+              <option value="PGMI">PGMI</option>
+              <option value="PG Paud">PG PAUD</option>
+            </select>
+          </div>
+          <div class="kuota-row-field">
+            <label>Kuota</label>
+            <input type="number" class="form-input" min="1" placeholder="1" />
+          </div>
+          <div class="kuota-row-field">
+            <label>Syarat Min IPK</label>
+            <input type="number" class="form-input" min="0" max="4" step="0.01" placeholder="Opsional" />
+          </div>
+          <button class="kuota-row-delete" onclick="deleteEditKuotaRow(this)">×</button>
+        `;
+        container.appendChild(row);
+        updateEditKuotaDeleteButtons();
+      }
+
+      function deleteEditKuotaRow(btn) {
+        btn.closest(".kuota-row").remove();
+        updateEditKuotaDeleteButtons();
+      }
+
+      function updateEditKuotaDeleteButtons() {
+        const container = document.getElementById("edit-kuota-rows");
+        const buttons = container.querySelectorAll(".kuota-row-delete");
+        buttons.forEach((btn, idx) => {
+          btn.style.visibility = buttons.length > 1 ? "visible" : "hidden";
+        });
+      }
+
+      function saveAddSekolah() {
+        alert("Sekolah mitra berhasil ditambahkan");
+        closeAddSekolahDrawer();
+        filterSekolahTable();
+      }
+
+      function resetAddSekolahForm() {
+        document.getElementById("pilih-search").value = "";
+        document.getElementById("school-results").classList.remove("open");
+        document.getElementById("new-sekolah-nama").value = "";
+        document.getElementById("new-sekolah-alamat").value = "";
+        document.getElementById("new-sekolah-jenjang").value = "";
+        document.getElementById("new-sekolah-npsn").value = "";
+        document.getElementById("new-sekolah-pic-nama").value = "";
+        document.getElementById("new-sekolah-pic-kontak").value = "";
+        switchAddSekolahMode("pilih");
+        const kuotaRows = document.getElementById("kuota-rows");
+        kuotaRows.innerHTML = "";
+        addKuotaRow();
+      }
+
+      // Drawer: Edit Kuota
+      function openEditKuotaDrawer(sekolahId) {
+        currentEditingSekolahId = sekolahId;
+        const sekolah = mockSekolahData.find((s) => s.id === sekolahId);
+        if (!sekolah) return;
+
+        document.getElementById("edit-sekolah-nama").value = sekolah.nama;
+        document.getElementById("edit-sekolah-npsn").value = sekolah.npsn;
+        document.getElementById("edit-sekolah-jenjang").value = sekolah.jenjang;
+
+        const editKuotaRows = document.getElementById("edit-kuota-rows");
+        editKuotaRows.innerHTML = "";
+        sekolah.kuota.forEach((k) => {
+          const row = document.createElement("div");
+          row.className = "kuota-row";
+          row.innerHTML = `
+            <div class="kuota-row-field">
+              <label>Program Studi</label>
+              <select class="form-input">
+                <option value="">Pilih...</option>
+                <option value="PAI" ${k.prodi === "PAI" ? "selected" : ""}>Pendidikan Agama Islam (PAI)</option>
+                <option value="PBA" ${k.prodi === "PBA" ? "selected" : ""}>Pendidikan Bahasa Arab (PBA)</option>
+                <option value="PGMI" ${k.prodi === "PGMI" ? "selected" : ""}>PGMI</option>
+                <option value="PG Paud" ${k.prodi === "PG Paud" ? "selected" : ""}>PG PAUD</option>
+              </select>
+            </div>
+            <div class="kuota-row-field">
+              <label>Kuota</label>
+              <input type="number" class="form-input" min="1" value="${k.kuota}" />
+            </div>
+            <div class="kuota-row-field">
+              <label>Syarat Min IPK</label>
+              <input type="number" class="form-input" min="0" max="4" step="0.01" value="${k.ipk_min || ""}" />
+            </div>
+            <button class="kuota-row-delete" onclick="deleteEditKuotaRow(this)">×</button>
+          `;
+          editKuotaRows.appendChild(row);
+        });
+        updateEditKuotaDeleteButtons();
+
+        document
+          .getElementById("edit-kuota-drawer-overlay")
+          .classList.add("open");
+      }
+
+      function closeEditKuotaDrawer(e) {
+        if (
+          !e ||
+          e.target === document.getElementById("edit-kuota-drawer-overlay")
+        ) {
+          document
+            .getElementById("edit-kuota-drawer-overlay")
+            .classList.remove("open");
+        }
+      }
+
+      function saveEditKuota() {
+        alert("Kuota sekolah berhasil diperbarui");
+        closeEditKuotaDrawer();
+        renderSekolahTable();
+      }
+
+      // Modal: Confirm Cabut
+      function openConfirmCabut(sekolahId) {
+        const sekolah = mockSekolahData.find((s) => s.id === sekolahId);
+        if (!sekolah) return;
+        currentEditingSekolahId = sekolahId;
+        document.getElementById("confirm-sekolah-nama").textContent =
+          sekolah.nama;
+        document.getElementById("confirm-cabut-overlay").classList.add("open");
+      }
+
+      function closeConfirmCabut(e) {
+        if (
+          !e ||
+          e.target === document.getElementById("confirm-cabut-overlay")
+        ) {
+          document
+            .getElementById("confirm-cabut-overlay")
+            .classList.remove("open");
+        }
+      }
+
+      function confirmCabut() {
+        if (!currentEditingSekolahId) return;
+        const sekolah = mockSekolahData.find(
+          (s) => s.id === currentEditingSekolahId,
+        );
+        alert(`Sekolah mitra "${sekolah.nama}" berhasil dicabut`);
+        closeConfirmCabut();
+        filterSekolahTable();
+      }
+
       // Initialize
       window.addEventListener("DOMContentLoaded", () => {
+        initSekolahTable();
         // Include the base-confirm-dialog
         fetch("/app/shared/components/base-confirm-dialog.html")
           .then((r) => r.text())
