@@ -1,356 +1,637 @@
 <!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daftar PPL — PPL FTK</title>
-  <link rel="stylesheet" href="../../assets/css/main.css" />
-  <style>
-    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
-    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
-    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
-    .elig-banner { border-radius: .5rem; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: .875rem; }
-    .elig-ok { background: #f0fdf4; border: 1px solid #86efac; }
-    .elig-fail { background: #fef2f2; border: 1px solid #fca5a5; }
-    .check-item { display: flex; align-items: center; gap: .5rem; font-size: .875rem; }
-    .check-ok { color: #15803d; }
-    .check-fail { color: #991b1b; }
-    .view { display: none; }
-    .view.active { display: block; }
-    .status-card { border-radius: .75rem; padding: 1.5rem; text-align: center; }
-    .info-row { display: flex; justify-content: space-between; font-size: .875rem; padding: .5rem 0; border-bottom: 1px solid var(--border); }
-    .info-row:last-child { border-bottom: none; }
-  </style>
-</head>
-<body>
-  <div class="app-container">
-    <aside class="sidebar">
-      <div class="sidebar-header">PPL FTK — Mahasiswa</div>
-      <nav class="sidebar-nav">
-        <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
-        <div class="nav-section">M3 — Pendaftaran</div>
-        <a href="../daftar/" class="nav-item active">📝 Daftar PPL</a>
-        <a href="../war/" class="nav-item">🏫 Pilih Sekolah</a>
-        <div class="nav-section">M4 — Aktivitas</div>
-        <a href="../logbook/" class="nav-item">📓 Logbook Mengajar</a>
-        <div class="nav-section">M6 — Penilaian</div>
-        <a href="../ujian/" class="nav-item">🎓 Ujian &amp; Nilai</a>
-      </nav>
-      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
-    </aside>
-
-    <div class="main-content">
-      <header class="top-bar">
-        <h1 style="font-size:1.125rem;font-weight:600">Pendaftaran PPL</h1>
-        <div style="display:flex;align-items:center;gap:1rem">
-          <span class="text-sm text-muted">Budi Santoso · PAI</span>
-          <div style="width:32px;height:32px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">BS</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar PPL — PPL FTK</title>
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <style>
+      .nav-section {
+        padding: 0.25rem 1.5rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7280;
+        margin-top: 0.75rem;
+      }
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #1f2937;
+      }
+      .sidebar-footer a {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+      .elig-banner {
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.875rem;
+      }
+      .elig-ok {
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+      }
+      .elig-fail {
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+      }
+      .check-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+      .check-ok {
+        color: #15803d;
+      }
+      .check-fail {
+        color: #991b1b;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .status-card {
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        text-align: center;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">PPL FTK — Mahasiswa</div>
+        <nav class="sidebar-nav">
+          <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+          <div class="nav-section">M3 — Pendaftaran</div>
+          <a href="../daftar/" class="nav-item active">📝 Daftar PPL</a>
+          <a href="../war/" class="nav-item">🏫 Pilih Sekolah</a>
+          <div class="nav-section">M4 — Aktivitas</div>
+          <a href="../logbook/" class="nav-item">📓 Logbook Mengajar</a>
+          <div class="nav-section">M6 — Penilaian</div>
+          <a href="../ujian/" class="nav-item">🎓 Ujian &amp; Nilai</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="../../index.html">← Keluar</a>
         </div>
-      </header>
+      </aside>
 
-      <main class="page-container">
-        <!-- VIEW: Sudah daftar (default karena user sudah daftar) -->
-        <div class="view active" id="view-submitted">
-          <div class="status-card" style="background:#eff6ff;border:1px solid #bfdbfe;margin-bottom:1.5rem">
-            <div style="font-size:2rem;margin-bottom:.5rem">📋</div>
-            <div style="font-size:1.25rem;font-weight:700;color:#1d4ed8;margin-bottom:.25rem">Pendaftaran Terkirim</div>
-            <div class="text-sm" style="color:#3b82f6">Menunggu review dari admin. Kamu akan dinotifikasi via email setelah diproses.</div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="card" style="margin-bottom:0">
-              <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Detail Pendaftaran</h3>
-              <div class="info-row"><span class="text-muted">Periode</span><span>PPL Ganjil 2026/2027</span></div>
-              <div class="info-row"><span class="text-muted">Jenis PPL</span><span>PPL Reguler</span></div>
-              <div class="info-row"><span class="text-muted">Tanggal Daftar</span><span>2 Agustus 2026</span></div>
-              <div class="info-row"><span class="text-muted">Berkas</span><a href="#" style="color:var(--primary);font-size:.875rem" onclick="return false">📎 Lihat Link</a></div>
-              <div class="info-row"><span class="text-muted">Status</span><span class="badge" style="background:#fef3c7;color:#92400e">Menunggu Review</span></div>
-            </div>
-            <div class="card" style="margin-bottom:0">
-              <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Data Mahasiswa (SALAM)</h3>
-              <div class="info-row"><span class="text-muted">NIM</span><span>123001</span></div>
-              <div class="info-row"><span class="text-muted">Prodi</span><span>Pendidikan Agama Islam</span></div>
-              <div class="info-row"><span class="text-muted">IPK</span><span style="color:var(--success);font-weight:500">3.75</span></div>
-              <div class="info-row"><span class="text-muted">SKS Lulus</span><span>110</span></div>
-              <div class="info-row"><span class="text-muted">Status</span><span style="color:var(--success)">Aktif</span></div>
+      <div class="main-content">
+        <header class="top-bar">
+          <h1 style="font-size: 1.125rem; font-weight: 600">Pendaftaran PPL</h1>
+          <div style="display: flex; align-items: center; gap: 1rem">
+            <span class="text-sm text-muted">Budi Santoso · PAI</span>
+            <div
+              style="
+                width: 32px;
+                height: 32px;
+                background: #10b981;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 700;
+              "
+            >
+              BS
             </div>
           </div>
-          <div style="margin-top:1rem;text-align:center">
-            <button class="btn btn-outline" onclick="showForm()" style="font-size:.8125rem">Lihat Form Pendaftaran</button>
-          </div>
-        </div>
+        </header>
 
-        <!-- VIEW: Form pendaftaran -->
-        <div class="view" id="view-form">
-          <!-- Eligibility check banner -->
-          <div class="elig-banner elig-ok">
-            <div style="font-size:1.375rem;flex-shrink:0">✅</div>
-            <div>
-              <div style="font-weight:600;color:#15803d;margin-bottom:.375rem">Kamu Memenuhi Syarat Mendaftar PPL</div>
-              <div style="display:flex;flex-wrap:wrap;gap:.5rem .875rem">
-                <div class="check-item check-ok">✓ Status mahasiswa aktif</div>
-                <div class="check-item check-ok">✓ IPK 3.75 ≥ minimal 2.75</div>
-                <div class="check-item check-ok">✓ SKS lulus 110 ≥ minimal 100</div>
-                <div class="check-item check-ok">✓ Belum pernah lulus PPL</div>
+        <main class="page-container">
+          <!-- VIEW: Sudah daftar (default karena user sudah daftar) -->
+          <div class="view active" id="view-submitted">
+            <div
+              class="status-card"
+              style="
+                background: #eff6ff;
+                border: 1px solid #bfdbfe;
+                margin-bottom: 1.5rem;
+              "
+            >
+              <div style="font-size: 2rem; margin-bottom: 0.5rem">📋</div>
+              <div
+                style="
+                  font-size: 1.25rem;
+                  font-weight: 700;
+                  color: #1d4ed8;
+                  margin-bottom: 0.25rem;
+                "
+              >
+                Pendaftaran Terkirim
+              </div>
+              <div class="text-sm" style="color: #3b82f6">
+                Menunggu review dari admin. Kamu akan dinotifikasi via email
+                setelah diproses.
               </div>
             </div>
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+            >
+              <div class="card" style="margin-bottom: 0">
+                <h3
+                  style="
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  Detail Pendaftaran
+                </h3>
+                <div class="info-row">
+                  <span class="text-muted">Periode</span
+                  ><span>PPL Ganjil 2026/2027</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Jenis PPL</span
+                  ><span>PPL Reguler</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Tanggal Daftar</span
+                  ><span>2 Agustus 2026</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Berkas</span
+                  ><a
+                    href="#"
+                    style="color: var(--primary); font-size: 0.875rem"
+                    onclick="return false;"
+                    >📎 Lihat Link</a
+                  >
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Status</span
+                  ><span
+                    class="badge"
+                    style="background: #fef3c7; color: #92400e"
+                    >Menunggu Review</span
+                  >
+                </div>
+              </div>
+              <div class="card" style="margin-bottom: 0">
+                <h3
+                  style="
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    margin-bottom: 0.75rem;
+                  "
+                >
+                  Data Mahasiswa (SALAM)
+                </h3>
+                <div class="info-row">
+                  <span class="text-muted">NIM</span><span>123001</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Prodi</span
+                  ><span>Pendidikan Agama Islam</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">IPK</span
+                  ><span style="color: var(--success); font-weight: 500"
+                    >3.75</span
+                  >
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">SKS Lulus</span><span>110</span>
+                </div>
+                <div class="info-row">
+                  <span class="text-muted">Status</span
+                  ><span style="color: var(--success)">Aktif</span>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 1rem; text-align: center">
+              <button
+                class="btn btn-outline"
+                onclick="showForm()"
+                style="font-size: 0.8125rem"
+              >
+                Lihat Form Pendaftaran
+              </button>
+            </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-            <div>
-              <div class="card" style="margin-bottom:1rem">
-                <h2 style="font-size:.9375rem;font-weight:600;margin-bottom:1.5rem">Form Pendaftaran PPL</h2>
+          <!-- VIEW: Form pendaftaran -->
+          <div class="view" id="view-form">
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
+            >
+              <div>
+                <div class="card" style="margin-bottom: 1rem">
+                  <h2
+                    style="
+                      font-size: 0.9375rem;
+                      font-weight: 600;
+                      margin-bottom: 1.5rem;
+                    "
+                  >
+                    Form Pendaftaran PPL
+                  </h2>
 
-                <!-- Section: Pilih Periode -->
-                <div style="margin-bottom:1.5rem">
-                  <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem;color:#374151">1. Pilih Periode PPL</h3>
+                  <!-- Section: Pilih Periode -->
+                  <div style="margin-bottom: 1.5rem">
+                    <h3
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        margin-bottom: 0.75rem;
+                        color: #374151;
+                      "
+                    >
+                      1. Pilih Periode PPL
+                    </h3>
 
-                  <div class="form-group">
-                    <label class="form-label">Periode PPL *</label>
-                    <select class="form-input" id="periode-select">
-                      <option value="">Pilih periode PPL</option>
-                      <option value="ganjil-2026-2027">PPL Ganjil 2026/2027</option>
-                      <option value="genap-2025-2026">PPL Genap 2025/2026</option>
-                      <option value="ganjil-2025-2026">PPL Ganjil 2025/2026</option>
-                    </select>
-                  </div>
-
-                  <!-- Period info (shown when period selected) -->
-                  <div id="periode-info" style="display:none;background:#f3f4f6;border-radius:.5rem;padding:.75rem 1rem;margin-top:.75rem;font-size:.8125rem">
-                    <div style="margin-bottom:.5rem">
-                      <span style="color:#6b7280">Tanggal Pendaftaran:</span><br>
-                      <span id="periode-dates" style="color:#374151;font-weight:500"></span>
+                    <div class="form-group">
+                      <label class="form-label">Periode PPL *</label>
+                      <select class="form-input" id="periode-select">
+                        <option value="">Pilih periode PPL</option>
+                        <option value="ganjil-2026-2027">
+                          PPL Ganjil 2026/2027
+                        </option>
+                        <option value="genap-2025-2026">
+                          PPL Genap 2025/2026
+                        </option>
+                        <option value="ganjil-2025-2026">
+                          PPL Ganjil 2025/2026
+                        </option>
+                      </select>
                     </div>
-                    <div id="periode-requirements-info" style="display:none">
-                      <div style="padding-top:.5rem;border-top:1px solid #d1d5db;color:#059669;display:flex;align-items:center;gap:.375rem">
-                        <span>ℹ</span>
-                        <span>Periode ini memiliki persyaratan berkas</span>
+
+                    <!-- Period info (shown when period selected) -->
+                    <div
+                      id="periode-info"
+                      style="
+                        display: none;
+                        background: #f3f4f6;
+                        border-radius: 0.5rem;
+                        padding: 0.75rem 1rem;
+                        margin-top: 0.75rem;
+                        font-size: 0.8125rem;
+                      "
+                    >
+                      <div style="margin-bottom: 0.5rem">
+                        <span style="color: #6b7280">Tanggal Pendaftaran:</span
+                        ><br />
+                        <span
+                          id="periode-dates"
+                          style="color: #374151; font-weight: 500"
+                        ></span>
+                      </div>
+                      <div id="periode-requirements-info" style="display: none">
+                        <div
+                          style="
+                            padding-top: 0.5rem;
+                            border-top: 1px solid #d1d5db;
+                            color: #059669;
+                            display: flex;
+                            align-items: center;
+                            gap: 0.375rem;
+                          "
+                        >
+                          <span>ℹ</span>
+                          <span>Periode ini memiliki persyaratan berkas</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Section: Upload Berkas (conditional) -->
-                <div id="berkas-section" style="display:none;padding-top:1.5rem;border-top:1px solid #e5e7eb;margin-top:1.5rem">
-                  <h3 style="font-size:.875rem;font-weight:600;margin-bottom:1rem;color:#374151">2. Upload Berkas</h3>
+                  <!-- Section: Upload Berkas (conditional) -->
+                  <div
+                    id="berkas-section"
+                    style="
+                      display: none;
+                      padding-top: 1.5rem;
+                      border-top: 1px solid #e5e7eb;
+                      margin-top: 1.5rem;
+                    "
+                  >
+                    <h3
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        margin-bottom: 1rem;
+                        color: #374151;
+                      "
+                    >
+                      2. Upload Berkas
+                    </h3>
 
-                  <!-- Daftar Persyaratan Berkas -->
-                  <div class="form-group" style="margin-bottom:1.25rem">
-                    <label class="form-label">Daftar Persyaratan Berkas</label>
-                    <div id="berkas-list" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:.375rem;padding:1rem"></div>
-                  </div>
+                    <!-- Daftar Persyaratan Berkas -->
+                    <div class="form-group" style="margin-bottom: 1.25rem">
+                      <label class="form-label">Persyaratan Berkas</label>
+                      <div
+                        id="berkas-list"
+                        style="
+                          background: #f9fafb;
+                          border: 1px solid #e5e7eb;
+                          border-radius: 0.375rem;
+                          padding: 1rem;
+                        "
+                      ></div>
+                    </div>
 
-                  <!-- Info banner -->
-                  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:.5rem;padding:.75rem 1rem;margin-bottom:1rem;font-size:.8125rem;color:#1e40af">
-                    <span style="font-weight:500">ℹ Informasi:</span> Unggah seluruh berkas persyaratan ke dalam satu folder Google Drive, lalu tempelkan link folder tersebut di sini.
-                  </div>
+                    <!-- Info banner -->
+                    <div
+                      style="
+                        background: #eff6ff;
+                        border: 1px solid #bfdbfe;
+                        border-radius: 0.5rem;
+                        padding: 0.75rem 1rem;
+                        margin-bottom: 1rem;
+                        font-size: 0.8125rem;
+                        color: #1e40af;
+                      "
+                    >
+                      <span style="font-weight: 500">ℹ Informasi:</span> Unggah
+                      seluruh berkas persyaratan ke dalam satu folder Google
+                      Drive, lalu tempelkan link folder tersebut di sini.
+                    </div>
 
-                  <!-- Single Google Drive Link Input -->
-                  <div class="form-group">
-                    <label class="form-label">Link Google Drive *</label>
-                    <input type="text" class="form-input" id="gdrive-link" placeholder="https://drive.google.com/drive/folders/..." />
-                    <div class="text-sm text-muted" style="margin-top:.25rem;font-size:.75rem">
-                      Tempelkan link folder Google Drive yang berisi semua berkas persyaratan di atas.
+                    <!-- Single Google Drive Link Input -->
+                    <div class="form-group">
+                      <label class="form-label">Link Google Drive *</label>
+                      <input
+                        type="text"
+                        class="form-input"
+                        id="gdrive-link"
+                        placeholder="https://drive.google.com/drive/folders/..."
+                      />
+                      <div
+                        class="text-sm text-muted"
+                        style="margin-top: 0.25rem; font-size: 0.75rem"
+                      >
+                        Tempelkan link folder Google Drive yang berisi semua
+                        berkas persyaratan di atas.
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <!-- Submit Button -->
-                <button class="btn btn-primary" id="submit-btn" style="width:100%;margin-top:1.5rem" disabled>
-                  Lanjut ke Pilih Sekolah
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div class="card" style="margin-bottom:1rem">
-                <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Data Kamu (dari SALAM)</h3>
-                <div class="info-row"><span class="text-muted">NIM</span><span>123001</span></div>
-                <div class="info-row"><span class="text-muted">Nama</span><span>Budi Santoso</span></div>
-                <div class="info-row"><span class="text-muted">Prodi</span><span>PAI</span></div>
-                <div class="info-row"><span class="text-muted">IPK</span><span>3.75</span></div>
-                <div class="info-row"><span class="text-muted">SKS Lulus</span><span>110</span></div>
-                <div class="info-row"><span class="text-muted">Gender</span><span>Laki-laki</span></div>
-              </div>
-              <div class="card" style="background:#fef3c7;border-color:#fcd34d">
-                <h3 style="font-size:.8125rem;font-weight:600;margin-bottom:.375rem;color:#92400e">⚠ Perhatian</h3>
-                <div style="font-size:.8125rem;color:#92400e;line-height:1.6">
-                  Data yang ditampilkan diambil langsung dari SALAM. Jika ada ketidaksesuaian, hubungi bagian akademik sebelum mendaftar.
+                  <!-- Submit Button -->
+                  <button
+                    class="btn btn-primary"
+                    id="submit-btn"
+                    style="width: 100%; margin-top: 1.5rem"
+                    disabled
+                  >
+                    Lanjut ke Pilih Sekolah
+                  </button>
                 </div>
               </div>
+
+              <div>
+                <div class="card" style="margin-bottom: 1rem">
+                  <h3
+                    style="
+                      font-size: 0.875rem;
+                      font-weight: 600;
+                      margin-bottom: 0.75rem;
+                    "
+                  >
+                    Data Kamu (dari SALAM)
+                  </h3>
+                  <div class="info-row">
+                    <span class="text-muted">NIM</span><span>123001</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="text-muted">Nama</span
+                    ><span>Budi Santoso</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="text-muted">Prodi</span><span>PAI</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="text-muted">IPK</span><span>3.75</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="text-muted">SKS Lulus</span><span>110</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="text-muted">Gender</span><span>Laki-laki</span>
+                  </div>
+                </div>
+                <div
+                  class="card"
+                  style="background: #fef3c7; border-color: #fcd34d"
+                >
+                  <h3
+                    style="
+                      font-size: 0.8125rem;
+                      font-weight: 600;
+                      margin-bottom: 0.375rem;
+                      color: #92400e;
+                    "
+                  >
+                    ⚠ Perhatian
+                  </h3>
+                  <div
+                    style="
+                      font-size: 0.8125rem;
+                      color: #92400e;
+                      line-height: 1.6;
+                    "
+                  >
+                    Data yang ditampilkan diambil langsung dari SALAM. Jika ada
+                    ketidaksesuaian, hubungi bagian akademik sebelum mendaftar.
+                  </div>
+                </div>
+              </div>
             </div>
+            <button
+              class="btn btn-outline"
+              onclick="showSubmitted()"
+              style="margin-top: 0.5rem"
+            >
+              ← Kembali
+            </button>
           </div>
-          <button class="btn btn-outline" onclick="showSubmitted()" style="margin-top:.5rem">← Kembali</button>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
-  </div>
 
-  <script>
-    // Dummy data untuk periode
-    const periodeData = {
-      'ganjil-2026-2027': {
-        name: 'PPL Ganjil 2026/2027',
-        dates: '1 – 15 Agustus 2026',
-        requirements: [
-          { name: 'Transkrip Nilai', id: 'transkrip' },
-          { name: 'Surat Keterangan Aktif Kuliah', id: 'surat-aktif' },
-          { name: 'Pas Foto 3x4', id: 'pas-foto' },
-          { name: 'Sertifikat Micro Teaching', id: 'micro-teaching' }
-        ]
-      },
-      'genap-2025-2026': {
-        name: 'PPL Genap 2025/2026',
-        dates: '1 – 20 Januari 2026',
-        requirements: [
-          { name: 'Transkrip Nilai', id: 'transkrip' },
-          { name: 'Surat Keterangan Aktif Kuliah', id: 'surat-aktif' }
-        ]
-      },
-      'ganjil-2025-2026': {
-        name: 'PPL Ganjil 2025/2026',
-        dates: '1 – 15 Agustus 2025',
-        requirements: []
-      }
-    };
+    <script>
+      // Dummy data untuk periode
+      const periodeData = {
+        "ganjil-2026-2027": {
+          name: "PPL Ganjil 2026/2027",
+          dates: "1 – 15 Agustus 2026",
+          requirements: [
+            { name: "Transkrip Nilai", id: "transkrip" },
+            { name: "Surat Keterangan Aktif Kuliah", id: "surat-aktif" },
+            { name: "Pas Foto 3x4", id: "pas-foto" },
+            { name: "Sertifikat Micro Teaching", id: "micro-teaching" },
+          ],
+        },
+        "genap-2025-2026": {
+          name: "PPL Genap 2025/2026",
+          dates: "1 – 20 Januari 2026",
+          requirements: [
+            { name: "Transkrip Nilai", id: "transkrip" },
+            { name: "Surat Keterangan Aktif Kuliah", id: "surat-aktif" },
+          ],
+        },
+        "ganjil-2025-2026": {
+          name: "PPL Ganjil 2025/2026",
+          dates: "1 – 15 Agustus 2025",
+          requirements: [],
+        },
+      };
 
-    function showForm() {
-      document.getElementById('view-submitted').classList.remove('active');
-      document.getElementById('view-form').classList.add('active');
-    }
-
-    function showSubmitted() {
-      document.getElementById('view-form').classList.remove('active');
-      document.getElementById('view-submitted').classList.add('active');
-    }
-
-    function initFormHandlers() {
-      const periodeSelect = document.getElementById('periode-select');
-      periodeSelect.addEventListener('change', handlePeriodeChange);
-      document.getElementById('submit-btn').addEventListener('click', submitForm);
-    }
-
-    function handlePeriodeChange(e) {
-      const periodeId = e.target.value;
-      const periodeInfo = document.getElementById('periode-info');
-      const barkasSection = document.getElementById('berkas-section');
-      const submitBtn = document.getElementById('submit-btn');
-
-      if (!periodeId) {
-        periodeInfo.style.display = 'none';
-        barkasSection.style.display = 'none';
-        submitBtn.disabled = true;
-        return;
+      function showForm() {
+        document.getElementById("view-submitted").classList.remove("active");
+        document.getElementById("view-form").classList.add("active");
       }
 
-      const periode = periodeData[periodeId];
-
-      // Show period info
-      document.getElementById('periode-dates').textContent = periode.dates;
-      periodeInfo.style.display = 'block';
-
-      // Show/hide requirements section
-      if (periode.requirements && periode.requirements.length > 0) {
-        renderBarkasFields(periode.requirements);
-        barkasSection.style.display = 'block';
-        document.getElementById('periode-requirements-info').style.display = 'flex';
-      } else {
-        barkasSection.style.display = 'none';
-        document.getElementById('periode-requirements-info').style.display = 'none';
-        submitBtn.disabled = false;
+      function showSubmitted() {
+        document.getElementById("view-form").classList.remove("active");
+        document.getElementById("view-submitted").classList.add("active");
       }
 
-      checkFormValidity();
-    }
-
-    function renderBarkasFields(requirements) {
-      const container = document.getElementById('berkas-list');
-      container.innerHTML = '';
-
-      const ul = document.createElement('ul');
-      ul.style.listStyle = 'none';
-      ul.style.padding = '0';
-      ul.style.margin = '0';
-
-      requirements.forEach((req, idx) => {
-        const li = document.createElement('li');
-        li.style.padding = '0.5rem 0';
-        if (idx < requirements.length - 1) {
-          li.style.borderBottom = '1px solid #e5e7eb';
-        }
-        li.style.fontSize = '0.875rem';
-        li.style.color = '#374151';
-        li.style.display = 'flex';
-        li.style.alignItems = 'center';
-        li.style.gap = '0.5rem';
-
-        const checkbox = document.createElement('span');
-        checkbox.textContent = '✓';
-        checkbox.style.color = '#059669';
-        checkbox.style.fontWeight = 'bold';
-
-        const label = document.createElement('span');
-        label.textContent = req.name;
-
-        li.appendChild(checkbox);
-        li.appendChild(label);
-        ul.appendChild(li);
-      });
-
-      container.appendChild(ul);
-
-      // Add change listener to single Google Drive input
-      const gdriveInput = document.getElementById('gdrive-link');
-      gdriveInput.addEventListener('change', checkFormValidity);
-      gdriveInput.addEventListener('input', checkFormValidity);
-    }
-
-    function checkFormValidity() {
-      const periodeId = document.getElementById('periode-select').value;
-      const submitBtn = document.getElementById('submit-btn');
-
-      if (!periodeId) {
-        submitBtn.disabled = true;
-        return;
+      function initFormHandlers() {
+        const periodeSelect = document.getElementById("periode-select");
+        periodeSelect.addEventListener("change", handlePeriodeChange);
+        document
+          .getElementById("submit-btn")
+          .addEventListener("click", submitForm);
       }
 
-      const periode = periodeData[periodeId];
+      function handlePeriodeChange(e) {
+        const periodeId = e.target.value;
+        const periodeInfo = document.getElementById("periode-info");
+        const barkasSection = document.getElementById("berkas-section");
+        const submitBtn = document.getElementById("submit-btn");
 
-      // If no requirements, form is valid
-      if (!periode.requirements || periode.requirements.length === 0) {
-        submitBtn.disabled = false;
-        return;
-      }
-
-      // Check if Google Drive link is filled
-      const gdriveLink = document.getElementById('gdrive-link').value.trim();
-      submitBtn.disabled = gdriveLink === '';
-    }
-
-    function submitForm() {
-      const periodeId = document.getElementById('periode-select').value;
-
-      if (!periodeId) {
-        alert('Pilih periode PPL terlebih dahulu.');
-        return;
-      }
-
-      const periode = periodeData[periodeId];
-
-      // Validate berkas requirements
-      if (periode.requirements && periode.requirements.length > 0) {
-        const gdriveLink = document.getElementById('gdrive-link').value.trim();
-        if (!gdriveLink) {
-          alert('Mohon masukkan link Google Drive untuk persyaratan berkas.');
+        if (!periodeId) {
+          periodeInfo.style.display = "none";
+          barkasSection.style.display = "none";
+          submitBtn.disabled = true;
           return;
         }
+
+        const periode = periodeData[periodeId];
+
+        // Show period info
+        document.getElementById("periode-dates").textContent = periode.dates;
+        periodeInfo.style.display = "block";
+
+        // Show/hide requirements section
+        if (periode.requirements && periode.requirements.length > 0) {
+          renderBarkasFields(periode.requirements);
+          barkasSection.style.display = "block";
+          document.getElementById("periode-requirements-info").style.display =
+            "flex";
+        } else {
+          barkasSection.style.display = "none";
+          document.getElementById("periode-requirements-info").style.display =
+            "none";
+          submitBtn.disabled = false;
+        }
+
+        checkFormValidity();
       }
 
-      showSubmitted();
-      alert('Pendaftaran berhasil dikirim! Admin akan segera meninjau berkas kamu.');
-    }
+      function renderBarkasFields(requirements) {
+        const container = document.getElementById("berkas-list");
+        container.innerHTML = "";
 
-    // Initialize when DOM is ready
-    document.addEventListener('DOMContentLoaded', initFormHandlers);
-  </script>
-</body>
+        const ul = document.createElement("ul");
+        ul.style.listStyle = "none";
+        ul.style.padding = "0";
+        ul.style.margin = "0";
+
+        requirements.forEach((req, idx) => {
+          const li = document.createElement("li");
+          li.style.padding = "0.5rem 0";
+          li.style.fontSize = "0.875rem";
+          li.style.color = "#374151";
+          li.style.display = "flex";
+          li.style.alignItems = "center";
+          li.style.gap = "0.5rem";
+
+          const label = document.createElement("span");
+          label.textContent = req.name;
+
+          li.appendChild(label);
+          ul.appendChild(li);
+        });
+
+        container.appendChild(ul);
+
+        // Add change listener to single Google Drive input
+        const gdriveInput = document.getElementById("gdrive-link");
+        gdriveInput.addEventListener("change", checkFormValidity);
+        gdriveInput.addEventListener("input", checkFormValidity);
+      }
+
+      function checkFormValidity() {
+        const periodeId = document.getElementById("periode-select").value;
+        const submitBtn = document.getElementById("submit-btn");
+
+        if (!periodeId) {
+          submitBtn.disabled = true;
+          return;
+        }
+
+        const periode = periodeData[periodeId];
+
+        // If no requirements, form is valid
+        if (!periode.requirements || periode.requirements.length === 0) {
+          submitBtn.disabled = false;
+          return;
+        }
+
+        // Check if Google Drive link is filled
+        const gdriveLink = document.getElementById("gdrive-link").value.trim();
+        submitBtn.disabled = gdriveLink === "";
+      }
+
+      function submitForm() {
+        const periodeId = document.getElementById("periode-select").value;
+
+        if (!periodeId) {
+          alert("Pilih periode PPL terlebih dahulu.");
+          return;
+        }
+
+        const periode = periodeData[periodeId];
+
+        // Validate berkas requirements
+        if (periode.requirements && periode.requirements.length > 0) {
+          const gdriveLink = document
+            .getElementById("gdrive-link")
+            .value.trim();
+          if (!gdriveLink) {
+            alert("Mohon masukkan link Google Drive untuk persyaratan berkas.");
+            return;
+          }
+        }
+
+        showSubmitted();
+        alert(
+          "Pendaftaran berhasil dikirim! Admin akan segera meninjau berkas kamu.",
+        );
+      }
+
+      // Initialize when DOM is ready
+      document.addEventListener("DOMContentLoaded", initFormHandlers);
+    </script>
+  </body>
 </html>
