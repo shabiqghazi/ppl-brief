@@ -57,6 +57,10 @@
       .view.active {
         display: block;
       }
+      .card-disabled {
+        opacity: 0.6;
+        pointer-events: none;
+      }
       .status-card {
         border-radius: 0.75rem;
         padding: 1.5rem;
@@ -236,7 +240,7 @@
               style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem"
             >
               <div>
-                <div class="card" style="margin-bottom: 1rem">
+                <div class="card" style="margin-bottom: 1rem" id="form-card">
                   <h2
                     style="
                       font-size: 0.9375rem;
@@ -246,108 +250,6 @@
                   >
                     Form Pendaftaran PPL
                   </h2>
-
-                  <!-- Section: Sinkronisasi Data SALAM (BARU) -->
-                  <div style="margin-bottom: 1.5rem">
-                    <h3
-                      style="
-                        font-size: 0.875rem;
-                        font-weight: 600;
-                        margin-bottom: 0.75rem;
-                        color: #374151;
-                      "
-                    >
-                      1. Sinkronisasi Data SALAM
-                    </h3>
-                    <div class="form-group">
-                      <button
-                        class="btn btn-primary"
-                        id="sync-btn"
-                        style="width: 100%"
-                        onclick="syncSalamData()"
-                      >
-                        🔄 Sinkronisasi Data Dengan SALAM
-                      </button>
-                      <div
-                        id="sync-status"
-                        style="
-                          margin-top: 0.75rem;
-                          font-size: 0.8125rem;
-                          display: none;
-                        "
-                      >
-                        <div
-                          id="sync-message"
-                          style="
-                            padding: 0.75rem 1rem;
-                            border-radius: 0.375rem;
-                            display: flex;
-                            align-items: center;
-                            gap: 0.5rem;
-                          "
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Section: Info Data SALAM (BARU - Conditional) -->
-                  <div
-                    id="salam-data-section"
-                    style="
-                      display: none;
-                      padding: 1rem;
-                      border-radius: 0.5rem;
-                      background: #f0f9ff;
-                      border: 1px solid #bfdbfe;
-                      margin-bottom: 1.5rem;
-                    "
-                  >
-                    <h3
-                      style="
-                        font-size: 0.875rem;
-                        font-weight: 600;
-                        margin-bottom: 0.75rem;
-                        color: #1e40af;
-                      "
-                    >
-                      Data dari SALAM
-                    </h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.8125rem">
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">Nama</div>
-                        <div id="salam-nama" style="font-weight: 600; color: #1f2937">—</div>
-                      </div>
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">Email</div>
-                        <div id="salam-email" style="font-weight: 600; color: #1f2937">—</div>
-                      </div>
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">Program Studi</div>
-                        <div id="salam-prodi" style="font-weight: 600; color: #1f2937">—</div>
-                      </div>
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">IPK</div>
-                        <div id="salam-ipk" style="font-weight: 600; color: #10b981">—</div>
-                      </div>
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">Total SKS</div>
-                        <div id="salam-sks" style="font-weight: 600; color: #1f2937">—</div>
-                      </div>
-                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
-                        <div style="color: #6b7280; margin-bottom: 0.25rem">Jenis Kelamin</div>
-                        <div id="salam-gender" style="font-weight: 600; color: #1f2937">—</div>
-                      </div>
-                    </div>
-                    <div
-                      id="salam-timestamp"
-                      style="
-                        margin-top: 0.75rem;
-                        font-size: 0.75rem;
-                        color: #6b7280;
-                        text-align: right;
-                      "
-                    ></div>
-                  </div>
 
                   <!-- Section: Pilih Periode -->
                   <div style="margin-bottom: 1.5rem">
@@ -359,7 +261,7 @@
                         color: #374151;
                       "
                     >
-                      2. Pilih Periode PPL
+                      1. Pilih Periode PPL
                     </h3>
 
                     <div class="form-group">
@@ -434,7 +336,7 @@
                         color: #374151;
                       "
                     >
-                      3. Upload Berkas
+                      2. Upload Berkas
                     </h3>
 
                     <!-- Daftar Persyaratan Berkas -->
@@ -505,29 +407,105 @@
                     style="
                       font-size: 0.875rem;
                       font-weight: 600;
-                      margin-bottom: 0.75rem;
+                      margin-bottom: 1rem;
                     "
                   >
                     Data Kamu (dari SALAM)
                   </h3>
-                  <div class="info-row">
-                    <span class="text-muted">NIM</span><span>123001</span>
+
+                  <!-- State: Belum sinkronisasi -->
+                  <div id="sync-pending-state" style="text-align: center">
+                    <div
+                      style="
+                        font-size: 0.875rem;
+                        color: #6b7280;
+                        margin-bottom: 1rem;
+                      "
+                    >
+                      Sinkronisasi data kamu dari SALAM terlebih dahulu
+                    </div>
+                    <button
+                      class="btn btn-primary"
+                      id="sync-btn"
+                      style="width: 100%"
+                      onclick="syncSalamData()"
+                    >
+                      🔄 Sinkronisasi dengan SALAM
+                    </button>
+                    <div
+                      id="sync-status"
+                      style="
+                        margin-top: 0.75rem;
+                        font-size: 0.75rem;
+                        display: none;
+                      "
+                    >
+                      <div
+                        id="sync-message"
+                        style="
+                          padding: 0.5rem 0.75rem;
+                          border-radius: 0.375rem;
+                          display: flex;
+                          align-items: center;
+                          gap: 0.5rem;
+                        "
+                      ></div>
+                    </div>
                   </div>
-                  <div class="info-row">
-                    <span class="text-muted">Nama</span
-                    ><span>Budi Santoso</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="text-muted">Prodi</span><span>PAI</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="text-muted">IPK</span><span>3.75</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="text-muted">SKS Lulus</span><span>110</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="text-muted">Gender</span><span>Laki-laki</span>
+
+                  <!-- State: Sudah sinkronisasi -->
+                  <div id="sync-success-state" style="display: none">
+                    <div class="info-row">
+                      <span class="text-muted">NIM</span
+                      ><span id="data-nim">—</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">Nama</span
+                      ><span id="data-nama">—</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">Prodi</span
+                      ><span id="data-prodi">—</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">IPK</span
+                      ><span id="data-ipk">—</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">SKS Lulus</span
+                      ><span id="data-sks">—</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="text-muted">Gender</span
+                      ><span id="data-gender">—</span>
+                    </div>
+                    <button
+                      class="btn btn-outline"
+                      id="resync-btn"
+                      style="width: 100%; margin-top: 0.875rem; font-size: 0.75rem"
+                      onclick="syncSalamData()"
+                    >
+                      🔄 Sinkronisasi Ulang
+                    </button>
+                    <div
+                      id="resync-status"
+                      style="
+                        margin-top: 0.5rem;
+                        font-size: 0.75rem;
+                        display: none;
+                      "
+                    >
+                      <div
+                        id="resync-message"
+                        style="
+                          padding: 0.5rem 0.75rem;
+                          border-radius: 0.375rem;
+                          display: flex;
+                          align-items: center;
+                          gap: 0.5rem;
+                        "
+                      ></div>
+                    </div>
                   </div>
                 </div>
                 <div
@@ -727,13 +705,20 @@
 
       /* ── Sinkronisasi Data SALAM ───────────────────────────── */
       function syncSalamData() {
-        const syncBtn = document.getElementById("sync-btn");
-        const syncStatus = document.getElementById("sync-status");
-        const syncMsg = document.getElementById("sync-message");
+        const isFirstSync = !salamSyncSuccess;
+        const syncBtn = isFirstSync
+          ? document.getElementById("sync-btn")
+          : document.getElementById("resync-btn");
+        const syncStatus = isFirstSync
+          ? document.getElementById("sync-status")
+          : document.getElementById("resync-status");
+        const syncMsg = syncStatus.querySelector("div");
 
         // Show loading state
         syncBtn.disabled = true;
-        syncBtn.innerHTML = "⏳ Sedang Sinkronisasi…";
+        syncBtn.innerHTML = isFirstSync
+          ? "⏳ Sedang Sinkronisasi…"
+          : "⏳ Sedang Sinkronisasi Ulang…";
         syncStatus.style.display = "block";
         syncMsg.innerHTML =
           '<span style="color: #f59e0b">⌛ Menghubungi server SALAM…</span>';
@@ -748,41 +733,63 @@
             salamData = dummySalamData;
             salamSyncSuccess = true;
 
-            syncBtn.innerHTML = "✓ Sinkronisasi Berhasil";
-            syncBtn.style.backgroundColor = "#10b981";
-            syncBtn.disabled = false;
-            syncMsg.innerHTML =
-              '<span style="color: #10b981">✓ Data berhasil disinkronisasi dari SALAM</span>';
+            if (isFirstSync) {
+              // First sync: switch to success state
+              syncBtn.innerHTML = "✓ Sinkronisasi Berhasil";
+              syncBtn.disabled = true;
+              syncMsg.innerHTML =
+                '<span style="color: #10b981">✓ Data berhasil disinkronisasi</span>';
 
-            // Show SALAM data section
-            const salamSection = document.getElementById("salam-data-section");
-            salamSection.style.display = "block";
-            document.getElementById("salam-nama").textContent = salamData.nama;
-            document.getElementById("salam-email").textContent = salamData.email;
-            document.getElementById("salam-prodi").textContent = salamData.prodi;
-            document.getElementById("salam-ipk").textContent = salamData.ipk;
-            document.getElementById("salam-sks").textContent = salamData.sks;
-            document.getElementById("salam-gender").textContent = salamData.gender;
-            document.getElementById("salam-timestamp").textContent =
-              "Sinkronisasi pada: " + new Date().toLocaleString("id-ID");
+              // Hide pending state, show success state
+              document.getElementById("sync-pending-state").style.display = "none";
+              document.getElementById("sync-success-state").style.display = "block";
 
-            // Enable periode select
-            document.getElementById("periode-select").disabled = false;
+              // Populate data
+              document.getElementById("data-nim").textContent = "123001";
+              document.getElementById("data-nama").textContent = salamData.nama;
+              document.getElementById("data-prodi").textContent =
+                salamData.prodi;
+              document.getElementById("data-ipk").textContent = salamData.ipk;
+              document.getElementById("data-sks").textContent = salamData.sks;
+              document.getElementById("data-gender").textContent = salamData.gender;
 
-            // Reset submit button state
+              // Enable form card
+              document.getElementById("form-card").classList.remove("card-disabled");
+              document.getElementById("periode-select").disabled = false;
+            } else {
+              // Resync: show success message
+              syncMsg.innerHTML =
+                '<span style="color: #10b981">✓ Data berhasil disinkronisasi ulang</span>';
+              syncBtn.disabled = false;
+
+              // Update data
+              document.getElementById("data-nama").textContent = salamData.nama;
+              document.getElementById("data-prodi").textContent =
+                salamData.prodi;
+              document.getElementById("data-ipk").textContent = salamData.ipk;
+              document.getElementById("data-sks").textContent = salamData.sks;
+              document.getElementById("data-gender").textContent = salamData.gender;
+            }
+
+            // Reset form validity
             checkFormValidity();
           } else {
             // Failed
-            salamSyncSuccess = false;
-            syncBtn.innerHTML = "🔄 Sinkronisasi Gagal – Coba Lagi";
-            syncBtn.style.backgroundColor = "#ef4444";
-            syncBtn.disabled = false;
-            syncMsg.innerHTML =
-              '<span style="color: #ef4444">✕ Gagal menghubungi server SALAM. Periksa koneksi atau hubungi admin.</span>';
+            if (isFirstSync) {
+              syncBtn.innerHTML = "🔄 Sinkronisasi Gagal – Coba Lagi";
+              syncBtn.style.backgroundColor = "#ef4444";
+              syncBtn.disabled = false;
+              syncMsg.innerHTML =
+                '<span style="color: #ef4444">✕ Gagal menghubungi server SALAM</span>';
+              document.getElementById("periode-select").disabled = true;
+              document.getElementById("form-card").classList.add("card-disabled");
+            } else {
+              syncMsg.innerHTML =
+                '<span style="color: #ef4444">✕ Gagal sinkronisasi ulang</span>';
+              syncBtn.disabled = false;
+            }
 
-            // Hide SALAM data section
-            document.getElementById("salam-data-section").style.display = "none";
-            document.getElementById("periode-select").disabled = true;
+            salamSyncSuccess = false;
             checkFormValidity();
           }
         }, 1500);
