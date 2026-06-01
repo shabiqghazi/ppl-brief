@@ -251,6 +251,29 @@
                     Form Pendaftaran PPL
                   </h2>
 
+                  <!-- Peringatan: Sinkronisasi dulu -->
+                  <div
+                    id="sync-warning"
+                    style="
+                      background: #fef3c7;
+                      border: 1px solid #fcd34d;
+                      border-radius: 0.5rem;
+                      padding: 0.875rem 1rem;
+                      margin-bottom: 1.5rem;
+                      display: flex;
+                      align-items: center;
+                      gap: 0.75rem;
+                      font-size: 0.875rem;
+                      color: #92400e;
+                    "
+                  >
+                    <span style="font-size: 1.25rem">⚠</span>
+                    <div>
+                      <strong>Sinkronisasi data SALAM terlebih dahulu</strong>
+                      untuk melanjutkan pendaftaran
+                    </div>
+                  </div>
+
                   <!-- Section: Pilih Periode -->
                   <div style="margin-bottom: 1.5rem">
                     <h3
@@ -482,7 +505,11 @@
                     <button
                       class="btn btn-outline"
                       id="resync-btn"
-                      style="width: 100%; margin-top: 0.875rem; font-size: 0.75rem"
+                      style="
+                        width: 100%;
+                        margin-top: 0.875rem;
+                        font-size: 0.75rem;
+                      "
                       onclick="syncSalamData()"
                     >
                       🔄 Sinkronisasi Ulang
@@ -605,6 +632,18 @@
         document
           .getElementById("submit-btn")
           .addEventListener("click", submitForm);
+
+        // Show warning initially (belum sinkronisasi)
+        updateSyncWarning();
+      }
+
+      function updateSyncWarning() {
+        const warning = document.getElementById("sync-warning");
+        if (salamSyncSuccess) {
+          warning.style.display = "none";
+        } else {
+          warning.style.display = "flex";
+        }
       }
 
       function handlePeriodeChange(e) {
@@ -736,13 +775,16 @@
             if (isFirstSync) {
               // First sync: switch to success state
               syncBtn.innerHTML = "✓ Sinkronisasi Berhasil";
+              syncBtn.style.backgroundColor = "#10b981";
               syncBtn.disabled = true;
               syncMsg.innerHTML =
                 '<span style="color: #10b981">✓ Data berhasil disinkronisasi</span>';
 
               // Hide pending state, show success state
-              document.getElementById("sync-pending-state").style.display = "none";
-              document.getElementById("sync-success-state").style.display = "block";
+              document.getElementById("sync-pending-state").style.display =
+                "none";
+              document.getElementById("sync-success-state").style.display =
+                "block";
 
               // Populate data
               document.getElementById("data-nim").textContent = "123001";
@@ -751,11 +793,17 @@
                 salamData.prodi;
               document.getElementById("data-ipk").textContent = salamData.ipk;
               document.getElementById("data-sks").textContent = salamData.sks;
-              document.getElementById("data-gender").textContent = salamData.gender;
+              document.getElementById("data-gender").textContent =
+                salamData.gender;
 
               // Enable form card
-              document.getElementById("form-card").classList.remove("card-disabled");
+              document
+                .getElementById("form-card")
+                .classList.remove("card-disabled");
               document.getElementById("periode-select").disabled = false;
+
+              // Hide warning
+              updateSyncWarning();
             } else {
               // Resync: show success message
               syncMsg.innerHTML =
@@ -768,7 +816,8 @@
                 salamData.prodi;
               document.getElementById("data-ipk").textContent = salamData.ipk;
               document.getElementById("data-sks").textContent = salamData.sks;
-              document.getElementById("data-gender").textContent = salamData.gender;
+              document.getElementById("data-gender").textContent =
+                salamData.gender;
             }
 
             // Reset form validity
@@ -782,7 +831,9 @@
               syncMsg.innerHTML =
                 '<span style="color: #ef4444">✕ Gagal menghubungi server SALAM</span>';
               document.getElementById("periode-select").disabled = true;
-              document.getElementById("form-card").classList.add("card-disabled");
+              document
+                .getElementById("form-card")
+                .classList.add("card-disabled");
             } else {
               syncMsg.innerHTML =
                 '<span style="color: #ef4444">✕ Gagal sinkronisasi ulang</span>';
