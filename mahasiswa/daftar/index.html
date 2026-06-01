@@ -98,42 +98,66 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
             <div>
               <div class="card" style="margin-bottom:1rem">
-                <h2 style="font-size:.9375rem;font-weight:600;margin-bottom:1rem">Form Pendaftaran PPL</h2>
+                <h2 style="font-size:.9375rem;font-weight:600;margin-bottom:1.5rem">Form Pendaftaran PPL</h2>
 
-                <div class="form-group">
-                  <label class="form-label">Periode PPL</label>
-                  <select class="form-input" disabled>
-                    <option>PPL Ganjil 2026/2027 (Sedang Buka)</option>
-                  </select>
-                  <div class="text-sm text-muted" style="margin-top:.25rem">Pendaftaran: 1 – 15 Agustus 2026</div>
-                </div>
+                <!-- Section: Pilih Periode -->
+                <div style="margin-bottom:1.5rem">
+                  <h3 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem;color:#374151">1. Pilih Periode PPL</h3>
 
-                <div class="form-group">
-                  <label class="form-label">Jenis PPL *</label>
-                  <select class="form-input" id="ppl-type">
-                    <option value="">— Pilih jenis PPL —</option>
-                    <option value="reguler">PPL Reguler</option>
-                    <option value="internasional">PPL Internasional</option>
-                    <option value="khusus">PPL Khusus Luar Daerah</option>
-                  </select>
-                </div>
+                  <div class="form-group">
+                    <label class="form-label">Periode PPL *</label>
+                    <select class="form-input" id="periode-select">
+                      <option value="">Pilih periode PPL</option>
+                      <option value="ganjil-2026-2027">PPL Ganjil 2026/2027</option>
+                      <option value="genap-2025-2026">PPL Genap 2025/2026</option>
+                      <option value="ganjil-2025-2026">PPL Ganjil 2025/2026</option>
+                    </select>
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label">Berkas Persyaratan *</label>
-                  <input class="form-input" id="berkas-url" placeholder="Link Google Drive atau URL zip berkas…" />
-                  <div class="text-sm text-muted" style="margin-top:.375rem">
-                    Persyaratan yang harus dilampirkan:<br>
-                    <ul style="padding-left:1.25rem;margin-top:.25rem;line-height:1.8">
-                      <li>Transkrip nilai semester terbaru</li>
-                      <li>Surat keterangan aktif kuliah</li>
-                      <li>Pas foto 3x4 terbaru</li>
-                      <li>Sertifikat Micro Teaching</li>
-                    </ul>
-                    Kompres semua file ke ZIP atau upload ke Google Drive lalu share link-nya.
+                  <!-- Period info (shown when period selected) -->
+                  <div id="periode-info" style="display:none;background:#f3f4f6;border-radius:.5rem;padding:.75rem 1rem;margin-top:.75rem;font-size:.8125rem">
+                    <div style="margin-bottom:.5rem">
+                      <span style="color:#6b7280">Tanggal Pendaftaran:</span><br>
+                      <span id="periode-dates" style="color:#374151;font-weight:500"></span>
+                    </div>
+                    <div id="periode-requirements-info" style="display:none">
+                      <div style="padding-top:.5rem;border-top:1px solid #d1d5db;color:#059669;display:flex;align-items:center;gap:.375rem">
+                        <span>ℹ</span>
+                        <span>Periode ini memiliki persyaratan berkas</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <button class="btn btn-primary" style="width:100%;margin-top:.5rem" onclick="submitForm()">Kirim Pendaftaran</button>
+                <!-- Section: Upload Berkas (conditional) -->
+                <div id="berkas-section" style="display:none;padding-top:1.5rem;border-top:1px solid #e5e7eb;margin-top:1.5rem">
+                  <h3 style="font-size:.875rem;font-weight:600;margin-bottom:1rem;color:#374151">2. Upload Berkas</h3>
+
+                  <!-- Daftar Persyaratan Berkas -->
+                  <div class="form-group" style="margin-bottom:1.25rem">
+                    <label class="form-label">Daftar Persyaratan Berkas</label>
+                    <div id="berkas-list" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:.375rem;padding:1rem"></div>
+                  </div>
+
+                  <!-- Info banner -->
+                  <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:.5rem;padding:.75rem 1rem;margin-bottom:1rem;font-size:.8125rem;color:#1e40af">
+                    <span style="font-weight:500">ℹ Informasi:</span> Unggah seluruh berkas persyaratan ke dalam satu folder Google Drive, lalu tempelkan link folder tersebut di sini.
+                  </div>
+
+                  <!-- Single Google Drive Link Input -->
+                  <div class="form-group">
+                    <label class="form-label">Link Google Drive *</label>
+                    <input type="text" class="form-input" id="gdrive-link" placeholder="https://drive.google.com/drive/folders/..." />
+                    <div class="text-sm text-muted" style="margin-top:.25rem;font-size:.75rem">
+                      Tempelkan link folder Google Drive yang berisi semua berkas persyaratan di atas.
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button class="btn btn-primary" id="submit-btn" style="width:100%;margin-top:1.5rem" disabled>
+                  Lanjut ke Pilih Sekolah
+                </button>
               </div>
             </div>
 
@@ -162,22 +186,171 @@
   </div>
 
   <script>
+    // Dummy data untuk periode
+    const periodeData = {
+      'ganjil-2026-2027': {
+        name: 'PPL Ganjil 2026/2027',
+        dates: '1 – 15 Agustus 2026',
+        requirements: [
+          { name: 'Transkrip Nilai', id: 'transkrip' },
+          { name: 'Surat Keterangan Aktif Kuliah', id: 'surat-aktif' },
+          { name: 'Pas Foto 3x4', id: 'pas-foto' },
+          { name: 'Sertifikat Micro Teaching', id: 'micro-teaching' }
+        ]
+      },
+      'genap-2025-2026': {
+        name: 'PPL Genap 2025/2026',
+        dates: '1 – 20 Januari 2026',
+        requirements: [
+          { name: 'Transkrip Nilai', id: 'transkrip' },
+          { name: 'Surat Keterangan Aktif Kuliah', id: 'surat-aktif' }
+        ]
+      },
+      'ganjil-2025-2026': {
+        name: 'PPL Ganjil 2025/2026',
+        dates: '1 – 15 Agustus 2025',
+        requirements: []
+      }
+    };
+
     function showForm() {
       document.getElementById('view-submitted').classList.remove('active');
       document.getElementById('view-form').classList.add('active');
     }
+
     function showSubmitted() {
       document.getElementById('view-form').classList.remove('active');
       document.getElementById('view-submitted').classList.add('active');
     }
+
+    function initFormHandlers() {
+      const periodeSelect = document.getElementById('periode-select');
+      periodeSelect.addEventListener('change', handlePeriodeChange);
+      document.getElementById('submit-btn').addEventListener('click', submitForm);
+    }
+
+    function handlePeriodeChange(e) {
+      const periodeId = e.target.value;
+      const periodeInfo = document.getElementById('periode-info');
+      const barkasSection = document.getElementById('berkas-section');
+      const submitBtn = document.getElementById('submit-btn');
+
+      if (!periodeId) {
+        periodeInfo.style.display = 'none';
+        barkasSection.style.display = 'none';
+        submitBtn.disabled = true;
+        return;
+      }
+
+      const periode = periodeData[periodeId];
+
+      // Show period info
+      document.getElementById('periode-dates').textContent = periode.dates;
+      periodeInfo.style.display = 'block';
+
+      // Show/hide requirements section
+      if (periode.requirements && periode.requirements.length > 0) {
+        renderBarkasFields(periode.requirements);
+        barkasSection.style.display = 'block';
+        document.getElementById('periode-requirements-info').style.display = 'flex';
+      } else {
+        barkasSection.style.display = 'none';
+        document.getElementById('periode-requirements-info').style.display = 'none';
+        submitBtn.disabled = false;
+      }
+
+      checkFormValidity();
+    }
+
+    function renderBarkasFields(requirements) {
+      const container = document.getElementById('berkas-list');
+      container.innerHTML = '';
+
+      const ul = document.createElement('ul');
+      ul.style.listStyle = 'none';
+      ul.style.padding = '0';
+      ul.style.margin = '0';
+
+      requirements.forEach((req, idx) => {
+        const li = document.createElement('li');
+        li.style.padding = '0.5rem 0';
+        if (idx < requirements.length - 1) {
+          li.style.borderBottom = '1px solid #e5e7eb';
+        }
+        li.style.fontSize = '0.875rem';
+        li.style.color = '#374151';
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.style.gap = '0.5rem';
+
+        const checkbox = document.createElement('span');
+        checkbox.textContent = '✓';
+        checkbox.style.color = '#059669';
+        checkbox.style.fontWeight = 'bold';
+
+        const label = document.createElement('span');
+        label.textContent = req.name;
+
+        li.appendChild(checkbox);
+        li.appendChild(label);
+        ul.appendChild(li);
+      });
+
+      container.appendChild(ul);
+
+      // Add change listener to single Google Drive input
+      const gdriveInput = document.getElementById('gdrive-link');
+      gdriveInput.addEventListener('change', checkFormValidity);
+      gdriveInput.addEventListener('input', checkFormValidity);
+    }
+
+    function checkFormValidity() {
+      const periodeId = document.getElementById('periode-select').value;
+      const submitBtn = document.getElementById('submit-btn');
+
+      if (!periodeId) {
+        submitBtn.disabled = true;
+        return;
+      }
+
+      const periode = periodeData[periodeId];
+
+      // If no requirements, form is valid
+      if (!periode.requirements || periode.requirements.length === 0) {
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // Check if Google Drive link is filled
+      const gdriveLink = document.getElementById('gdrive-link').value.trim();
+      submitBtn.disabled = gdriveLink === '';
+    }
+
     function submitForm() {
-      const type = document.getElementById('ppl-type').value;
-      const url = document.getElementById('berkas-url').value;
-      if (!type) { alert('Pilih jenis PPL terlebih dahulu.'); return; }
-      if (!url) { alert('Masukkan link berkas persyaratan.'); return; }
+      const periodeId = document.getElementById('periode-select').value;
+
+      if (!periodeId) {
+        alert('Pilih periode PPL terlebih dahulu.');
+        return;
+      }
+
+      const periode = periodeData[periodeId];
+
+      // Validate berkas requirements
+      if (periode.requirements && periode.requirements.length > 0) {
+        const gdriveLink = document.getElementById('gdrive-link').value.trim();
+        if (!gdriveLink) {
+          alert('Mohon masukkan link Google Drive untuk persyaratan berkas.');
+          return;
+        }
+      }
+
       showSubmitted();
       alert('Pendaftaran berhasil dikirim! Admin akan segera meninjau berkas kamu.');
     }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', initFormHandlers);
   </script>
 </body>
 </html>
