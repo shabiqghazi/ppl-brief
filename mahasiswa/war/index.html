@@ -914,13 +914,34 @@
       }
 
       /* ── WAR countdown timer ─────────────────────────────────── */
-      let secs = 11 * 3600 + 42 * 60 + 7;
+      /* Format: jika > 24 jam tampilkan d:hh:mm:ss, jika ≤ 24 jam tampilkan hh:mm:ss */
+      /* Sesuaikan nilai secs di bawah untuk testing: */
+      /* - 11 jam 42 menit 7 detik: 11 * 3600 + 42 * 60 + 7 = 42127 */
+      /* - 2 hari 12 jam 21 menit 8 detik: 2 * 86400 + 12 * 3600 + 21 * 60 + 8 = 216068 */
+      let secs = 45 * 3600 + 42 * 60 + 7; // Ubah ke jumlah detik yang diinginkan
+
+      function formatTimer(totalSecs) {
+        if (totalSecs <= 0) return "00:00:00";
+        if (totalSecs > 86400) {
+          // Lebih dari 24 jam: tampilkan d:hh:mm:ss
+          const days = Math.floor(totalSecs / 86400);
+          const hours = Math.floor((totalSecs % 86400) / 3600);
+          const mins = Math.floor((totalSecs % 3600) / 60);
+          const secsRem = totalSecs % 60;
+          return `${days}:${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secsRem).padStart(2, "0")}`;
+        } else {
+          // 24 jam atau kurang: tampilkan hh:mm:ss
+          const hours = Math.floor(totalSecs / 3600);
+          const mins = Math.floor((totalSecs % 3600) / 60);
+          const secsRem = totalSecs % 60;
+          return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secsRem).padStart(2, "0")}`;
+        }
+      }
+
+      document.getElementById("timer").textContent = formatTimer(secs);
       setInterval(() => {
         if (secs > 0) secs--;
-        const h = String(Math.floor(secs / 3600)).padStart(2, "0");
-        const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
-        const s = String(secs % 60).padStart(2, "0");
-        document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+        document.getElementById("timer").textContent = formatTimer(secs);
       }, 1000);
 
       /* ── Student info display ────────────────────────────────── */
