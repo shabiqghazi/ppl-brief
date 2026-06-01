@@ -247,6 +247,108 @@
                     Form Pendaftaran PPL
                   </h2>
 
+                  <!-- Section: Sinkronisasi Data SALAM (BARU) -->
+                  <div style="margin-bottom: 1.5rem">
+                    <h3
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        margin-bottom: 0.75rem;
+                        color: #374151;
+                      "
+                    >
+                      1. Sinkronisasi Data SALAM
+                    </h3>
+                    <div class="form-group">
+                      <button
+                        class="btn btn-primary"
+                        id="sync-btn"
+                        style="width: 100%"
+                        onclick="syncSalamData()"
+                      >
+                        🔄 Sinkronisasi Data Dengan SALAM
+                      </button>
+                      <div
+                        id="sync-status"
+                        style="
+                          margin-top: 0.75rem;
+                          font-size: 0.8125rem;
+                          display: none;
+                        "
+                      >
+                        <div
+                          id="sync-message"
+                          style="
+                            padding: 0.75rem 1rem;
+                            border-radius: 0.375rem;
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                          "
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Section: Info Data SALAM (BARU - Conditional) -->
+                  <div
+                    id="salam-data-section"
+                    style="
+                      display: none;
+                      padding: 1rem;
+                      border-radius: 0.5rem;
+                      background: #f0f9ff;
+                      border: 1px solid #bfdbfe;
+                      margin-bottom: 1.5rem;
+                    "
+                  >
+                    <h3
+                      style="
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        margin-bottom: 0.75rem;
+                        color: #1e40af;
+                      "
+                    >
+                      Data dari SALAM
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.8125rem">
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">Nama</div>
+                        <div id="salam-nama" style="font-weight: 600; color: #1f2937">—</div>
+                      </div>
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">Email</div>
+                        <div id="salam-email" style="font-weight: 600; color: #1f2937">—</div>
+                      </div>
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">Program Studi</div>
+                        <div id="salam-prodi" style="font-weight: 600; color: #1f2937">—</div>
+                      </div>
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">IPK</div>
+                        <div id="salam-ipk" style="font-weight: 600; color: #10b981">—</div>
+                      </div>
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">Total SKS</div>
+                        <div id="salam-sks" style="font-weight: 600; color: #1f2937">—</div>
+                      </div>
+                      <div style="background: white; padding: 0.625rem; border-radius: 0.375rem; border-left: 3px solid #3b82f6">
+                        <div style="color: #6b7280; margin-bottom: 0.25rem">Jenis Kelamin</div>
+                        <div id="salam-gender" style="font-weight: 600; color: #1f2937">—</div>
+                      </div>
+                    </div>
+                    <div
+                      id="salam-timestamp"
+                      style="
+                        margin-top: 0.75rem;
+                        font-size: 0.75rem;
+                        color: #6b7280;
+                        text-align: right;
+                      "
+                    ></div>
+                  </div>
+
                   <!-- Section: Pilih Periode -->
                   <div style="margin-bottom: 1.5rem">
                     <h3
@@ -257,12 +359,12 @@
                         color: #374151;
                       "
                     >
-                      1. Pilih Periode PPL
+                      2. Pilih Periode PPL
                     </h3>
 
                     <div class="form-group">
                       <label class="form-label">Periode PPL *</label>
-                      <select class="form-input" id="periode-select">
+                      <select class="form-input" id="periode-select" disabled>
                         <option value="">Pilih periode PPL</option>
                         <option value="ganjil-2026-2027">
                           PPL Ganjil 2026/2027
@@ -332,7 +434,7 @@
                         color: #374151;
                       "
                     >
-                      2. Upload Berkas
+                      3. Upload Berkas
                     </h3>
 
                     <!-- Daftar Persyaratan Berkas -->
@@ -468,6 +570,20 @@
     </div>
 
     <script>
+      /* ── State ─────────────────────────────────────────────── */
+      let salamSyncSuccess = false; // Track apakah sinkronisasi berhasil
+      let salamData = null; // Store data dari SALAM
+
+      /* ── Dummy data SALAM ──────────────────────────────────── */
+      const dummySalamData = {
+        nama: "Budi Santoso",
+        email: "budi.santoso@univ.ac.id",
+        prodi: "Pendidikan Agama Islam",
+        ipk: 3.75,
+        sks: 110,
+        gender: "Laki-laki",
+      };
+
       // Dummy data untuk periode
       const periodeData = {
         "ganjil-2026-2027": {
@@ -585,6 +701,12 @@
         const periodeId = document.getElementById("periode-select").value;
         const submitBtn = document.getElementById("submit-btn");
 
+        // Disable jika sinkronisasi belum berhasil
+        if (!salamSyncSuccess) {
+          submitBtn.disabled = true;
+          return;
+        }
+
         if (!periodeId) {
           submitBtn.disabled = true;
           return;
@@ -601,6 +723,69 @@
         // Check if Google Drive link is filled
         const gdriveLink = document.getElementById("gdrive-link").value.trim();
         submitBtn.disabled = gdriveLink === "";
+      }
+
+      /* ── Sinkronisasi Data SALAM ───────────────────────────── */
+      function syncSalamData() {
+        const syncBtn = document.getElementById("sync-btn");
+        const syncStatus = document.getElementById("sync-status");
+        const syncMsg = document.getElementById("sync-message");
+
+        // Show loading state
+        syncBtn.disabled = true;
+        syncBtn.innerHTML = "⏳ Sedang Sinkronisasi…";
+        syncStatus.style.display = "block";
+        syncMsg.innerHTML =
+          '<span style="color: #f59e0b">⌛ Menghubungi server SALAM…</span>';
+
+        // Simulate API call dengan delay 1.5 detik
+        setTimeout(() => {
+          // Random success untuk demo (90% sukses)
+          const isSuccess = Math.random() < 0.9;
+
+          if (isSuccess) {
+            // Success
+            salamData = dummySalamData;
+            salamSyncSuccess = true;
+
+            syncBtn.innerHTML = "✓ Sinkronisasi Berhasil";
+            syncBtn.style.backgroundColor = "#10b981";
+            syncBtn.disabled = false;
+            syncMsg.innerHTML =
+              '<span style="color: #10b981">✓ Data berhasil disinkronisasi dari SALAM</span>';
+
+            // Show SALAM data section
+            const salamSection = document.getElementById("salam-data-section");
+            salamSection.style.display = "block";
+            document.getElementById("salam-nama").textContent = salamData.nama;
+            document.getElementById("salam-email").textContent = salamData.email;
+            document.getElementById("salam-prodi").textContent = salamData.prodi;
+            document.getElementById("salam-ipk").textContent = salamData.ipk;
+            document.getElementById("salam-sks").textContent = salamData.sks;
+            document.getElementById("salam-gender").textContent = salamData.gender;
+            document.getElementById("salam-timestamp").textContent =
+              "Sinkronisasi pada: " + new Date().toLocaleString("id-ID");
+
+            // Enable periode select
+            document.getElementById("periode-select").disabled = false;
+
+            // Reset submit button state
+            checkFormValidity();
+          } else {
+            // Failed
+            salamSyncSuccess = false;
+            syncBtn.innerHTML = "🔄 Sinkronisasi Gagal – Coba Lagi";
+            syncBtn.style.backgroundColor = "#ef4444";
+            syncBtn.disabled = false;
+            syncMsg.innerHTML =
+              '<span style="color: #ef4444">✕ Gagal menghubungi server SALAM. Periksa koneksi atau hubungi admin.</span>';
+
+            // Hide SALAM data section
+            document.getElementById("salam-data-section").style.display = "none";
+            document.getElementById("periode-select").disabled = true;
+            checkFormValidity();
+          }
+        }, 1500);
       }
 
       function submitForm() {
