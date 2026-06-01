@@ -1,259 +1,939 @@
 <!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pilih Sekolah (WAR) — PPL FTK</title>
-  <link rel="stylesheet" href="../../assets/css/main.css" />
-  <style>
-    .nav-section { padding: .25rem 1.5rem; font-size: .65rem; text-transform: uppercase; letter-spacing: .1em; color: #6b7280; margin-top: .75rem; }
-    .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid #1f2937; }
-    .sidebar-footer a { color: #9ca3af; font-size: .875rem; text-decoration: none; }
-    .war-header { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: white; border-radius: .75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-    .timer { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-    .school-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-    .school-card { background: var(--white); border: 1.5px solid var(--border); border-radius: .625rem; padding: 1.125rem; transition: border-color .15s, box-shadow .15s; position: relative; }
-    .school-card:hover:not(.school-full):not(.school-ineligible) { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
-    .school-full { opacity: .65; }
-    .school-ineligible { opacity: .75; }
-    .school-selected { border-color: var(--success) !important; box-shadow: 0 0 0 3px rgba(16,185,129,.15) !important; }
-    .quota-bar { height: 5px; background: #e5e7eb; border-radius: 3px; margin-top: 4px; }
-    .quota-fill-green { height: 100%; border-radius: 3px; background: var(--success); }
-    .quota-fill-warn { height: 100%; border-radius: 3px; background: var(--warning); }
-    .quota-fill-red { height: 100%; border-radius: 3px; background: var(--danger); }
-    .elig-tag { display: inline-flex; align-items: center; gap: .3rem; font-size: .7rem; padding: .2rem .6rem; border-radius: 9999px; font-weight: 500; }
-    .tag-ok { background: #d1fae5; color: #065f46; }
-    .tag-fail { background: #fee2e2; color: #991b1b; }
-    .tag-full { background: #f3f4f6; color: #6b7280; }
-    .filter-bar { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
-    .prodi-slot-row { display: flex; justify-content: space-between; align-items: center; font-size: .8125rem; padding: .375rem 0; border-bottom: 1px solid #f0f0f0; }
-    .prodi-slot-row:last-child { border-bottom: none; }
-    /* Selected banner */
-    .selected-banner { background: #f0fdf4; border: 1px solid #86efac; border-radius: .5rem; padding: .875rem 1.125rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; display: none; }
-  </style>
-</head>
-<body>
-  <div class="app-container">
-    <aside class="sidebar">
-      <div class="sidebar-header">PPL FTK — Mahasiswa</div>
-      <nav class="sidebar-nav">
-        <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
-        <div class="nav-section">M3 — Pendaftaran</div>
-        <a href="../daftar/" class="nav-item">📝 Daftar PPL</a>
-        <a href="../war/" class="nav-item active">🏫 Pilih Sekolah</a>
-        <div class="nav-section">M4 — Aktivitas</div>
-        <a href="../logbook/" class="nav-item">📓 Logbook Mengajar</a>
-        <div class="nav-section">M6 — Penilaian</div>
-        <a href="../ujian/" class="nav-item">🎓 Ujian &amp; Nilai</a>
-      </nav>
-      <div class="sidebar-footer"><a href="../../index.html">← Keluar</a></div>
-    </aside>
-
-    <div class="main-content">
-      <header class="top-bar">
-        <h1 style="font-size:1.125rem;font-weight:600">Pilih Sekolah (WAR)</h1>
-        <div style="display:flex;align-items:center;gap:1rem">
-          <span class="text-sm text-muted">Budi Santoso · PAI</span>
-          <div style="width:32px;height:32px;background:#10b981;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:.75rem;font-weight:700">BS</div>
-        </div>
-      </header>
-
-      <main class="page-container">
-        <!-- WAR Header -->
-        <div class="war-header">
-          <div>
-            <div style="font-size:.75rem;opacity:.85;margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.05em">Periode WAR — PPL Ganjil 2026/2027</div>
-            <div style="font-size:1rem;font-weight:600">Pilih sekolah penempatanmu secara mandiri</div>
-            <div style="font-size:.8125rem;opacity:.8;margin-top:.25rem">Kamu: <strong>Budi Santoso</strong> · PAI · IPK 3.75 · Laki-laki</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:.75rem;opacity:.8;margin-bottom:.25rem">Sisa Waktu WAR</div>
-            <div class="timer" id="timer">11:42:07</div>
-          </div>
-        </div>
-
-        <!-- Selected banner -->
-        <div class="selected-banner" id="selected-banner">
-          <div>
-            <span style="font-size:.875rem;font-weight:600;color:#15803d">✓ Sekolah Dipilih: <span id="selected-name">—</span></span>
-            <span class="text-sm text-muted" style="margin-left:.5rem">Kamu masih bisa membatalkan selama periode WAR berlangsung.</span>
-          </div>
-          <button class="btn btn-outline" style="font-size:.75rem;color:var(--danger)" onclick="cancelChoice()">Batalkan Pilihan</button>
-        </div>
-
-        <div class="filter-bar">
-          <input class="form-input" id="search" placeholder="Cari nama sekolah…" oninput="filterCards()" style="max-width:220px" />
-          <select class="form-input" style="max-width:120px" onchange="filterCards()">
-            <option value="">Semua kota</option>
-            <option value="Bandung">Bandung</option>
-            <option value="Cimahi">Cimahi</option>
-          </select>
-          <label style="font-size:.875rem;display:flex;align-items:center;gap:.375rem;cursor:pointer">
-            <input type="checkbox" id="elig-only" onchange="filterCards()" /> Hanya yang bisa dipilih
-          </label>
-          <span class="text-sm text-muted" style="margin-left:auto">12 sekolah tersedia</span>
-        </div>
-
-        <div class="school-grid" id="school-grid">
-
-          <!-- Available + Eligible -->
-          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="MAN 1 Bandung">
-            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
-              <div style="font-weight:600;font-size:.9375rem">MAN 1 Bandung</div>
-              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
-            </div>
-            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300001</div>
-            <div style="margin-bottom:.875rem">
-              <div class="prodi-slot-row">
-                <span style="font-weight:500">PAI</span>
-                <div style="text-align:right">
-                  <span style="font-weight:600">2</span><span class="text-muted"> / 5 sisa</span>
-                  <div class="quota-bar" style="width:80px"><div class="quota-fill-warn" style="width:60%"></div></div>
-                </div>
-              </div>
-              <div class="prodi-slot-row">
-                <span>PBA</span>
-                <div style="text-align:right"><span>3</span><span class="text-muted"> / 3 sisa</span></div>
-              </div>
-            </div>
-            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: IPK ≥ 3.0 · Semua gender</div>
-            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'MAN 1 Bandung')">Pilih Sekolah Ini</button>
-          </div>
-
-          <!-- Available + Eligible -->
-          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="SMAN 8 Bandung">
-            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
-              <div style="font-weight:600;font-size:.9375rem">SMAN 8 Bandung</div>
-              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
-            </div>
-            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300002</div>
-            <div style="margin-bottom:.875rem">
-              <div class="prodi-slot-row">
-                <span style="font-weight:500">PAI</span>
-                <div style="text-align:right">
-                  <span style="font-weight:600">4</span><span class="text-muted"> / 4 sisa</span>
-                  <div class="quota-bar" style="width:80px"><div class="quota-fill-green" style="width:0%"></div></div>
-                </div>
-              </div>
-              <div class="prodi-slot-row">
-                <span>PGMI</span>
-                <div style="text-align:right"><span>2</span><span class="text-muted"> / 2 sisa</span></div>
-              </div>
-            </div>
-            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: Tidak ada</div>
-            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'SMAN 8 Bandung')">Pilih Sekolah Ini</button>
-          </div>
-
-          <!-- Full -->
-          <div class="school-card school-full" data-city="Bandung" data-eligible="true" data-full="true" data-name="MTsN 2 Kota Bandung">
-            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
-              <div style="font-weight:600;font-size:.9375rem">MTsN 2 Kota Bandung</div>
-              <span class="elig-tag tag-full">Penuh</span>
-            </div>
-            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300003</div>
-            <div style="margin-bottom:.875rem">
-              <div class="prodi-slot-row">
-                <span style="font-weight:500">PAI</span>
-                <div style="text-align:right">
-                  <span style="color:var(--danger);font-weight:600">0</span><span class="text-muted"> / 3 sisa</span>
-                  <div class="quota-bar" style="width:80px"><div class="quota-fill-red" style="width:100%"></div></div>
-                </div>
-              </div>
-            </div>
-            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: IPK ≥ 2.75</div>
-            <button class="btn btn-outline" style="width:100%" disabled>Kuota Penuh</button>
-          </div>
-
-          <!-- Ineligible: gender -->
-          <div class="school-card school-ineligible" data-city="Cimahi" data-eligible="false" data-full="false" data-name="SMA Negeri 3 Cimahi">
-            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
-              <div style="font-weight:600;font-size:.9375rem">SMA Negeri 3 Cimahi</div>
-              <span class="elig-tag tag-fail">✕ Tidak Memenuhi</span>
-            </div>
-            <div class="text-sm text-muted" style="margin-bottom:.875rem">Cimahi · NPSN: 40300004</div>
-            <div style="margin-bottom:.875rem">
-              <div class="prodi-slot-row">
-                <span style="font-weight:500">PAI</span>
-                <div style="text-align:right"><span>3</span><span class="text-muted"> / 4 sisa</span></div>
-              </div>
-            </div>
-            <div style="font-size:.75rem;background:#fee2e2;color:#991b1b;padding:.375rem .625rem;border-radius:.375rem;margin-bottom:.875rem">
-              ✕ Sekolah ini hanya menerima <strong>perempuan</strong> untuk prodi PAI
-            </div>
-            <button class="btn btn-outline" style="width:100%;cursor:not-allowed;opacity:.5" disabled>Tidak Memenuhi Syarat</button>
-          </div>
-
-          <!-- Available + Eligible -->
-          <div class="school-card" data-city="Bandung" data-eligible="true" data-full="false" data-name="MA Al-Ihsan Baleendah">
-            <div class="flex justify-between items-center" style="margin-bottom:.625rem">
-              <div style="font-weight:600;font-size:.9375rem">MA Al-Ihsan Baleendah</div>
-              <span class="elig-tag tag-ok">✓ Bisa dipilih</span>
-            </div>
-            <div class="text-sm text-muted" style="margin-bottom:.875rem">Bandung · NPSN: 40300005</div>
-            <div style="margin-bottom:.875rem">
-              <div class="prodi-slot-row">
-                <span style="font-weight:500">PAI</span>
-                <div style="text-align:right"><span style="font-weight:600">3</span><span class="text-muted"> / 4 sisa</span></div>
-              </div>
-            </div>
-            <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.875rem">Syarat: Tidak ada</div>
-            <button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(this, 'MA Al-Ihsan Baleendah')">Pilih Sekolah Ini</button>
-          </div>
-
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <script>
-    // Timer countdown (demo)
-    let secs = 11 * 3600 + 42 * 60 + 7;
-    setInterval(() => {
-      secs--;
-      if (secs < 0) secs = 0;
-      const h = String(Math.floor(secs/3600)).padStart(2,'0');
-      const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
-      const s = String(secs%60).padStart(2,'0');
-      document.getElementById('timer').textContent = `${h}:${m}:${s}`;
-    }, 1000);
-
-    let chosen = null;
-    function pilihSekolah(btn, name) {
-      if (chosen) {
-        if (!confirm(`Batalkan pilihan "${chosen}" dan pilih "${name}"?`)) return;
-      } else {
-        if (!confirm(`Pilih ${name} sebagai sekolah PPL kamu?`)) return;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pilih Sekolah (WAR) — PPL FTK</title>
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <style>
+      /* ── Nav ───────────────────────────────────── */
+      .nav-section {
+        padding: 0.25rem 1.5rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7280;
+        margin-top: 0.75rem;
       }
-      chosen = name;
-      // Reset all cards
-      document.querySelectorAll('.school-card').forEach(c => c.classList.remove('school-selected'));
-      btn.closest('.school-card').classList.add('school-selected');
-      btn.textContent = '✓ Dipilih';
-      btn.className = 'btn btn-outline';
-      btn.style.borderColor = 'var(--success)';
-      btn.style.color = 'var(--success)';
-      document.getElementById('selected-name').textContent = name;
-      document.getElementById('selected-banner').style.display = 'flex';
-    }
-    function cancelChoice() {
-      if (!confirm('Batalkan pilihan sekolah?')) return;
-      chosen = null;
-      document.querySelectorAll('.school-card').forEach(c => {
-        c.classList.remove('school-selected');
-        const btn = c.querySelector('button:not([disabled])');
-        if (btn) { btn.textContent = 'Pilih Sekolah Ini'; btn.className = 'btn btn-primary'; btn.style = ''; }
-      });
-      document.getElementById('selected-banner').style.display = 'none';
-    }
-    function filterCards() {
-      const q = document.getElementById('search').value.toLowerCase();
-      const eligOnly = document.getElementById('elig-only').checked;
-      document.querySelectorAll('.school-card').forEach(c => {
-        const name = c.dataset.name.toLowerCase();
-        const elig = c.dataset.eligible === 'true';
-        c.style.display = (name.includes(q) && (!eligOnly || elig)) ? '' : 'none';
-      });
-    }
-  </script>
-</body>
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #1f2937;
+      }
+      .sidebar-footer a {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+
+      /* ── WAR header ────────────────────────────── */
+      .war-header {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .timer {
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ── Jenjang badges ────────────────────────── */
+      .badge-jenjang {
+        display: inline-block;
+        padding: 0.15rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.65rem;
+        font-weight: 600;
+      }
+      .badge-sd {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-smp {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .badge-sma {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-tk {
+        background: #fce7f3;
+        color: #9d174d;
+      }
+      .badge-slb {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      /* ── Status tags ───────────────────────────── */
+      .elig-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 9999px;
+        font-weight: 500;
+      }
+      .tag-ok {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .tag-full {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+      .tag-fail {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* ── School card grid ──────────────────────── */
+      .school-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+      .school-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 0.625rem;
+        padding: 1.125rem;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      .school-card:hover:not(.school-full):not(.school-ineligible) {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+      .school-full {
+        opacity: 0.65;
+      }
+      .school-ineligible {
+        opacity: 0.75;
+      }
+      .school-selected {
+        border-color: var(--success) !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+      }
+
+      /* ── Quota bar ─────────────────────────────── */
+      .quota-bar {
+        height: 5px;
+        background: #e5e7eb;
+        border-radius: 3px;
+        margin-top: 4px;
+        overflow: hidden;
+      }
+      .quota-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.3s;
+      }
+      .fill-green {
+        background: var(--success);
+      }
+      .fill-warn {
+        background: var(--warning);
+      }
+      .fill-red {
+        background: var(--danger);
+      }
+
+      /* ── Card sub-sections ─────────────────────── */
+      .prodi-slot-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        font-size: 0.8125rem;
+        padding: 0.375rem 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .prodi-slot-row:last-child {
+        border-bottom: none;
+      }
+      .syarat-row {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.625rem;
+        border-radius: 0.375rem;
+        margin-bottom: 0.875rem;
+      }
+      .syarat-ok {
+        color: var(--text-muted);
+        background: #f9fafb;
+      }
+      .syarat-fail {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .card-spacer {
+        flex: 1;
+      }
+
+      /* ── Filter bar ────────────────────────────── */
+      .filter-bar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── Selected banner ───────────────────────── */
+      .selected-banner {
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+        border-radius: 0.5rem;
+        padding: 0.875rem 1.125rem;
+        margin-bottom: 1.25rem;
+        display: none;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      /* ── Loading skeleton ──────────────────────── */
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #f0f0f0 25%,
+          #e0e0e0 50%,
+          #f0f0f0 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+        border-radius: 0.375rem;
+      }
+      .skel-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 0.625rem;
+        padding: 1.125rem;
+      }
+      .skel-title {
+        height: 18px;
+        width: 65%;
+        margin-bottom: 0.75rem;
+      }
+      .skel-sub {
+        height: 13px;
+        width: 45%;
+        margin-bottom: 1rem;
+      }
+      .skel-line {
+        height: 13px;
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+      .skel-line.w75 {
+        width: 75%;
+      }
+      .skel-btn {
+        height: 36px;
+        width: 100%;
+        margin-top: 0.875rem;
+        border-radius: 0.375rem;
+      }
+
+      /* ── Mobile responsiveness ─────────────────── */
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.375rem;
+        color: var(--text-main);
+      }
+      .hamburger svg {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .hamburger {
+          display: flex;
+          align-items: center;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100%;
+          z-index: 100;
+          transform: translateX(-100%);
+          transition: transform 0.25s;
+          width: 260px;
+        }
+        .sidebar-open .sidebar {
+          transform: translateX(0);
+        }
+        .sidebar-overlay {
+          display: none;
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 99;
+        }
+        .sidebar-open .sidebar-overlay {
+          display: block;
+        }
+
+        .main-content {
+          width: 100%;
+        }
+        .top-bar {
+          padding: 0 1rem;
+        }
+
+        .page-container {
+          padding: 1rem;
+        }
+
+        .war-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .filter-bar {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .filter-bar .form-input {
+          max-width: 100% !important;
+        }
+        .filter-bar label {
+          font-size: 0.875rem;
+        }
+
+        .school-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .selected-banner {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <div class="app-container" id="app">
+      <aside class="sidebar">
+        <div class="sidebar-header">PPL FTK — Mahasiswa</div>
+        <nav class="sidebar-nav">
+          <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+          <div class="nav-section">M3 — Pendaftaran</div>
+          <a href="../daftar/" class="nav-item">📝 Daftar PPL</a>
+          <a href="../war/" class="nav-item active">🏫 Pilih Sekolah</a>
+          <div class="nav-section">M4 — Aktivitas</div>
+          <a href="../logbook/" class="nav-item">📓 Logbook Mengajar</a>
+          <div class="nav-section">M6 — Penilaian</div>
+          <a href="../ujian/" class="nav-item">🎓 Ujian &amp; Nilai</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="../../index.html">← Keluar</a>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="top-bar">
+          <div style="display: flex; align-items: center; gap: 0.75rem">
+            <button
+              class="hamburger"
+              onclick="toggleSidebar()"
+              aria-label="Menu"
+            >
+              <svg
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <h1 style="font-size: 1.125rem; font-weight: 600">
+              Pilih Sekolah (WAR)
+            </h1>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem">
+            <span class="text-sm text-muted" id="hdr-user"
+              >Budi Santoso · PAI</span
+            >
+            <div
+              style="
+                width: 32px;
+                height: 32px;
+                background: #10b981;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 700;
+              "
+            >
+              BS
+            </div>
+          </div>
+        </header>
+
+        <main class="page-container">
+          <!-- WAR Header -->
+          <div class="war-header">
+            <div>
+              <div
+                style="
+                  font-size: 0.75rem;
+                  opacity: 0.85;
+                  margin-bottom: 0.25rem;
+                  text-transform: uppercase;
+                  letter-spacing: 0.05em;
+                "
+              >
+                Periode Pendaftaran — PPL Ganjil 2026/2027
+              </div>
+              <div style="font-size: 1rem; font-weight: 600">
+                Pilih sekolah penempatanmu secara mandiri
+              </div>
+              <div
+                style="font-size: 0.8125rem; opacity: 0.8; margin-top: 0.25rem"
+                id="war-student-info"
+              >
+                —
+              </div>
+            </div>
+            <div style="text-align: right">
+              <div
+                style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem"
+              >
+                Sisa Waktu Pendaftaran
+              </div>
+              <div class="timer" id="timer">11:42:07</div>
+            </div>
+          </div>
+
+          <!-- Selected banner -->
+          <div class="selected-banner" id="selected-banner">
+            <div>
+              <span
+                style="font-size: 0.875rem; font-weight: 600; color: #15803d"
+                >✓ Sekolah Dipilih: <span id="selected-name">—</span></span
+              >
+              <span class="text-sm text-muted" style="margin-left: 0.5rem"
+                >Kamu masih bisa membatalkan selama periode WAR
+                berlangsung.</span
+              >
+            </div>
+            <button
+              class="btn btn-outline"
+              style="font-size: 0.75rem; color: var(--danger)"
+              onclick="cancelChoice()"
+            >
+              Batalkan Pilihan
+            </button>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <input
+              class="form-input"
+              id="search"
+              placeholder="Cari nama sekolah…"
+              oninput="applyFilters()"
+              style="max-width: 220px"
+            />
+            <select
+              class="form-input"
+              id="filter-jenjang"
+              onchange="applyFilters()"
+              style="max-width: 150px"
+            >
+              <option value="">Semua jenjang</option>
+            </select>
+            <label
+              style="
+                font-size: 0.875rem;
+                display: flex;
+                align-items: center;
+                gap: 0.375rem;
+                cursor: pointer;
+              "
+            >
+              <input type="checkbox" id="elig-only" onchange="applyFilters()" />
+              Hanya yang bisa dipilih
+            </label>
+            <span
+              class="text-sm text-muted"
+              style="margin-left: auto"
+              id="count-label"
+              >Memuat…</span
+            >
+          </div>
+
+          <!-- School grid (skeleton → real) -->
+          <div class="school-grid" id="school-grid">
+            <!-- Skeleton cards shown while loading -->
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+            <div class="skel-card">
+              <div class="skeleton skel-title"></div>
+              <div class="skeleton skel-sub"></div>
+              <div class="skeleton skel-line"></div>
+              <div class="skeleton skel-line w75"></div>
+              <div class="skeleton skel-btn"></div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      /* ── Student context (dummy) ────────────────────────────── */
+      const MAHASISWA = {
+        nama: "Budi Santoso",
+        prodi: "pai",
+        ipk: 3.75,
+        gender: "L",
+      };
+
+      /* ── Dummy school data ──────────────────────────────────── */
+      /* sisa = remaining quota for this semester */
+      const SCHOOLS = [
+        {
+          id: 1,
+          namaSekolah: "MAN 1 Kota Bandung",
+          npsn: "20275583",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. H. Alpi No. 40, Cijerah, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 5, sisa: 2, ipkMin: 3.0, gender: "all" },
+            { prodiId: "pba", kuota: 3, sisa: 3, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 2,
+          namaSekolah: "SMAN 8 Bandung",
+          npsn: "20252010",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Solontongan No. 3, Turangga, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 4, sisa: 4, ipkMin: null, gender: "all" },
+            { prodiId: "pgmi", kuota: 2, sisa: 1, ipkMin: 2.75, gender: "P" },
+          ],
+        },
+        {
+          id: 3,
+          namaSekolah: "MTsN 2 Kota Bandung",
+          npsn: "20275101",
+          jenjang: "SMP/MTs",
+          alamat: "Jl. Buah Batu No. 130, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 3, sisa: 0, ipkMin: 2.75, gender: "all" },
+            { prodiId: "pba", kuota: 2, sisa: 2, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 4,
+          namaSekolah: "MA Al-Ihsan Baleendah",
+          npsn: "20275200",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Baleendah No. 77, Kabupaten Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 4, sisa: 3, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 5,
+          namaSekolah: "SMA Negeri 3 Cimahi",
+          npsn: "20225301",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Moh. Toha No. 5, Cimahi",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 4, sisa: 3, ipkMin: null, gender: "P" },
+          ],
+        },
+        {
+          id: 6,
+          namaSekolah: "SMK Muhammadiyah 2 Bandung",
+          npsn: "20252099",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Ahmad Yani No. 25, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 5, sisa: 1, ipkMin: 3.5, gender: "all" },
+          ],
+        },
+        {
+          id: 7,
+          namaSekolah: "MIN 1 Kota Bandung",
+          npsn: "20275102",
+          jenjang: "SD/MI",
+          alamat: "Jl. Bima No. 7, Antapani, Bandung",
+          prodiKuota: [
+            { prodiId: "pgmi", kuota: 6, sisa: 4, ipkMin: 3.0, gender: "all" },
+            { prodiId: "pai", kuota: 2, sisa: 1, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 8,
+          namaSekolah: "MAN 2 Kota Bandung",
+          npsn: "20275584",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Cipadung No. 57, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 6, sisa: 0, ipkMin: 3.0, gender: "all" },
+            { prodiId: "pba", kuota: 3, sisa: 0, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 9,
+          namaSekolah: "MTs Persis 67 Banjaran",
+          npsn: "20275300",
+          jenjang: "SMP/MTs",
+          alamat: "Jl. Raya Banjaran No. 12, Kabupaten Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 4, sisa: 2, ipkMin: null, gender: "all" },
+            { prodiId: "pba", kuota: 2, sisa: 2, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 10,
+          namaSekolah: "SLB Negeri A Pajajaran",
+          npsn: "20252011",
+          jenjang: "SLB",
+          alamat: "Jl. Pajajaran No. 50, Bandung",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 2, sisa: 2, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 11,
+          namaSekolah: "SDN Cimahi Tengah",
+          npsn: "20215432",
+          jenjang: "SD/MI",
+          alamat: "Jl. Baros No. 12, Cimahi",
+          prodiKuota: [
+            { prodiId: "pgmi", kuota: 4, sisa: 3, ipkMin: null, gender: "all" },
+            { prodiId: "pai", kuota: 2, sisa: 0, ipkMin: null, gender: "all" },
+          ],
+        },
+        {
+          id: 12,
+          namaSekolah: "SMK Negeri 12 Cimahi",
+          npsn: "20252012",
+          jenjang: "SMA/SMK/MA",
+          alamat: "Jl. Cimahi Raya No. 12, Cimahi",
+          prodiKuota: [
+            { prodiId: "pai", kuota: 3, sisa: 3, ipkMin: null, gender: "all" },
+          ],
+        },
+      ];
+
+      /* ── State ──────────────────────────────────────────────── */
+      let chosen = null; // { id, nama }
+      let loadedSchools = [];
+
+      /* ── Helpers ─────────────────────────────────────────────── */
+      function getProdiSlot(school) {
+        return (
+          school.prodiKuota.find((p) => p.prodiId === MAHASISWA.prodi) || null
+        );
+      }
+
+      function computeStatus(school) {
+        const slot = getProdiSlot(school);
+        if (!slot) return "not_applicable"; // student's prodi not offered here
+        if (slot.sisa === 0) return "full";
+        if (slot.ipkMin !== null && MAHASISWA.ipk < slot.ipkMin)
+          return "not_qualified";
+        if (slot.gender !== "all" && slot.gender !== MAHASISWA.gender)
+          return "not_qualified";
+        return "available";
+      }
+
+      function jenjangBadge(j) {
+        const map = {
+          "SMA/SMK/MA": ["badge-sma", "SMA/MA/SMK"],
+          "SMP/MTs": ["badge-smp", "SMP/MTs"],
+          "SD/MI": ["badge-sd", "SD/MI"],
+          "PAUD/TK": ["badge-tk", "PAUD/TK"],
+          SLB: ["badge-slb", "SLB"],
+        };
+        const [cls, label] = map[j] || ["badge-slb", j];
+        return `<span class="badge-jenjang ${cls}">${label}</span>`;
+      }
+
+      function quotaBar(slot) {
+        if (!slot || slot.kuota === 0) return "";
+        const taken = slot.kuota - slot.sisa;
+        const pct = Math.round((taken / slot.kuota) * 100);
+        const fillCls =
+          pct >= 75 ? "fill-red" : pct >= 50 ? "fill-warn" : "fill-green";
+        return `<div class="quota-bar"><div class="quota-fill ${fillCls}" style="width:${pct}%"></div></div>`;
+      }
+
+      function syaratLine(slot, status) {
+        if (!slot) return "";
+        const parts = [];
+        if (slot.ipkMin !== null) parts.push(`IPK ≥ ${slot.ipkMin.toFixed(2)}`);
+        if (slot.gender === "P") parts.push("Khusus perempuan");
+        if (slot.gender === "L") parts.push("Khusus laki-laki");
+        if (parts.length === 0) parts.push("Tidak ada");
+
+        if (status === "not_qualified") {
+          const failReason = [];
+          if (slot.ipkMin !== null && MAHASISWA.ipk < slot.ipkMin)
+            failReason.push(
+              `IPK kamu (${MAHASISWA.ipk}) di bawah minimum (${slot.ipkMin.toFixed(2)})`,
+            );
+          if (slot.gender !== "all" && slot.gender !== MAHASISWA.gender)
+            failReason.push(
+              `Sekolah ini hanya menerima <strong>${slot.gender === "P" ? "perempuan" : "laki-laki"}</strong>`,
+            );
+          return `<div class="syarat-row syarat-fail">✕ ${failReason.join(" · ")}</div>`;
+        }
+        return `<div class="syarat-row syarat-ok">Syarat: ${parts.join(" · ")}</div>`;
+      }
+
+      function renderCard(school) {
+        const status = computeStatus(school);
+        const slot = getProdiSlot(school);
+
+        const statusLabel = {
+          available: "✓ Bisa dipilih",
+          full: "Penuh",
+          not_qualified: "✕ Tidak Memenuhi",
+          not_applicable: "—",
+        };
+        const statusCls = {
+          available: "tag-ok",
+          full: "tag-full",
+          not_qualified: "tag-fail",
+          not_applicable: "tag-full",
+        };
+        const cardCls =
+          status === "full"
+            ? "school-full"
+            : status === "not_qualified"
+              ? "school-ineligible"
+              : "";
+
+        const isChosen = chosen && chosen.id === school.id;
+        const selectedCls = isChosen ? "school-selected" : "";
+
+        let quotaHtml = "";
+        if (slot) {
+          quotaHtml = `
+          <div class="prodi-slot-row">
+            <span style="font-weight:500;text-transform:uppercase;font-size:.75rem">${MAHASISWA.prodi.toUpperCase()}</span>
+            <div style="text-align:right">
+              <span style="${slot.sisa === 0 ? "color:var(--danger);" : ""}font-weight:600">${slot.sisa}</span>
+              <span class="text-muted"> / ${slot.kuota} sisa</span>
+              ${quotaBar(slot)}
+            </div>
+          </div>`;
+        }
+
+        let btnHtml = "";
+        if (isChosen) {
+          btnHtml = `<button class="btn btn-outline" style="width:100%;border-color:var(--success);color:var(--success)" onclick="cancelChoice()">✓ Dipilih — Batalkan</button>`;
+        } else if (status === "available") {
+          btnHtml = `<button class="btn btn-primary" style="width:100%" onclick="pilihSekolah(${school.id}, '${school.namaSekolah.replace(/'/g, "\\'")}')">Pilih Sekolah Ini</button>`;
+        } else if (status === "full") {
+          btnHtml = `<button class="btn btn-outline" style="width:100%" disabled>Kuota Penuh</button>`;
+        } else {
+          btnHtml = `<button class="btn btn-outline" style="width:100%;cursor:not-allowed;opacity:.5" disabled>Tidak Memenuhi Syarat</button>`;
+        }
+
+        return `
+        <div class="school-card ${cardCls} ${selectedCls}" data-id="${school.id}" data-status="${status}" data-kota="${school.alamat.split(",").pop().trim()}" data-jenjang="${school.jenjang}" data-name="${school.namaSekolah.toLowerCase()}">
+          <div class="flex justify-between items-center" style="margin-bottom:.5rem">
+            <div style="font-weight:600;font-size:.9375rem">${school.namaSekolah}</div>
+            <span class="elig-tag ${statusCls[status]}">${statusLabel[status]}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.375rem;margin-bottom:.125rem">
+            ${jenjangBadge(school.jenjang)}
+            <span class="text-sm text-muted">NPSN: ${school.npsn}</span>
+          </div>
+          <div class="text-sm text-muted" style="margin-bottom:.875rem;font-size:.8rem">${school.alamat}</div>
+          <div style="margin-bottom:.5rem">${quotaHtml}</div>
+          ${syaratLine(slot, status)}
+          <div class="card-spacer"></div>
+          ${btnHtml}
+        </div>`;
+      }
+
+      /* ── Sort order: available → full → not_qualified → not_applicable ── */
+      const STATUS_ORDER = {
+        available: 0,
+        full: 1,
+        not_qualified: 2,
+        not_applicable: 3,
+      };
+
+      function sortedSchools(schools) {
+        return [...schools].sort((a, b) => {
+          const sa = computeStatus(a),
+            sb = computeStatus(b);
+          return (STATUS_ORDER[sa] ?? 9) - (STATUS_ORDER[sb] ?? 9);
+        });
+      }
+
+      /* ── Filter + render ─────────────────────────────────────── */
+      function applyFilters() {
+        const q = document.getElementById("search").value.toLowerCase().trim();
+        const jenjang = document.getElementById("filter-jenjang").value;
+        const eligOnly = document.getElementById("elig-only").checked;
+
+        const filtered = loadedSchools.filter((s) => {
+          const status = computeStatus(s);
+          if (
+            q &&
+            !s.namaSekolah.toLowerCase().includes(q) &&
+            !s.alamat.toLowerCase().includes(q)
+          )
+            return false;
+          if (jenjang && s.jenjang !== jenjang) return false;
+          if (eligOnly && status !== "available") return false;
+          return true;
+        });
+
+        const sorted = sortedSchools(filtered);
+        const grid = document.getElementById("school-grid");
+        grid.innerHTML =
+          sorted.map(renderCard).join("") ||
+          '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)">Tidak ada sekolah yang sesuai filter.</div>';
+
+        const availCount = filtered.filter(
+          (s) => computeStatus(s) === "available",
+        ).length;
+        document.getElementById("count-label").textContent =
+          `${filtered.length} sekolah · ${availCount} bisa dipilih`;
+      }
+
+      /* ── Populate filter dropdowns ───────────────────────────── */
+      function populateFilters(schools) {
+        const kotas = [
+          ...new Set(schools.map((s) => s.alamat.split(",").pop().trim())),
+        ].sort();
+        const jenjangs = [...new Set(schools.map((s) => s.jenjang))].sort();
+
+        const jenjangSel = document.getElementById("filter-jenjang");
+        jenjangs.forEach((j) => {
+          const o = document.createElement("option");
+          o.value = j;
+          o.textContent = j;
+          jenjangSel.appendChild(o);
+        });
+      }
+
+      /* ── Actions ─────────────────────────────────────────────── */
+      function pilihSekolah(id, nama) {
+        const msg = chosen
+          ? `Batalkan pilihan "${chosen.nama}" dan pilih "${nama}"?`
+          : `Pilih ${nama} sebagai sekolah PPL kamu?`;
+        if (!confirm(msg)) return;
+        chosen = { id, nama };
+        document.getElementById("selected-name").textContent = nama;
+        document.getElementById("selected-banner").style.display = "flex";
+        applyFilters();
+      }
+
+      function cancelChoice() {
+        if (!confirm("Batalkan pilihan sekolah?")) return;
+        chosen = null;
+        document.getElementById("selected-banner").style.display = "none";
+        applyFilters();
+      }
+
+      /* ── Mobile sidebar ──────────────────────────────────────── */
+      function toggleSidebar() {
+        document.getElementById("app").classList.toggle("sidebar-open");
+      }
+      function closeSidebar() {
+        document.getElementById("app").classList.remove("sidebar-open");
+      }
+
+      /* ── WAR countdown timer ─────────────────────────────────── */
+      let secs = 11 * 3600 + 42 * 60 + 7;
+      setInterval(() => {
+        if (secs > 0) secs--;
+        const h = String(Math.floor(secs / 3600)).padStart(2, "0");
+        const m = String(Math.floor((secs % 3600) / 60)).padStart(2, "0");
+        const s = String(secs % 60).padStart(2, "0");
+        document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+      }, 1000);
+
+      /* ── Student info display ────────────────────────────────── */
+      document.getElementById("war-student-info").textContent =
+        `Kamu: ${MAHASISWA.nama} · ${MAHASISWA.prodi.toUpperCase()} · IPK ${MAHASISWA.ipk} · ${MAHASISWA.gender === "L" ? "Laki-laki" : "Perempuan"}`;
+
+      /* ── Simulate API load with skeleton → real data ─────────── */
+      setTimeout(() => {
+        loadedSchools = SCHOOLS;
+        populateFilters(loadedSchools);
+        applyFilters();
+      }, 800);
+    </script>
+  </body>
 </html>
