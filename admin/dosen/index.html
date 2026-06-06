@@ -1,0 +1,1519 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Dosen — PPL FTK</title>
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <style>
+      /* ── Nav ─────────────────────────────────────── */
+      .nav-section {
+        padding: 0.25rem 1.5rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7280;
+        margin-top: 0.75rem;
+      }
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #1f2937;
+      }
+      .sidebar-footer a {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+
+      /* ── Page header ─────────────────────────────── */
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .page-header h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      /* ── Filter bar ──────────────────────────────── */
+      .filter-bar {
+        display: flex;
+        gap: 0.625rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+      }
+      .filter-bar .form-input {
+        max-width: 180px;
+      }
+      .search-input {
+        max-width: 260px !important;
+      }
+
+      /* ── Table ───────────────────────────────────── */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .table tbody tr {
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .table tbody tr:hover {
+        background: #f9fafb;
+      }
+      .sortable-th {
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+      }
+      .sortable-th:hover {
+        background: #f3f4f6;
+      }
+      .sort-icon {
+        margin-left: 4px;
+        opacity: 0.4;
+        font-size: 0.7rem;
+      }
+      .sort-icon.asc::after {
+        content: "▲";
+      }
+      .sort-icon.desc::after {
+        content: "▼";
+      }
+      .sort-icon:not(.asc):not(.desc)::after {
+        content: "⇅";
+      }
+
+      /* ── Badges ──────────────────────────────────── */
+      .badge {
+        display: inline-block;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+      .badge-salam {
+        background: #dbeafe;
+        color: #1d4ed8;
+      }
+      .badge-manual {
+        background: #f3f4f6;
+        color: #374151;
+      }
+      .badge-aktif {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .badge-nonaktif {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      /* ── Nama+NIP cell ───────────────────────────── */
+      .cell-nama {
+        font-weight: 500;
+      }
+      .cell-nip {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      /* ── Pagination ──────────────────────────────── */
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        margin-top: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .page-btn {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        background: white;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .page-btn:hover {
+        background: #f3f4f6;
+      }
+      .page-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+      .page-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .page-info {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-left: auto;
+      }
+
+      /* ── Drawer ──────────────────────────────────── */
+      .drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 100;
+      }
+      .drawer-overlay.open {
+        display: block;
+      }
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 480px;
+        max-width: 100vw;
+        background: white;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 101;
+      }
+      .drawer.open {
+        transform: translateX(0);
+      }
+      .drawer-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .drawer-title {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .drawer-close {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        line-height: 1;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        transition: background 0.15s;
+      }
+      .drawer-close:hover {
+        background: #f3f4f6;
+      }
+      .drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+      }
+      .drawer-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.625rem;
+        flex-shrink: 0;
+      }
+
+      /* ── Detail drawer ───────────────────────────── */
+      .detail-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #e0e7ff;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.375rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .detail-hero {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .detail-hero-name {
+        font-size: 1rem;
+        font-weight: 700;
+      }
+      .detail-hero-nip {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .detail-hero-badges {
+        display: flex;
+        gap: 0.375rem;
+        margin-top: 6px;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-label {
+        color: var(--text-muted);
+      }
+      .info-value {
+        font-weight: 500;
+        text-align: right;
+      }
+      .section-divider {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 1.25rem 0 0.75rem;
+        padding-bottom: 0.375rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .salam-info-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 0.5rem;
+        padding: 0.875rem 1rem;
+        font-size: 0.8125rem;
+        color: #1e40af;
+        line-height: 1.5;
+      }
+      .action-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .btn-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      .btn-danger:hover {
+        background: #fecaca;
+      }
+      .btn-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+      .btn-success:hover {
+        background: #a7f3d0;
+      }
+      .btn-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+      }
+      .btn-warning:hover {
+        background: #fde68a;
+      }
+
+      /* ── Form ────────────────────────────────────── */
+      .form-error {
+        font-size: 0.75rem;
+        color: var(--danger);
+        margin-top: 0.25rem;
+        display: none;
+      }
+      .form-error.show {
+        display: block;
+      }
+      .form-input.invalid {
+        border-color: var(--danger);
+      }
+      .edit-banner {
+        background: #fef3c7;
+        border: 1px solid #fde68a;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        color: #92400e;
+        line-height: 1.5;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ── Modal overlay ───────────────────────────── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 200;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal-box {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 460px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+      .modal-box.wide {
+        max-width: 560px;
+      }
+      .modal-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .modal-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .modal-desc {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+
+      /* Sync result modal */
+      .sync-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1.25rem 0;
+      }
+      .sync-stat-box {
+        background: #f9fafb;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.875rem;
+        text-align: center;
+      }
+      .sync-stat-box.success-box {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+      }
+      .sync-stat-box.error-box {
+        background: #fef2f2;
+        border-color: #fecaca;
+      }
+      .sync-stat-num {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+      .sync-stat-box.success-box .sync-stat-num {
+        color: #065f46;
+      }
+      .sync-stat-box.error-box .sync-stat-num {
+        color: #991b1b;
+      }
+      .sync-stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+      .sync-fail-list {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 0.5rem;
+        padding: 0.875rem 1rem;
+        margin-top: 0.75rem;
+      }
+      .sync-fail-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #991b1b;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .sync-fail-item {
+        font-size: 0.8125rem;
+        color: #7f1d1d;
+        padding: 0.25rem 0;
+        border-bottom: 1px solid #fecaca;
+        display: flex;
+        justify-content: space-between;
+      }
+      .sync-fail-item:last-child {
+        border-bottom: none;
+      }
+      .sync-fail-reason {
+        color: #991b1b;
+        font-size: 0.75rem;
+      }
+
+      /* ── Toast ───────────────────────────────────── */
+      #toast-container {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        padding: 0.875rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        animation: slideIn 0.25s ease;
+        min-width: 240px;
+        max-width: 380px;
+      }
+      .toast.success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+      .toast.error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      /* ── Empty / loading ─────────────────────────── */
+      .empty-row td {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">PPL FTK — Admin</div>
+        <nav class="sidebar-nav">
+          <a href="../dashboard/" class="nav-item">📊 Dashboard</a>
+          <div class="nav-section">M1 — SALAM &amp; SSO</div>
+          <a href="../salam/" class="nav-item">🔗 Integrasi SALAM</a>
+          <div class="nav-section">M2 — Periode PPL</div>
+          <a href="../periode/" class="nav-item">📅 Periode PPL</a>
+          <a href="../mitra/" class="nav-item">🏫 Sekolah Mitra</a>
+          <a href="../program-studi/" class="nav-item">📚 Program Studi</a>
+          <a href="../dosen/" class="nav-item active">👨‍🏫 Manajemen Dosen</a>
+          <div class="nav-section">M3 — Pendaftaran</div>
+          <a href="../pendaftaran/" class="nav-item">📝 Pendaftaran</a>
+          <a href="../penempatan/" class="nav-item">📌 Penempatan &amp; DPL</a>
+          <a href="../laporan/" class="nav-item">📄 Laporan &amp; Surat</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="../../index.html">← Keluar</a>
+        </div>
+      </aside>
+
+      <!-- Main content -->
+      <div class="main-content">
+        <!-- Top bar -->
+        <div class="top-bar">
+          <div style="font-weight: 600">Manajemen Data Dosen</div>
+          <div style="display: flex; align-items: center; gap: 0.75rem">
+            <span class="text-sm text-muted">Admin</span>
+            <div
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #e0e7ff;
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 0.875rem;
+              "
+            >
+              A
+            </div>
+          </div>
+        </div>
+
+        <!-- Page body -->
+        <div class="page-container">
+          <!-- Header -->
+          <div class="page-header">
+            <h2>Data Dosen</h2>
+            <div style="display: flex; gap: 0.625rem">
+              <button class="btn btn-outline" onclick="openSyncConfirm()">
+                🔄 Sinkronisasi SALAM
+              </button>
+              <button class="btn btn-primary" onclick="openCreateDrawer()">
+                + Tambah Dosen
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <input
+              type="search"
+              class="form-input search-input"
+              placeholder="Cari nama atau NIP…"
+              id="searchInput"
+              oninput="applyFilters()"
+            />
+            <select
+              class="form-input"
+              id="filterProdi"
+              onchange="applyFilters()"
+            >
+              <option value="">Semua Prodi</option>
+              <option value="Pendidikan Matematika">
+                Pendidikan Matematika
+              </option>
+              <option value="Pendidikan Fisika">Pendidikan Fisika</option>
+              <option value="Pendidikan Biologi">Pendidikan Biologi</option>
+              <option value="Pendidikan Kimia">Pendidikan Kimia</option>
+              <option value="Pendidikan Bahasa Indonesia">
+                Pendidikan Bahasa Indonesia
+              </option>
+              <option value="Pendidikan Bahasa Inggris">
+                Pendidikan Bahasa Inggris
+              </option>
+              <option value="Pendidikan Sejarah">Pendidikan Sejarah</option>
+            </select>
+            <select
+              class="form-input"
+              id="filterSumber"
+              onchange="applyFilters()"
+            >
+              <option value="">Semua Sumber</option>
+              <option value="SALAM">SALAM</option>
+              <option value="Manual">Manual</option>
+            </select>
+            <select
+              class="form-input"
+              id="filterStatus"
+              onchange="applyFilters()"
+            >
+              <option value="">Semua Status</option>
+              <option value="Aktif">Aktif</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+
+          <!-- Table -->
+          <div class="card" style="padding: 0; overflow: hidden">
+            <div class="table-wrap">
+              <table class="table" id="dosenTable">
+                <thead>
+                  <tr>
+                    <th style="width: 48px">No</th>
+                    <th class="sortable-th" onclick="sortBy('nama')">
+                      Nama &amp; NIP
+                      <span class="sort-icon" id="sort-nama"></span>
+                    </th>
+                    <th class="sortable-th" onclick="sortBy('prodi')">
+                      Program Studi
+                      <span class="sort-icon" id="sort-prodi"></span>
+                    </th>
+                    <th class="sortable-th" onclick="sortBy('sumber')">
+                      Sumber <span class="sort-icon" id="sort-sumber"></span>
+                    </th>
+                    <th class="sortable-th" onclick="sortBy('status')">
+                      Status <span class="sort-icon" id="sort-status"></span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+              </table>
+            </div>
+            <div
+              style="
+                padding: 1rem 1.5rem;
+                border-top: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+              "
+            >
+              <span class="text-sm text-muted">Tampil</span>
+              <select
+                class="form-input"
+                style="max-width: 80px"
+                id="perPageSelect"
+                onchange="changePerPage()"
+              >
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+              <span class="text-sm text-muted">per halaman</span>
+              <div class="pagination" id="pagination"></div>
+              <span class="page-info" id="pageInfo"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         DRAWER OVERLAY
+    ═══════════════════════════════════════════════════════════════ -->
+    <div
+      class="drawer-overlay"
+      id="drawerOverlay"
+      onclick="closeAllDrawers()"
+    ></div>
+
+    <!-- Detail Drawer -->
+    <div class="drawer" id="drawerDetail">
+      <div class="drawer-header">
+        <span class="drawer-title">Detail Dosen</span>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerDetailBody"></div>
+    </div>
+
+    <!-- Create Drawer -->
+    <div class="drawer" id="drawerCreate">
+      <div class="drawer-header">
+        <span class="drawer-title">Tambah Dosen</span>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
+      </div>
+      <div class="drawer-body">
+        <form id="createForm" onsubmit="submitCreate(event)">
+          <div class="form-group">
+            <label class="form-label"
+              >NIP <span style="color: var(--danger)">*</span></label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="createNip"
+              placeholder="cth. 197203152005011002"
+            />
+            <div class="form-error" id="createNipErr">NIP wajib diisi.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >Nama Lengkap <span style="color: var(--danger)">*</span></label
+            >
+            <input
+              type="text"
+              class="form-input"
+              id="createNama"
+              placeholder="cth. Dr. Budi Santoso, M.Pd."
+            />
+            <div class="form-error" id="createNamaErr">Nama wajib diisi.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >Program Studi <span style="color: var(--danger)">*</span></label
+            >
+            <select class="form-input" id="createProdi">
+              <option value="">— Pilih Program Studi —</option>
+              <option>Pendidikan Matematika</option>
+              <option>Pendidikan Fisika</option>
+              <option>Pendidikan Biologi</option>
+              <option>Pendidikan Kimia</option>
+              <option>Pendidikan Bahasa Indonesia</option>
+              <option>Pendidikan Bahasa Inggris</option>
+              <option>Pendidikan Sejarah</option>
+            </select>
+            <div class="form-error" id="createProdiErr">
+              Program studi wajib dipilih.
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-input"
+              id="createEmail"
+              placeholder="cth. budi@unp.ac.id"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP</label>
+            <input
+              type="text"
+              class="form-input"
+              id="createHp"
+              placeholder="cth. 08123456789"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="drawer-footer">
+        <button class="btn btn-outline" onclick="closeAllDrawers()">
+          Batal
+        </button>
+        <button class="btn btn-primary" onclick="submitCreate()">Simpan</button>
+      </div>
+    </div>
+
+    <!-- Edit Drawer -->
+    <div class="drawer" id="drawerEdit">
+      <div class="drawer-header">
+        <span class="drawer-title">Edit Dosen</span>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="edit-banner">
+          ⚠️ Perubahan yang Anda simpan akan tergantikan oleh data SALAM jika
+          sinkronisasi dilakukan kembali.
+        </div>
+        <form id="editForm" onsubmit="submitEdit(event)">
+          <div class="form-group">
+            <label class="form-label"
+              >NIP <span style="color: var(--danger)">*</span></label
+            >
+            <input type="text" class="form-input" id="editNip" />
+            <div class="form-error" id="editNipErr">NIP wajib diisi.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >Nama Lengkap <span style="color: var(--danger)">*</span></label
+            >
+            <input type="text" class="form-input" id="editNama" />
+            <div class="form-error" id="editNamaErr">Nama wajib diisi.</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >Program Studi <span style="color: var(--danger)">*</span></label
+            >
+            <select class="form-input" id="editProdi">
+              <option value="">— Pilih Program Studi —</option>
+              <option>Pendidikan Matematika</option>
+              <option>Pendidikan Fisika</option>
+              <option>Pendidikan Biologi</option>
+              <option>Pendidikan Kimia</option>
+              <option>Pendidikan Bahasa Indonesia</option>
+              <option>Pendidikan Bahasa Inggris</option>
+              <option>Pendidikan Sejarah</option>
+            </select>
+            <div class="form-error" id="editProdiErr">
+              Program studi wajib dipilih.
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="editEmail" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP</label>
+            <input type="text" class="form-input" id="editHp" />
+          </div>
+        </form>
+      </div>
+      <div class="drawer-footer">
+        <button class="btn btn-outline" onclick="closeAllDrawers()">
+          Batal
+        </button>
+        <button class="btn btn-primary" onclick="submitEdit()">Simpan</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODALS
+    ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- Modal: Konfirmasi Sinkronisasi -->
+    <div class="modal-overlay" id="modalSyncConfirm">
+      <div class="modal-box">
+        <div class="modal-icon">🔄</div>
+        <div class="modal-title">Sinkronisasi Data SALAM</div>
+        <div class="modal-desc">
+          Proses ini akan menarik data dosen terbaru dari sistem SALAM dan
+          memperbarui data yang ada. Data yang diubah secara manual mungkin akan
+          tertimpa.
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-outline"
+            onclick="closeModal('modalSyncConfirm')"
+          >
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="runSync()">
+            Ya, Sinkronisasi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Hasil Sinkronisasi -->
+    <div class="modal-overlay" id="modalSyncResult">
+      <div class="modal-box wide">
+        <div class="modal-icon">✅</div>
+        <div class="modal-title">Sinkronisasi Selesai</div>
+        <div class="modal-desc">
+          Berikut adalah hasil sinkronisasi data dosen dari SALAM.
+        </div>
+        <div class="sync-stats">
+          <div class="sync-stat-box">
+            <div class="sync-stat-num">142</div>
+            <div class="sync-stat-label">Total Data SALAM</div>
+          </div>
+          <div class="sync-stat-box success-box">
+            <div class="sync-stat-num">139</div>
+            <div class="sync-stat-label">Berhasil</div>
+          </div>
+          <div class="sync-stat-box error-box">
+            <div class="sync-stat-num">3</div>
+            <div class="sync-stat-label">Gagal</div>
+          </div>
+        </div>
+        <div class="sync-fail-list">
+          <div class="sync-fail-title">Data yang Gagal Disinkronisasi</div>
+          <div class="sync-fail-item">
+            <span>197203151999031001 — Dra. Rahmi Yusuf, M.Pd.</span>
+            <span class="sync-fail-reason">NIP duplikat</span>
+          </div>
+          <div class="sync-fail-item">
+            <span>198506202010121003 — Ahmad Fauzi, S.Pd.</span>
+            <span class="sync-fail-reason">Prodi tidak dikenal</span>
+          </div>
+          <div class="sync-fail-item">
+            <span>196712051993022002 — Prof. Dr. Siti Rahayu</span>
+            <span class="sync-fail-reason">Data tidak lengkap</span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-primary"
+            onclick="closeModal('modalSyncResult')"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Konfirmasi Hapus -->
+    <div class="modal-overlay" id="modalDeleteConfirm">
+      <div class="modal-box">
+        <div class="modal-icon">🗑️</div>
+        <div class="modal-title">Hapus Dosen</div>
+        <div class="modal-desc" id="modalDeleteDesc">
+          Apakah Anda yakin ingin menghapus dosen ini? Tindakan ini tidak dapat
+          dibatalkan.
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-outline"
+            onclick="closeModal('modalDeleteConfirm')"
+          >
+            Batal
+          </button>
+          <button class="btn btn-danger" onclick="confirmDelete()">
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container"></div>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         JAVASCRIPT
+    ═══════════════════════════════════════════════════════════════ -->
+    <script>
+      // ── Dummy data ────────────────────────────────────────────────
+      const dosenData = [
+        {
+          id: 1,
+          nip: "197203152005011002",
+          nama: "Dr. Budi Santoso, M.Pd.",
+          prodi: "Pendidikan Matematika",
+          email: "budi.santoso@unp.ac.id",
+          hp: "081234567890",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 2,
+          nip: "198506202010121003",
+          nama: "Dra. Siti Aminah, M.Si.",
+          prodi: "Pendidikan Biologi",
+          email: "siti.aminah@unp.ac.id",
+          hp: "082345678901",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 3,
+          nip: "196712051993022002",
+          nama: "Prof. Dr. Hendra Wijaya, M.Pd.",
+          prodi: "Pendidikan Bahasa Indonesia",
+          email: "hendra.w@unp.ac.id",
+          hp: "083456789012",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 4,
+          nip: "197809112003121001",
+          nama: "Ir. Dewi Kurniasih, M.T.",
+          prodi: "Pendidikan Fisika",
+          email: "dewi.k@unp.ac.id",
+          hp: "084567890123",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 5,
+          nip: "198001202006041002",
+          nama: "Dr. Rizky Pratama, M.Kom.",
+          prodi: "Pendidikan Matematika",
+          email: "rizky.p@unp.ac.id",
+          hp: "085678901234",
+          sumber: "SALAM",
+          status: "Nonaktif",
+        },
+        {
+          id: 6,
+          nip: "197504301999032001",
+          nama: "Dra. Nurul Hidayah, M.Pd.",
+          prodi: "Pendidikan Bahasa Inggris",
+          email: "nurul.h@unp.ac.id",
+          hp: "086789012345",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 7,
+          nip: "199001152015041001",
+          nama: "Ahmad Fauzi, S.Pd., M.Pd.",
+          prodi: "Pendidikan Sejarah",
+          email: "ahmad.f@unp.ac.id",
+          hp: "087890123456",
+          sumber: "Manual",
+          status: "Aktif",
+        },
+        {
+          id: 8,
+          nip: "198703282012122002",
+          nama: "Dr. Lestari Wulandari, M.Si.",
+          prodi: "Pendidikan Kimia",
+          email: "lestari.w@unp.ac.id",
+          hp: "088901234567",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 9,
+          nip: "197605141998031003",
+          nama: "Drs. Agus Salim, M.Ed.",
+          prodi: "Pendidikan Sejarah",
+          email: "agus.salim@unp.ac.id",
+          hp: "089012345678",
+          sumber: "SALAM",
+          status: "Nonaktif",
+        },
+        {
+          id: 10,
+          nip: "199205102020122001",
+          nama: "Rina Fitriani, S.Pd., M.Pd.",
+          prodi: "Pendidikan Bahasa Indonesia",
+          email: "rina.f@unp.ac.id",
+          hp: "081123456789",
+          sumber: "Manual",
+          status: "Aktif",
+        },
+        {
+          id: 11,
+          nip: "198112252007011004",
+          nama: "Dr. Yudi Pratama, M.Sc.",
+          prodi: "Pendidikan Fisika",
+          email: "yudi.p@unp.ac.id",
+          hp: "082234567890",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 12,
+          nip: "197906082003122005",
+          nama: "Dr. Mirna Sari, M.Pd.",
+          prodi: "Pendidikan Biologi",
+          email: "mirna.s@unp.ac.id",
+          hp: "083345678901",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 13,
+          nip: "198409172009121003",
+          nama: "Drs. Fahmi Ramadhan, M.Pd.",
+          prodi: "Pendidikan Matematika",
+          email: "fahmi.r@unp.ac.id",
+          hp: "084456789012",
+          sumber: "Manual",
+          status: "Aktif",
+        },
+        {
+          id: 14,
+          nip: "197102231995011002",
+          nama: "Prof. Dr. Sri Wahyuni, M.Hum.",
+          prodi: "Pendidikan Bahasa Inggris",
+          email: "sri.w@unp.ac.id",
+          hp: "085567890123",
+          sumber: "SALAM",
+          status: "Aktif",
+        },
+        {
+          id: 15,
+          nip: "198807052013121002",
+          nama: "Indra Kusuma, S.Pd., M.T.",
+          prodi: "Pendidikan Kimia",
+          email: "indra.k@unp.ac.id",
+          hp: "086678901234",
+          sumber: "Manual",
+          status: "Nonaktif",
+        },
+      ];
+
+      // ── State ─────────────────────────────────────────────────────
+      let filtered = [...dosenData];
+      let currentPage = 1;
+      let perPage = 10;
+      let sortCol = "";
+      let sortDir = "";
+      let selectedDosen = null;
+      let deleteTarget = null;
+
+      // ── Render table ──────────────────────────────────────────────
+      function renderTable() {
+        const tbody = document.getElementById("tableBody");
+        const start = (currentPage - 1) * perPage;
+        const page = filtered.slice(start, start + perPage);
+
+        if (page.length === 0) {
+          tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Tidak ada data dosen yang sesuai filter.</td></tr>`;
+          renderPagination();
+          return;
+        }
+
+        tbody.innerHTML = page
+          .map(
+            (d, i) => `
+          <tr onclick="openDetail(${d.id})">
+            <td style="color:var(--text-muted);font-size:0.8125rem;">${start + i + 1}</td>
+            <td>
+              <div class="cell-nama">${d.nama}</div>
+              <div class="cell-nip">${d.nip}</div>
+            </td>
+            <td class="text-sm">${d.prodi}</td>
+            <td>
+              <span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span>
+            </td>
+            <td>
+              <span class="badge ${d.status === "Aktif" ? "badge-aktif" : "badge-nonaktif"}">${d.status}</span>
+            </td>
+          </tr>
+        `,
+          )
+          .join("");
+
+        renderPagination();
+      }
+
+      function renderPagination() {
+        const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+        const pg = document.getElementById("pagination");
+        const pi = document.getElementById("pageInfo");
+        const start =
+          filtered.length === 0 ? 0 : (currentPage - 1) * perPage + 1;
+        const end = Math.min(currentPage * perPage, filtered.length);
+        pi.textContent = `Menampilkan ${start}–${end} dari ${filtered.length} dosen`;
+
+        let html = `<button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? "disabled" : ""}>‹</button>`;
+        for (let p = 1; p <= totalPages; p++) {
+          if (
+            totalPages > 7 &&
+            p > 2 &&
+            p < totalPages - 1 &&
+            Math.abs(p - currentPage) > 1
+          ) {
+            if (p === 3 || p === totalPages - 2)
+              html += `<span style="padding:0 4px;color:var(--text-muted)">…</span>`;
+            continue;
+          }
+          html += `<button class="page-btn ${p === currentPage ? "active" : ""}" onclick="goPage(${p})">${p}</button>`;
+        }
+        html += `<button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? "disabled" : ""}>›</button>`;
+        pg.innerHTML = html;
+      }
+
+      function goPage(p) {
+        const totalPages = Math.ceil(filtered.length / perPage);
+        if (p < 1 || p > totalPages) return;
+        currentPage = p;
+        renderTable();
+      }
+
+      function changePerPage() {
+        perPage = parseInt(document.getElementById("perPageSelect").value);
+        currentPage = 1;
+        renderTable();
+      }
+
+      // ── Filters ───────────────────────────────────────────────────
+      function applyFilters() {
+        const q = document.getElementById("searchInput").value.toLowerCase();
+        const prodi = document.getElementById("filterProdi").value;
+        const sumber = document.getElementById("filterSumber").value;
+        const status = document.getElementById("filterStatus").value;
+
+        filtered = dosenData.filter((d) => {
+          const matchQ =
+            !q || d.nama.toLowerCase().includes(q) || d.nip.includes(q);
+          const matchProdi = !prodi || d.prodi === prodi;
+          const matchSumber = !sumber || d.sumber === sumber;
+          const matchStatus = !status || d.status === status;
+          return matchQ && matchProdi && matchSumber && matchStatus;
+        });
+
+        if (sortCol) applySortToFiltered();
+        currentPage = 1;
+        renderTable();
+      }
+
+      // ── Sorting ───────────────────────────────────────────────────
+      function sortBy(col) {
+        if (sortCol === col) {
+          sortDir =
+            sortDir === "asc" ? "desc" : sortDir === "desc" ? "" : "asc";
+        } else {
+          sortCol = col;
+          sortDir = "asc";
+        }
+        if (!sortDir) {
+          sortCol = "";
+          filtered = dosenData.filter((d) => matchesCurrentFilters(d));
+        }
+        updateSortIcons();
+        applySortToFiltered();
+        currentPage = 1;
+        renderTable();
+      }
+
+      function matchesCurrentFilters(d) {
+        const q = document.getElementById("searchInput").value.toLowerCase();
+        const prodi = document.getElementById("filterProdi").value;
+        const sumber = document.getElementById("filterSumber").value;
+        const status = document.getElementById("filterStatus").value;
+        return (
+          (!q || d.nama.toLowerCase().includes(q) || d.nip.includes(q)) &&
+          (!prodi || d.prodi === prodi) &&
+          (!sumber || d.sumber === sumber) &&
+          (!status || d.status === status)
+        );
+      }
+
+      function applySortToFiltered() {
+        if (!sortCol || !sortDir) return;
+        filtered.sort((a, b) => {
+          const av = a[sortCol].toLowerCase();
+          const bv = b[sortCol].toLowerCase();
+          return sortDir === "asc"
+            ? av.localeCompare(bv)
+            : bv.localeCompare(av);
+        });
+      }
+
+      function updateSortIcons() {
+        ["nama", "prodi", "sumber", "status"].forEach((c) => {
+          const el = document.getElementById("sort-" + c);
+          el.className = "sort-icon";
+          if (c === sortCol && sortDir) el.classList.add(sortDir);
+        });
+      }
+
+      // ── Drawer: Detail ────────────────────────────────────────────
+      function openDetail(id) {
+        selectedDosen = dosenData.find((d) => d.id === id);
+        if (!selectedDosen) return;
+        const d = selectedDosen;
+        const initials = d.nama
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase();
+
+        const isExternal = d.sumber === "Manual";
+        const editSection = isExternal
+          ? `<button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="openEditDrawer()">✏️ Edit Dosen</button>`
+          : `<div class="salam-info-box">ℹ️ Data dosen ini bersumber dari SALAM. Perubahan data harus dilakukan melalui sistem SALAM.</div>`;
+
+        const toggleLabel =
+          d.status === "Aktif" ? "🔴 Nonaktifkan" : "🟢 Aktifkan";
+        const toggleClass =
+          d.status === "Aktif" ? "btn-warning" : "btn-success";
+
+        document.getElementById("drawerDetailBody").innerHTML = `
+          <div class="detail-hero">
+            <div class="detail-avatar">${initials}</div>
+            <div>
+              <div class="detail-hero-name">${d.nama}</div>
+              <div class="detail-hero-nip">${d.nip}</div>
+              <div class="detail-hero-badges">
+                <span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span>
+                <span class="badge ${d.status === "Aktif" ? "badge-aktif" : "badge-nonaktif"}">${d.status}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider">Informasi</div>
+          <div class="info-row"><span class="info-label">Program Studi</span><span class="info-value">${d.prodi}</span></div>
+          <div class="info-row"><span class="info-label">Email</span><span class="info-value">${d.email || "—"}</span></div>
+          <div class="info-row"><span class="info-label">No. HP</span><span class="info-value">${d.hp || "—"}</span></div>
+          <div class="info-row"><span class="info-label">Sumber</span><span class="info-value">${d.sumber}</span></div>
+          <div class="info-row"><span class="info-label">Status</span><span class="info-value">${d.status}</span></div>
+
+          <div class="section-divider">Aksi</div>
+          <div class="action-row">
+            ${editSection}
+            <button class="btn ${toggleClass}" style="width:100%;justify-content:center;" onclick="toggleStatus()">${toggleLabel}</button>
+            <button class="btn btn-danger" style="width:100%;justify-content:center;" onclick="openDeleteConfirm()">🗑️ Hapus Dosen</button>
+          </div>
+        `;
+
+        openDrawer("drawerDetail");
+      }
+
+      // ── Drawer: Create ────────────────────────────────────────────
+      function openCreateDrawer() {
+        document.getElementById("createNip").value = "";
+        document.getElementById("createNama").value = "";
+        document.getElementById("createProdi").value = "";
+        document.getElementById("createEmail").value = "";
+        document.getElementById("createHp").value = "";
+        clearFormErrors("create");
+        openDrawer("drawerCreate");
+      }
+
+      function submitCreate() {
+        const nip = document.getElementById("createNip").value.trim();
+        const nama = document.getElementById("createNama").value.trim();
+        const prodi = document.getElementById("createProdi").value;
+        let valid = true;
+
+        clearFormErrors("create");
+        if (!nip) {
+          showError("createNipErr", "createNip");
+          valid = false;
+        }
+        if (!nama) {
+          showError("createNamaErr", "createNama");
+          valid = false;
+        }
+        if (!prodi) {
+          showError("createProdiErr", "createProdi");
+          valid = false;
+        }
+        if (!valid) return;
+
+        const newId = Math.max(...dosenData.map((d) => d.id)) + 1;
+        dosenData.push({
+          id: newId,
+          nip,
+          nama,
+          prodi,
+          email: document.getElementById("createEmail").value.trim(),
+          hp: document.getElementById("createHp").value.trim(),
+          sumber: "Manual",
+          status: "Aktif",
+        });
+        applyFilters();
+        closeAllDrawers();
+        showToast("success", `Dosen ${nama} berhasil ditambahkan.`);
+      }
+
+      // ── Drawer: Edit ──────────────────────────────────────────────
+      function openEditDrawer() {
+        if (!selectedDosen) return;
+        const d = selectedDosen;
+        document.getElementById("editNip").value = d.nip;
+        document.getElementById("editNama").value = d.nama;
+        document.getElementById("editProdi").value = d.prodi;
+        document.getElementById("editEmail").value = d.email;
+        document.getElementById("editHp").value = d.hp;
+        clearFormErrors("edit");
+        openDrawer("drawerEdit");
+      }
+
+      function submitEdit() {
+        const nip = document.getElementById("editNip").value.trim();
+        const nama = document.getElementById("editNama").value.trim();
+        const prodi = document.getElementById("editProdi").value;
+        let valid = true;
+
+        clearFormErrors("edit");
+        if (!nip) {
+          showError("editNipErr", "editNip");
+          valid = false;
+        }
+        if (!nama) {
+          showError("editNamaErr", "editNama");
+          valid = false;
+        }
+        if (!prodi) {
+          showError("editProdiErr", "editProdi");
+          valid = false;
+        }
+        if (!valid) return;
+
+        const d = dosenData.find((x) => x.id === selectedDosen.id);
+        if (d) {
+          d.nip = nip;
+          d.nama = nama;
+          d.prodi = prodi;
+          d.email = document.getElementById("editEmail").value.trim();
+          d.hp = document.getElementById("editHp").value.trim();
+        }
+        applyFilters();
+        closeAllDrawers();
+        showToast("success", `Data dosen berhasil diperbarui.`);
+      }
+
+      // ── Toggle status ─────────────────────────────────────────────
+      function toggleStatus() {
+        if (!selectedDosen) return;
+        const d = dosenData.find((x) => x.id === selectedDosen.id);
+        if (!d) return;
+        d.status = d.status === "Aktif" ? "Nonaktif" : "Aktif";
+        selectedDosen = d;
+        applyFilters();
+        openDetail(d.id);
+        showToast(
+          "success",
+          `Dosen ${d.nama} berhasil ${d.status === "Aktif" ? "diaktifkan" : "dinonaktifkan"}.`,
+        );
+      }
+
+      // ── Delete ────────────────────────────────────────────────────
+      function openDeleteConfirm() {
+        if (!selectedDosen) return;
+        deleteTarget = selectedDosen;
+        document.getElementById("modalDeleteDesc").textContent =
+          `Apakah Anda yakin ingin menghapus dosen "${deleteTarget.nama}" (NIP: ${deleteTarget.nip})? Tindakan ini tidak dapat dibatalkan.`;
+        openModal("modalDeleteConfirm");
+      }
+
+      function confirmDelete() {
+        if (!deleteTarget) return;
+        const idx = dosenData.findIndex((d) => d.id === deleteTarget.id);
+        if (idx !== -1) dosenData.splice(idx, 1);
+        closeModal("modalDeleteConfirm");
+        closeAllDrawers();
+        applyFilters();
+        showToast("success", `Dosen ${deleteTarget.nama} berhasil dihapus.`);
+        deleteTarget = null;
+      }
+
+      // ── Sync ──────────────────────────────────────────────────────
+      function openSyncConfirm() {
+        openModal("modalSyncConfirm");
+      }
+
+      function runSync() {
+        closeModal("modalSyncConfirm");
+        setTimeout(() => openModal("modalSyncResult"), 200);
+      }
+
+      // ── Drawer helpers ────────────────────────────────────────────
+      function openDrawer(id) {
+        document.getElementById("drawerOverlay").classList.add("open");
+        document.getElementById(id).classList.add("open");
+      }
+
+      function closeAllDrawers() {
+        document.getElementById("drawerOverlay").classList.remove("open");
+        ["drawerDetail", "drawerCreate", "drawerEdit"].forEach((id) =>
+          document.getElementById(id).classList.remove("open"),
+        );
+      }
+
+      // ── Modal helpers ─────────────────────────────────────────────
+      function openModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+
+      // Close modal when clicking overlay
+      document.querySelectorAll(".modal-overlay").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          if (e.target === el) el.classList.remove("open");
+        });
+      });
+
+      // ── Form helpers ──────────────────────────────────────────────
+      function showError(errId, inputId) {
+        document.getElementById(errId).classList.add("show");
+        document.getElementById(inputId).classList.add("invalid");
+      }
+
+      function clearFormErrors(prefix) {
+        ["Nip", "Nama", "Prodi"].forEach((f) => {
+          document.getElementById(prefix + f + "Err")?.classList.remove("show");
+          document
+            .getElementById(prefix + f.toLowerCase())
+            ?.classList.remove("invalid");
+          // also try capitalized input ids
+          document.getElementById(prefix + f)?.classList.remove("invalid");
+        });
+      }
+
+      // ── Toast ─────────────────────────────────────────────────────
+      function showToast(type, msg) {
+        const el = document.createElement("div");
+        el.className = `toast ${type}`;
+        el.textContent = (type === "success" ? "✓ " : "✕ ") + msg;
+        document.getElementById("toast-container").appendChild(el);
+        setTimeout(() => el.remove(), 3500);
+      }
+
+      // ── Init ──────────────────────────────────────────────────────
+      applyFilters();
+    </script>
+  </body>
+</html>

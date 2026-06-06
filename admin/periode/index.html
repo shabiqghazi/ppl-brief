@@ -838,6 +838,7 @@
           <a href="../periode/" class="nav-item active">📅 Periode PPL</a>
           <a href="../mitra/" class="nav-item">🏫 Sekolah Mitra</a>
           <a href="../program-studi/" class="nav-item">📚 Program Studi</a>
+          <a href="../dosen/" class="nav-item">👨‍🏫 Manajemen Dosen</a>
           <div class="nav-section">M3 — Pendaftaran</div>
           <a href="../pendaftaran/" class="nav-item">📝 Pendaftaran</a>
           <a href="../penempatan/" class="nav-item">📌 Penempatan &amp; DPL</a>
@@ -1200,19 +1201,33 @@
                     <thead>
                       <tr>
                         <th style="width: 48px">No</th>
-                        <th class="sortable-th" onclick="sortSekolahTable('namaSekolah')">
+                        <th
+                          class="sortable-th"
+                          onclick="sortSekolahTable('namaSekolah')"
+                        >
                           Nama Sekolah
-                          <span class="sort-icon" id="sort-namaSekolah">▲▼</span>
+                          <span class="sort-icon" id="sort-namaSekolah"
+                            >▲▼</span
+                          >
                         </th>
-                        <th class="sortable-th" onclick="sortSekolahTable('npsn')">
+                        <th
+                          class="sortable-th"
+                          onclick="sortSekolahTable('npsn')"
+                        >
                           NPSN <span class="sort-icon" id="sort-npsn">▲▼</span>
                         </th>
-                        <th class="sortable-th" onclick="sortSekolahTable('jenjang')">
+                        <th
+                          class="sortable-th"
+                          onclick="sortSekolahTable('jenjang')"
+                        >
                           Jenjang
                           <span class="sort-icon" id="sort-jenjang">▲▼</span>
                         </th>
                         <th>PIC</th>
-                        <th class="sortable-th" onclick="sortSekolahTable('totalKuota')">
+                        <th
+                          class="sortable-th"
+                          onclick="sortSekolahTable('totalKuota')"
+                        >
                           Kuota
                           <span class="sort-icon" id="sort-totalKuota">▲▼</span>
                         </th>
@@ -1263,7 +1278,6 @@
                   <div class="page-info" id="page-info-sekolah"></div>
                 </div>
               </div>
-
             </div>
 
             <!-- Rubrik tab -->
@@ -1578,31 +1592,33 @@
       <div class="drawer" onclick="event.stopPropagation()">
         <div class="drawer-header">
           <h2 id="peserta-drawer-title">Detail Peserta</h2>
-          <button class="drawer-close" onclick="closePesertaDrawer()">
-            ✕
-          </button>
+          <button class="drawer-close" onclick="closePesertaDrawer()">✕</button>
         </div>
         <div class="drawer-content">
           <!-- Data Diri Section -->
           <div class="drawer-section">
             <div class="drawer-section-title">Data Diri</div>
             <div class="info-row">
-              <span class="text-muted">Nama</span><span id="drawer-nama">—</span>
+              <span class="text-muted">Nama</span
+              ><span id="drawer-nama">—</span>
             </div>
             <div class="info-row">
               <span class="text-muted">NIM</span><span id="drawer-nim">—</span>
             </div>
             <div class="info-row">
-              <span class="text-muted">Program Studi</span><span id="drawer-prodi">—</span>
+              <span class="text-muted">Program Studi</span
+              ><span id="drawer-prodi">—</span>
             </div>
             <div class="info-row">
-              <span class="text-muted">Jenis Kelamin</span><span id="drawer-gender">—</span>
+              <span class="text-muted">Jenis Kelamin</span
+              ><span id="drawer-gender">—</span>
             </div>
             <div class="info-row">
               <span class="text-muted">IPK</span><span id="drawer-ipk">—</span>
             </div>
             <div class="info-row">
-              <span class="text-muted">Jumlah SKS Lulus</span><span id="drawer-sks">—</span>
+              <span class="text-muted">Jumlah SKS Lulus</span
+              ><span id="drawer-sks">—</span>
             </div>
           </div>
 
@@ -1610,15 +1626,24 @@
           <div class="drawer-section">
             <div class="drawer-section-title">Pendaftaran</div>
             <div class="info-row">
-              <span class="text-muted">Tanggal Daftar</span><span id="drawer-daftar">—</span>
+              <span class="text-muted">Tanggal Daftar</span
+              ><span id="drawer-daftar">—</span>
             </div>
             <div class="info-row">
               <span class="text-muted">Status</span
-              ><span id="drawer-status-badge" class="badge badge-warning">—</span>
+              ><span id="drawer-status-badge" class="badge badge-warning"
+                >—</span
+              >
             </div>
             <div id="drawer-berkas-row" class="info-row" style="display: none">
               <span class="text-muted">Berkas Pendaftaran</span
-              ><a id="drawer-berkas-link" href="#" target="_blank" style="color: var(--primary)">📎 Lihat Link</a>
+              ><a
+                id="drawer-berkas-link"
+                href="#"
+                target="_blank"
+                style="color: var(--primary)"
+                >📎 Lihat Link</a
+              >
             </div>
           </div>
 
@@ -1631,16 +1656,20 @@
             </div>
             <div id="drawer-penempatan-filled" style="display: none">
               <div class="info-row">
-                <span class="text-muted">Sekolah</span><span id="drawer-sekolah">—</span>
+                <span class="text-muted">Sekolah</span
+                ><span id="drawer-sekolah">—</span>
               </div>
               <div class="info-row">
-                <span class="text-muted">Alamat</span><span id="drawer-alamat">—</span>
+                <span class="text-muted">Alamat</span
+                ><span id="drawer-alamat">—</span>
               </div>
               <div class="info-row">
-                <span class="text-muted">PIC</span><span id="drawer-pic">—</span>
+                <span class="text-muted">PIC</span
+                ><span id="drawer-pic">—</span>
               </div>
               <div class="info-row">
-                <span class="text-muted">DPL</span><span id="drawer-dpl">Belum ditentukan</span>
+                <span class="text-muted">DPL</span
+                ><span id="drawer-dpl">Belum ditentukan</span>
               </div>
             </div>
           </div>
@@ -1649,21 +1678,51 @@
         <!-- Drawer Footer: Aksi -->
         <div class="drawer-footer" style="flex-direction: column; gap: 1rem">
           <div style="display: flex; gap: 0.625rem">
-            <button class="btn btn-primary" id="drawer-verify-btn" style="flex: 1" onclick="toggleVerifikasi()">
+            <button
+              class="btn btn-primary"
+              id="drawer-verify-btn"
+              style="flex: 1"
+              onclick="toggleVerifikasi()"
+            >
               Verifikasi
             </button>
-            <button class="btn btn-primary" style="flex: 1" onclick="openPenempatanManualModal()">
+            <button
+              class="btn btn-primary"
+              style="flex: 1"
+              onclick="openPenempatanManualModal()"
+            >
               Penempatan Manual
             </button>
-            <button class="btn btn-primary" style="flex: 1" onclick="openTukarPenempatanModal()">
+            <button
+              class="btn btn-primary"
+              style="flex: 1"
+              onclick="openTukarPenempatanModal()"
+            >
               Tukar Penempatan
             </button>
           </div>
-          <div style="border-top: 1px solid var(--border); padding-top: 1rem; display: flex; gap: 0.625rem">
-            <button class="btn btn-danger" id="drawer-hapus-sekolah-btn" style="flex: 1" onclick="openHapusModal('sekolah')" disabled>
+          <div
+            style="
+              border-top: 1px solid var(--border);
+              padding-top: 1rem;
+              display: flex;
+              gap: 0.625rem;
+            "
+          >
+            <button
+              class="btn btn-danger"
+              id="drawer-hapus-sekolah-btn"
+              style="flex: 1"
+              onclick="openHapusModal('sekolah')"
+              disabled
+            >
               Hapus dari Sekolah
             </button>
-            <button class="btn btn-danger" style="flex: 1" onclick="openHapusModal('periode')">
+            <button
+              class="btn btn-danger"
+              style="flex: 1"
+              onclick="openHapusModal('periode')"
+            >
               Hapus dari Periode
             </button>
           </div>
@@ -1672,11 +1731,19 @@
     </div>
 
     <!-- Modal: Penempatan Manual -->
-    <div class="overlay" id="penempatan-modal" onclick="closePenempatanManualModal(event)">
+    <div
+      class="overlay"
+      id="penempatan-modal"
+      onclick="closePenempatanManualModal(event)"
+    >
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-head">
-          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">Penempatan Manual</h3>
-          <button class="drawer-close" onclick="closePenempatanManualModal()">✕</button>
+          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">
+            Penempatan Manual
+          </h3>
+          <button class="drawer-close" onclick="closePenempatanManualModal()">
+            ✕
+          </button>
         </div>
         <div class="form-group">
           <label class="form-label">Pilih Sekolah *</label>
@@ -1688,33 +1755,64 @@
             <option value="4">MA Al-Ihsan Baleendah</option>
           </select>
         </div>
-        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.5rem; padding: 0.875rem; margin-bottom: 1.5rem; font-size: 0.875rem; color: #92400e">
+        <div
+          style="
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 0.5rem;
+            padding: 0.875rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: #92400e;
+          "
+        >
           ⚠ Catatan: Penempatan ini mengabaikan syarat IPK, gender, dan kuota.
         </div>
         <div class="modal-footer-group">
-          <button class="btn btn-outline" onclick="closePenempatanManualModal()">Batal</button>
-          <button class="btn btn-primary" onclick="confirmPenempatanManual()">Simpan</button>
+          <button
+            class="btn btn-outline"
+            onclick="closePenempatanManualModal()"
+          >
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="confirmPenempatanManual()">
+            Simpan
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Modal: Tukar Penempatan -->
-    <div class="overlay" id="tukar-modal" onclick="closeTukarPenempatanModal(event)">
+    <div
+      class="overlay"
+      id="tukar-modal"
+      onclick="closeTukarPenempatanModal(event)"
+    >
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-head">
-          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">Tukar Penempatan</h3>
-          <button class="drawer-close" onclick="closeTukarPenempatanModal()">✕</button>
+          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">
+            Tukar Penempatan
+          </h3>
+          <button class="drawer-close" onclick="closeTukarPenempatanModal()">
+            ✕
+          </button>
         </div>
         <div class="form-group">
           <label class="form-label">Tukar dengan Mahasiswa *</label>
-          <select class="form-input" id="modal-mhs-select" onchange="onTukarMhsChange()">
+          <select
+            class="form-input"
+            id="modal-mhs-select"
+            onchange="onTukarMhsChange()"
+          >
             <option value="">Pilih mahasiswa…</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Info Mahasiswa Dipilih</label>
           <div class="preview-box">
-            <div id="preview-mhs-info">Pilih mahasiswa untuk melihat detail</div>
+            <div id="preview-mhs-info">
+              Pilih mahasiswa untuk melihat detail
+            </div>
           </div>
         </div>
         <div class="form-group">
@@ -1725,7 +1823,14 @@
               <span class="preview-arrow">→</span>
               <span id="preview-a-school">Sekolah B</span>
             </div>
-            <div class="preview-line" style="border-top: 1px solid #d1d5db; padding-top: 0.5rem; margin-top: 0.5rem">
+            <div
+              class="preview-line"
+              style="
+                border-top: 1px solid #d1d5db;
+                padding-top: 0.5rem;
+                margin-top: 0.5rem;
+              "
+            >
               <span id="preview-b-name">Peserta B</span>
               <span class="preview-arrow">→</span>
               <span id="preview-b-school">Sekolah A</span>
@@ -1733,8 +1838,12 @@
           </div>
         </div>
         <div class="modal-footer-group">
-          <button class="btn btn-outline" onclick="closeTukarPenempatanModal()">Batal</button>
-          <button class="btn btn-primary" onclick="confirmTukarPenempatan()">Tukar</button>
+          <button class="btn btn-outline" onclick="closeTukarPenempatanModal()">
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="confirmTukarPenempatan()">
+            Tukar
+          </button>
         </div>
       </div>
     </div>
@@ -1743,13 +1852,33 @@
     <div class="overlay" id="hapus-modal" onclick="closeHapusModal(event)">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-head">
-          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">Konfirmasi Hapus</h3>
+          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">
+            Konfirmasi Hapus
+          </h3>
           <button class="drawer-close" onclick="closeHapusModal()">✕</button>
         </div>
-        <p id="hapus-message" style="font-size: 0.9375rem; line-height: 1.6; color: var(--text-main); margin-bottom: 1.5rem">—</p>
+        <p
+          id="hapus-message"
+          style="
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+          "
+        >
+          —
+        </p>
         <div class="modal-footer-group">
-          <button class="btn btn-outline" onclick="closeHapusModal()">Batal</button>
-          <button id="hapus-confirm-btn" class="btn btn-primary" onclick="confirmHapus()">Hapus</button>
+          <button class="btn btn-outline" onclick="closeHapusModal()">
+            Batal
+          </button>
+          <button
+            id="hapus-confirm-btn"
+            class="btn btn-primary"
+            onclick="confirmHapus()"
+          >
+            Hapus
+          </button>
         </div>
       </div>
     </div>
@@ -4033,7 +4162,9 @@
       }
 
       function onPerPageSelectChange() {
-        const perPageVal = parseInt(document.getElementById("per-page-select").value);
+        const perPageVal = parseInt(
+          document.getElementById("per-page-select").value,
+        );
         if (perPageVal !== sekolahPerPage) {
           sekolahPerPage = perPageVal;
           sekolahCurrentPage = 1;
@@ -4333,14 +4464,126 @@
 
       /* ── Tab Peserta Functions ──────────────────────── */
       const PESERTA_DATA = [
-        { id: 1, nama: "Budi Santoso", nim: "123001", prodi: "PAI", gender: "L", ipk: 3.75, sks: 110, daftar: "2 Agustus 2026", status: "verified", berkas: "https://drive.google.com/...", sekolah: "MAN 1 Kota Bandung", alamat: "Jl. H. Alpi No. 40, Cijerah, Bandung", pic: "Bapak Hendra (0812-1234-5678)" },
-        { id: 2, nama: "Siti Nurhaliza", nim: "123002", prodi: "PBA", gender: "P", ipk: 3.50, sks: 115, daftar: "3 Agustus 2026", status: "verified", berkas: "https://drive.google.com/...", sekolah: "SMAN 8 Bandung", alamat: "Jl. Solontongan No. 3, Turangga, Bandung", pic: "Ibu Siti (0813-9876-5432)" },
-        { id: 3, nama: "Ahmad Wijaya", nim: "123003", prodi: "PGMI", gender: "L", ipk: 3.20, sks: 105, daftar: "4 Agustus 2026", status: "belum", berkas: null, sekolah: null, alamat: null, pic: null },
-        { id: 4, nama: "Dina Kusuma", nim: "123004", prodi: "PAI", gender: "P", ipk: 3.85, sks: 120, daftar: "5 Agustus 2026", status: "verified", berkas: "https://drive.google.com/...", sekolah: "MTsN 2 Kota Bandung", alamat: "Jl. Buah Batu No. 130, Bandung", pic: "Pak Rizal (0857-1111-2222)" },
-        { id: 5, nama: "Riyan Pratama", nim: "123005", prodi: "PBA", gender: "L", ipk: 3.15, sks: 108, daftar: "6 Agustus 2026", status: "belum", berkas: null, sekolah: "MA Al-Ihsan Baleendah", alamat: "Jl. Baleendah No. 77, Kabupaten Bandung", pic: "Ibu Nurul (0821-5555-6666)" },
-        { id: 6, nama: "Fitri Rahayu", nim: "123006", prodi: "PGMI", gender: "P", ipk: 3.40, sks: 112, daftar: "7 Agustus 2026", status: "verified", berkas: "https://drive.google.com/...", sekolah: null, alamat: null, pic: null },
-        { id: 7, nama: "Zainul Arifin", nim: "123007", prodi: "PAI", gender: "L", ipk: 3.60, sks: 118, daftar: "8 Agustus 2026", status: "verified", berkas: "https://drive.google.com/...", sekolah: "SMA Negeri 3 Cimahi", alamat: "Jl. Moh. Toha No. 5, Cimahi", pic: "Pak Andi (0822-3333-4444)" },
-        { id: 8, nama: "Maya Putri Sari", nim: "123008", prodi: "PBA", gender: "P", ipk: 3.95, sks: 122, daftar: "9 Agustus 2026", status: "belum", berkas: null, sekolah: null, alamat: null, pic: null },
+        {
+          id: 1,
+          nama: "Budi Santoso",
+          nim: "123001",
+          prodi: "PAI",
+          gender: "L",
+          ipk: 3.75,
+          sks: 110,
+          daftar: "2 Agustus 2026",
+          status: "verified",
+          berkas: "https://drive.google.com/...",
+          sekolah: "MAN 1 Kota Bandung",
+          alamat: "Jl. H. Alpi No. 40, Cijerah, Bandung",
+          pic: "Bapak Hendra (0812-1234-5678)",
+        },
+        {
+          id: 2,
+          nama: "Siti Nurhaliza",
+          nim: "123002",
+          prodi: "PBA",
+          gender: "P",
+          ipk: 3.5,
+          sks: 115,
+          daftar: "3 Agustus 2026",
+          status: "verified",
+          berkas: "https://drive.google.com/...",
+          sekolah: "SMAN 8 Bandung",
+          alamat: "Jl. Solontongan No. 3, Turangga, Bandung",
+          pic: "Ibu Siti (0813-9876-5432)",
+        },
+        {
+          id: 3,
+          nama: "Ahmad Wijaya",
+          nim: "123003",
+          prodi: "PGMI",
+          gender: "L",
+          ipk: 3.2,
+          sks: 105,
+          daftar: "4 Agustus 2026",
+          status: "belum",
+          berkas: null,
+          sekolah: null,
+          alamat: null,
+          pic: null,
+        },
+        {
+          id: 4,
+          nama: "Dina Kusuma",
+          nim: "123004",
+          prodi: "PAI",
+          gender: "P",
+          ipk: 3.85,
+          sks: 120,
+          daftar: "5 Agustus 2026",
+          status: "verified",
+          berkas: "https://drive.google.com/...",
+          sekolah: "MTsN 2 Kota Bandung",
+          alamat: "Jl. Buah Batu No. 130, Bandung",
+          pic: "Pak Rizal (0857-1111-2222)",
+        },
+        {
+          id: 5,
+          nama: "Riyan Pratama",
+          nim: "123005",
+          prodi: "PBA",
+          gender: "L",
+          ipk: 3.15,
+          sks: 108,
+          daftar: "6 Agustus 2026",
+          status: "belum",
+          berkas: null,
+          sekolah: "MA Al-Ihsan Baleendah",
+          alamat: "Jl. Baleendah No. 77, Kabupaten Bandung",
+          pic: "Ibu Nurul (0821-5555-6666)",
+        },
+        {
+          id: 6,
+          nama: "Fitri Rahayu",
+          nim: "123006",
+          prodi: "PGMI",
+          gender: "P",
+          ipk: 3.4,
+          sks: 112,
+          daftar: "7 Agustus 2026",
+          status: "verified",
+          berkas: "https://drive.google.com/...",
+          sekolah: null,
+          alamat: null,
+          pic: null,
+        },
+        {
+          id: 7,
+          nama: "Zainul Arifin",
+          nim: "123007",
+          prodi: "PAI",
+          gender: "L",
+          ipk: 3.6,
+          sks: 118,
+          daftar: "8 Agustus 2026",
+          status: "verified",
+          berkas: "https://drive.google.com/...",
+          sekolah: "SMA Negeri 3 Cimahi",
+          alamat: "Jl. Moh. Toha No. 5, Cimahi",
+          pic: "Pak Andi (0822-3333-4444)",
+        },
+        {
+          id: 8,
+          nama: "Maya Putri Sari",
+          nim: "123008",
+          prodi: "PBA",
+          gender: "P",
+          ipk: 3.95,
+          sks: 122,
+          daftar: "9 Agustus 2026",
+          status: "belum",
+          berkas: null,
+          sekolah: null,
+          alamat: null,
+          pic: null,
+        },
       ];
 
       let pesertaFiltered = [...PESERTA_DATA];
@@ -4349,7 +4592,7 @@
 
       function updatePesertaStats() {
         const total = PESERTA_DATA.length;
-        const placed = PESERTA_DATA.filter(p => p.sekolah).length;
+        const placed = PESERTA_DATA.filter((p) => p.sekolah).length;
         const unplaced = total - placed;
         document.getElementById("total-peserta").textContent = total;
         document.getElementById("peserta-placed").textContent = placed;
@@ -4364,8 +4607,11 @@
           tr.className = "row-clickable";
           tr.onclick = () => openPesertaDrawer(p.id);
 
-          const statusBadgeClass = p.status === "verified" ? "badge-success" : "badge-warning";
-          const placementBadgeClass = p.sekolah ? "badge-success" : "badge-warning";
+          const statusBadgeClass =
+            p.status === "verified" ? "badge-success" : "badge-warning";
+          const placementBadgeClass = p.sekolah
+            ? "badge-success"
+            : "badge-warning";
           const placementText = p.sekolah || "Belum Ditempatkan";
 
           tr.innerHTML = `
@@ -4381,16 +4627,24 @@
       }
 
       function filterPeserta() {
-        const search = document.getElementById("peserta-search").value.toLowerCase();
+        const search = document
+          .getElementById("peserta-search")
+          .value.toLowerCase();
         const prodi = document.getElementById("peserta-prodi").value;
         const status = document.getElementById("peserta-status").value;
         const placement = document.getElementById("peserta-placement").value;
 
-        pesertaFiltered = PESERTA_DATA.filter(p => {
-          const matchSearch = !search || p.nama.toLowerCase().includes(search) || p.nim.includes(search);
+        pesertaFiltered = PESERTA_DATA.filter((p) => {
+          const matchSearch =
+            !search ||
+            p.nama.toLowerCase().includes(search) ||
+            p.nim.includes(search);
           const matchProdi = !prodi || p.prodi === prodi;
           const matchStatus = !status || p.status === status;
-          const matchPlacement = !placement || (placement === "placed" && p.sekolah) || (placement === "unplaced" && !p.sekolah);
+          const matchPlacement =
+            !placement ||
+            (placement === "placed" && p.sekolah) ||
+            (placement === "unplaced" && !p.sekolah);
           return matchSearch && matchProdi && matchStatus && matchPlacement;
         });
 
@@ -4398,23 +4652,31 @@
       }
 
       function openPesertaDrawer(id) {
-        const peserta = PESERTA_DATA.find(p => p.id === id);
+        const peserta = PESERTA_DATA.find((p) => p.id === id);
         if (!peserta) return;
 
         currentPesertaId = id;
 
-        document.getElementById("peserta-drawer-title").textContent = peserta.nama;
+        document.getElementById("peserta-drawer-title").textContent =
+          peserta.nama;
         document.getElementById("drawer-nama").textContent = peserta.nama;
         document.getElementById("drawer-nim").textContent = peserta.nim;
         document.getElementById("drawer-prodi").textContent = peserta.prodi;
-        document.getElementById("drawer-gender").textContent = peserta.gender === "L" ? "Laki-laki" : "Perempuan";
+        document.getElementById("drawer-gender").textContent =
+          peserta.gender === "L" ? "Laki-laki" : "Perempuan";
         document.getElementById("drawer-ipk").textContent = peserta.ipk;
         document.getElementById("drawer-sks").textContent = peserta.sks;
 
         document.getElementById("drawer-daftar").textContent = peserta.daftar;
         const statusBadge = document.getElementById("drawer-status-badge");
-        statusBadge.textContent = peserta.status === "verified" ? "Terverifikasi" : "Belum Diverifikasi";
-        statusBadge.className = peserta.status === "verified" ? "badge badge-success" : "badge badge-warning";
+        statusBadge.textContent =
+          peserta.status === "verified"
+            ? "Terverifikasi"
+            : "Belum Diverifikasi";
+        statusBadge.className =
+          peserta.status === "verified"
+            ? "badge badge-success"
+            : "badge badge-warning";
 
         const berkasRow = document.getElementById("drawer-berkas-row");
         if (peserta.berkas) {
@@ -4424,19 +4686,27 @@
           berkasRow.style.display = "none";
         }
 
-        const hapusSekolahBtn = document.getElementById("drawer-hapus-sekolah-btn");
+        const hapusSekolahBtn = document.getElementById(
+          "drawer-hapus-sekolah-btn",
+        );
         hapusSekolahBtn.disabled = !peserta.sekolah;
 
         const verifyBtn = document.getElementById("drawer-verify-btn");
-        verifyBtn.textContent = peserta.status === "verified" ? "Batalkan Verifikasi" : "Verifikasi";
+        verifyBtn.textContent =
+          peserta.status === "verified" ? "Batalkan Verifikasi" : "Verifikasi";
 
-        const penempatanEmpty = document.getElementById("drawer-penempatan-empty");
-        const penempatanFilled = document.getElementById("drawer-penempatan-filled");
+        const penempatanEmpty = document.getElementById(
+          "drawer-penempatan-empty",
+        );
+        const penempatanFilled = document.getElementById(
+          "drawer-penempatan-filled",
+        );
 
         if (peserta.sekolah) {
           penempatanEmpty.style.display = "none";
           penempatanFilled.style.display = "block";
-          document.getElementById("drawer-sekolah").textContent = peserta.sekolah;
+          document.getElementById("drawer-sekolah").textContent =
+            peserta.sekolah;
           document.getElementById("drawer-alamat").textContent = peserta.alamat;
           document.getElementById("drawer-pic").textContent = peserta.pic;
         } else {
@@ -4448,14 +4718,19 @@
       }
 
       function closePesertaDrawer(e) {
-        if (!e || e.target === document.getElementById("peserta-drawer-overlay")) {
-          document.getElementById("peserta-drawer-overlay").classList.remove("open");
+        if (
+          !e ||
+          e.target === document.getElementById("peserta-drawer-overlay")
+        ) {
+          document
+            .getElementById("peserta-drawer-overlay")
+            .classList.remove("open");
           currentPesertaId = null;
         }
       }
 
       function toggleVerifikasi() {
-        const peserta = PESERTA_DATA.find(p => p.id === currentPesertaId);
+        const peserta = PESERTA_DATA.find((p) => p.id === currentPesertaId);
         if (!peserta) return;
 
         peserta.status = peserta.status === "verified" ? "belum" : "verified";
@@ -4481,13 +4756,21 @@
           return;
         }
 
-        const sekolahNames = ["—", "MAN 1 Kota Bandung", "SMAN 8 Bandung", "MTsN 2 Kota Bandung", "MA Al-Ihsan Baleendah"];
-        const peserta = PESERTA_DATA.find(p => p.id === currentPesertaId);
+        const sekolahNames = [
+          "—",
+          "MAN 1 Kota Bandung",
+          "SMAN 8 Bandung",
+          "MTsN 2 Kota Bandung",
+          "MA Al-Ihsan Baleendah",
+        ];
+        const peserta = PESERTA_DATA.find((p) => p.id === currentPesertaId);
         if (peserta) {
           peserta.sekolah = sekolahNames[sekolahId];
           peserta.alamat = "Jl. [alamat sesuai sekolah]";
           peserta.pic = "[PIC sekolah]";
-          alert(`Penempatan manual peserta "${peserta.nama}" ke "${peserta.sekolah}" berhasil disimpan`);
+          alert(
+            `Penempatan manual peserta "${peserta.nama}" ke "${peserta.sekolah}" berhasil disimpan`,
+          );
           openPesertaDrawer(currentPesertaId);
           renderPesertaTable();
           updatePesertaStats();
@@ -4497,7 +4780,7 @@
       }
 
       function openTukarPenempatanModal() {
-        const peserta = PESERTA_DATA.find(p => p.id === currentPesertaId);
+        const peserta = PESERTA_DATA.find((p) => p.id === currentPesertaId);
         if (!peserta || !peserta.sekolah) {
           alert("Peserta harus sudah ditempatkan untuk ditukar");
           return;
@@ -4505,7 +4788,7 @@
 
         const select = document.getElementById("modal-mhs-select");
         select.innerHTML = '<option value="">Pilih mahasiswa…</option>';
-        PESERTA_DATA.forEach(p => {
+        PESERTA_DATA.forEach((p) => {
           if (p.id !== currentPesertaId && p.sekolah) {
             const opt = document.createElement("option");
             opt.value = p.id;
@@ -4525,11 +4808,12 @@
 
       function onTukarMhsChange() {
         const selectId = document.getElementById("modal-mhs-select").value;
-        const pesertaA = PESERTA_DATA.find(p => p.id === currentPesertaId);
-        const pesertaB = PESERTA_DATA.find(p => p.id === parseInt(selectId));
+        const pesertaA = PESERTA_DATA.find((p) => p.id === currentPesertaId);
+        const pesertaB = PESERTA_DATA.find((p) => p.id === parseInt(selectId));
 
         if (!pesertaB) {
-          document.getElementById("preview-mhs-info").textContent = "Pilih mahasiswa untuk melihat detail";
+          document.getElementById("preview-mhs-info").textContent =
+            "Pilih mahasiswa untuk melihat detail";
           document.getElementById("preview-a-name").textContent = "Peserta A";
           document.getElementById("preview-b-name").textContent = "Peserta B";
           return;
@@ -4541,9 +4825,11 @@
         `;
 
         document.getElementById("preview-a-name").textContent = pesertaA.nama;
-        document.getElementById("preview-a-school").textContent = pesertaB.sekolah;
+        document.getElementById("preview-a-school").textContent =
+          pesertaB.sekolah;
         document.getElementById("preview-b-name").textContent = pesertaB.nama;
-        document.getElementById("preview-b-school").textContent = pesertaA.sekolah;
+        document.getElementById("preview-b-school").textContent =
+          pesertaA.sekolah;
       }
 
       function confirmTukarPenempatan() {
@@ -4553,8 +4839,8 @@
           return;
         }
 
-        const pesertaA = PESERTA_DATA.find(p => p.id === currentPesertaId);
-        const pesertaB = PESERTA_DATA.find(p => p.id === parseInt(selectId));
+        const pesertaA = PESERTA_DATA.find((p) => p.id === currentPesertaId);
+        const pesertaB = PESERTA_DATA.find((p) => p.id === parseInt(selectId));
 
         if (!pesertaA || !pesertaB) return;
 
@@ -4570,7 +4856,9 @@
         pesertaB.alamat = tempAlamat;
         pesertaB.pic = tempPic;
 
-        alert(`Penempatan peserta "${pesertaA.nama}" dan "${pesertaB.nama}" berhasil ditukar`);
+        alert(
+          `Penempatan peserta "${pesertaA.nama}" dan "${pesertaB.nama}" berhasil ditukar`,
+        );
         openPesertaDrawer(currentPesertaId);
         renderPesertaTable();
         document.getElementById("modal-mhs-select").value = "";
@@ -4579,7 +4867,7 @@
 
       function openHapusModal(type) {
         currentHapusType = type;
-        const peserta = PESERTA_DATA.find(p => p.id === currentPesertaId);
+        const peserta = PESERTA_DATA.find((p) => p.id === currentPesertaId);
         if (!peserta) return;
 
         const messageEl = document.getElementById("hapus-message");
@@ -4605,7 +4893,7 @@
       }
 
       function confirmHapus() {
-        const peserta = PESERTA_DATA.find(p => p.id === currentPesertaId);
+        const peserta = PESERTA_DATA.find((p) => p.id === currentPesertaId);
         if (!peserta) return;
 
         if (currentHapusType === "sekolah") {
@@ -4613,11 +4901,13 @@
           peserta.sekolah = null;
           peserta.alamat = null;
           peserta.pic = null;
-          alert(`Peserta "${peserta.nama}" berhasil dilepas dari ${tempSekolah}`);
+          alert(
+            `Peserta "${peserta.nama}" berhasil dilepas dari ${tempSekolah}`,
+          );
         } else {
           const idx = PESERTA_DATA.indexOf(peserta);
           PESERTA_DATA.splice(idx, 1);
-          pesertaFiltered = pesertaFiltered.filter(p => p.id !== peserta.id);
+          pesertaFiltered = pesertaFiltered.filter((p) => p.id !== peserta.id);
           alert(`Peserta "${peserta.nama}" berhasil dihapus dari periode`);
           closePesertaDrawer();
         }
