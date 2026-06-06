@@ -39,6 +39,120 @@
         font-weight: 700;
       }
 
+      /* ── Tab switcher ────────────────────────────── */
+      .tab-switcher {
+        display: flex;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 1.25rem;
+        gap: 0;
+      }
+      .tab-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        cursor: pointer;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .tab-btn:hover {
+        color: var(--text-main);
+      }
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        font-weight: 600;
+      }
+      .tab-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        background: #e5e7eb;
+        color: #374151;
+      }
+      .tab-btn.active .tab-count {
+        background: #e0e7ff;
+        color: var(--primary);
+      }
+
+      /* ── Tab panels ──────────────────────────────── */
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Archive visual ──────────────────────────── */
+      .archive-banner {
+        background: #f9fafb;
+        border: 1px dashed #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .table-archive tbody tr {
+        opacity: 0.85;
+      }
+      .table-archive tbody tr:hover {
+        opacity: 1;
+        background: #f3f4f6;
+      }
+      .archive-name {
+        font-weight: 500;
+        color: #374151;
+      }
+      .archive-nip {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: 2px;
+      }
+      .badge-arsip {
+        background: #f3f4f6;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+      }
+
+      /* ── Archive drawer header accent ────────────── */
+      .drawer-header-arsip {
+        background: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .drawer-header-arsip .drawer-title {
+        color: #374151;
+      }
+      .archive-readonly-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: #f3f4f6;
+        color: #6b7280;
+        border: 1px solid #e5e7eb;
+        border-radius: 9999px;
+        padding: 0.15rem 0.5rem;
+      }
+
       /* ── Filter bar ──────────────────────────────── */
       .filter-bar {
         display: flex;
@@ -243,6 +357,10 @@
         font-weight: 700;
         flex-shrink: 0;
       }
+      .detail-avatar.avatar-archive {
+        background: #f3f4f6;
+        color: #9ca3af;
+      }
       .detail-hero {
         display: flex;
         align-items: center;
@@ -262,6 +380,7 @@
         display: flex;
         gap: 0.375rem;
         margin-top: 6px;
+        flex-wrap: wrap;
       }
       .info-row {
         display: flex;
@@ -518,6 +637,24 @@
         color: var(--text-muted);
         font-size: 0.875rem;
       }
+
+      /* ── View icon button ────────────────────────── */
+      .btn-icon {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        padding: 0.3rem 0.5rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .btn-icon:hover {
+        background: #f3f4f6;
+        color: var(--text-main);
+      }
     </style>
   </head>
   <body>
@@ -575,7 +712,7 @@
           <!-- Header -->
           <div class="page-header">
             <h2>Data Dosen</h2>
-            <div style="display: flex; gap: 0.625rem">
+            <div style="display: flex; gap: 0.625rem" id="headerActions">
               <button class="btn btn-outline" onclick="openSyncConfirm()">
                 🔄 Sinkronisasi SALAM
               </button>
@@ -585,105 +722,198 @@
             </div>
           </div>
 
-          <!-- Filter bar -->
-          <div class="filter-bar">
-            <input
-              type="search"
-              class="form-input search-input"
-              placeholder="Cari nama atau NIP…"
-              id="searchInput"
-              oninput="applyFilters()"
-            />
-            <select
-              class="form-input"
-              id="filterProdi"
-              onchange="applyFilters()"
+          <!-- Tab Switcher -->
+          <div class="tab-switcher">
+            <button
+              class="tab-btn active"
+              id="tabBtnDaftar"
+              onclick="switchTab('daftar')"
             >
-              <option value="">Semua Prodi</option>
-              <option value="Pendidikan Matematika">
-                Pendidikan Matematika
-              </option>
-              <option value="Pendidikan Fisika">Pendidikan Fisika</option>
-              <option value="Pendidikan Biologi">Pendidikan Biologi</option>
-              <option value="Pendidikan Kimia">Pendidikan Kimia</option>
-              <option value="Pendidikan Bahasa Indonesia">
-                Pendidikan Bahasa Indonesia
-              </option>
-              <option value="Pendidikan Bahasa Inggris">
-                Pendidikan Bahasa Inggris
-              </option>
-              <option value="Pendidikan Sejarah">Pendidikan Sejarah</option>
-            </select>
-            <select
-              class="form-input"
-              id="filterSumber"
-              onchange="applyFilters()"
+              👨‍🏫 Daftar Dosen
+              <span class="tab-count" id="tabCountDaftar">—</span>
+            </button>
+            <button
+              class="tab-btn"
+              id="tabBtnArsip"
+              onclick="switchTab('arsip')"
             >
-              <option value="">Semua Sumber</option>
-              <option value="SALAM">SALAM</option>
-              <option value="Manual">Manual</option>
-            </select>
-            <select
-              class="form-input"
-              id="filterStatus"
-              onchange="applyFilters()"
-            >
-              <option value="">Semua Status</option>
-              <option value="Aktif">Aktif</option>
-              <option value="Nonaktif">Nonaktif</option>
-            </select>
+              🗄️ Arsip
+              <span class="tab-count" id="tabCountArsip">—</span>
+            </button>
           </div>
 
-          <!-- Table -->
-          <div class="card" style="padding: 0; overflow: hidden">
-            <div class="table-wrap">
-              <table class="table" id="dosenTable">
-                <thead>
-                  <tr>
-                    <th style="width: 48px">No</th>
-                    <th class="sortable-th" onclick="sortBy('nama')">
-                      Nama &amp; NIP
-                      <span class="sort-icon" id="sort-nama"></span>
-                    </th>
-                    <th class="sortable-th" onclick="sortBy('prodi')">
-                      Program Studi
-                      <span class="sort-icon" id="sort-prodi"></span>
-                    </th>
-                    <th class="sortable-th" onclick="sortBy('sumber')">
-                      Sumber <span class="sort-icon" id="sort-sumber"></span>
-                    </th>
-                    <th class="sortable-th" onclick="sortBy('status')">
-                      Status <span class="sort-icon" id="sort-status"></span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-              </table>
-            </div>
-            <div
-              style="
-                padding: 1rem 1.5rem;
-                border-top: 1px solid var(--border);
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-              "
-            >
-              <span class="text-sm text-muted">Tampil</span>
+          <!-- ═══ TAB: DAFTAR DOSEN ═══ -->
+          <div class="tab-panel active" id="panelDaftar">
+            <!-- Filter bar -->
+            <div class="filter-bar">
+              <input
+                type="search"
+                class="form-input search-input"
+                placeholder="Cari nama atau NIP…"
+                id="searchInput"
+                oninput="applyFilters()"
+              />
               <select
                 class="form-input"
-                style="max-width: 80px"
-                id="perPageSelect"
-                onchange="changePerPage()"
+                id="filterProdi"
+                onchange="applyFilters()"
               >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
+                <option value="">Semua Prodi</option>
+                <option value="Pendidikan Matematika">
+                  Pendidikan Matematika
+                </option>
+                <option value="Pendidikan Fisika">Pendidikan Fisika</option>
+                <option value="Pendidikan Biologi">Pendidikan Biologi</option>
+                <option value="Pendidikan Kimia">Pendidikan Kimia</option>
+                <option value="Pendidikan Bahasa Indonesia">
+                  Pendidikan Bahasa Indonesia
+                </option>
+                <option value="Pendidikan Bahasa Inggris">
+                  Pendidikan Bahasa Inggris
+                </option>
+                <option value="Pendidikan Sejarah">Pendidikan Sejarah</option>
               </select>
-              <span class="text-sm text-muted">per halaman</span>
-              <div class="pagination" id="pagination"></div>
-              <span class="page-info" id="pageInfo"></span>
+              <select
+                class="form-input"
+                id="filterSumber"
+                onchange="applyFilters()"
+              >
+                <option value="">Semua Sumber</option>
+                <option value="SALAM">SALAM</option>
+                <option value="Manual">Manual</option>
+              </select>
+              <select
+                class="form-input"
+                id="filterStatus"
+                onchange="applyFilters()"
+              >
+                <option value="">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </div>
+
+            <!-- Table -->
+            <div class="card" style="padding: 0; overflow: hidden">
+              <div class="table-wrap">
+                <table class="table" id="dosenTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 48px">No</th>
+                      <th class="sortable-th" onclick="sortBy('nama')">
+                        Nama &amp; NIP
+                        <span class="sort-icon" id="sort-nama"></span>
+                      </th>
+                      <th class="sortable-th" onclick="sortBy('prodi')">
+                        Program Studi
+                        <span class="sort-icon" id="sort-prodi"></span>
+                      </th>
+                      <th class="sortable-th" onclick="sortBy('sumber')">
+                        Sumber <span class="sort-icon" id="sort-sumber"></span>
+                      </th>
+                      <th class="sortable-th" onclick="sortBy('status')">
+                        Status <span class="sort-icon" id="sort-status"></span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="tableBody"></tbody>
+                </table>
+              </div>
+              <div
+                style="
+                  padding: 1rem 1.5rem;
+                  border-top: 1px solid var(--border);
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  flex-wrap: wrap;
+                "
+              >
+                <span class="text-sm text-muted">Tampil</span>
+                <select
+                  class="form-input"
+                  style="max-width: 80px"
+                  id="perPageSelect"
+                  onchange="changePerPage()"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="text-sm text-muted">per halaman</span>
+                <div class="pagination" id="pagination"></div>
+                <span class="page-info" id="pageInfo"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ TAB: ARSIP ═══ -->
+          <div class="tab-panel" id="panelArsip">
+            <div class="archive-banner">
+              🗄️ Daftar dosen yang telah dihapus dari sistem. Data bersifat
+              read-only dan dapat dipulihkan ke daftar aktif.
+            </div>
+
+            <!-- Archive filter bar -->
+            <div class="filter-bar">
+              <input
+                type="search"
+                class="form-input search-input"
+                placeholder="Cari nama atau NIP…"
+                id="searchArsip"
+                oninput="applyArsipFilters()"
+              />
+              <select
+                class="form-input"
+                id="filterArsipSumber"
+                onchange="applyArsipFilters()"
+              >
+                <option value="">Semua Sumber</option>
+                <option value="SALAM">SALAM</option>
+                <option value="Manual">Manual</option>
+              </select>
+            </div>
+
+            <!-- Archive table -->
+            <div class="card" style="padding: 0; overflow: hidden">
+              <div class="table-wrap">
+                <table class="table table-archive" id="arsipTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 48px">No</th>
+                      <th>Nama &amp; NIP</th>
+                      <th>Program Studi</th>
+                      <th>Sumber</th>
+                    </tr>
+                  </thead>
+                  <tbody id="arsipTableBody"></tbody>
+                </table>
+              </div>
+              <div
+                style="
+                  padding: 1rem 1.5rem;
+                  border-top: 1px solid var(--border);
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+                  flex-wrap: wrap;
+                "
+              >
+                <span class="text-sm text-muted">Tampil</span>
+                <select
+                  class="form-input"
+                  style="max-width: 80px"
+                  id="arsipPerPageSelect"
+                  onchange="changeArsipPerPage()"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span class="text-sm text-muted">per halaman</span>
+                <div class="pagination" id="arsipPagination"></div>
+                <span class="page-info" id="arsipPageInfo"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -699,7 +929,7 @@
       onclick="closeAllDrawers()"
     ></div>
 
-    <!-- Detail Drawer -->
+    <!-- Detail Drawer (dosen aktif) -->
     <div class="drawer" id="drawerDetail">
       <div class="drawer-header">
         <span class="drawer-title">Detail Dosen</span>
@@ -848,6 +1078,18 @@
       </div>
     </div>
 
+    <!-- Archive Detail Drawer -->
+    <div class="drawer" id="drawerArsipDetail">
+      <div class="drawer-header drawer-header-arsip">
+        <div style="display: flex; align-items: center; gap: 0.625rem">
+          <span class="drawer-title">Detail Dosen</span>
+          <span class="archive-readonly-badge">🗄️ Arsip</span>
+        </div>
+        <button class="drawer-close" onclick="closeAllDrawers()">✕</button>
+      </div>
+      <div class="drawer-body" id="drawerArsipDetailBody"></div>
+    </div>
+
     <!-- ═══════════════════════════════════════════════════════════════
          MODALS
     ═══════════════════════════════════════════════════════════════ -->
@@ -936,6 +1178,28 @@
       </div>
     </div>
 
+    <!-- Modal: Konfirmasi Restore -->
+    <div class="modal-overlay" id="modalRestoreConfirm">
+      <div class="modal-box">
+        <div class="modal-icon">♻️</div>
+        <div class="modal-title">Restore Dosen</div>
+        <div class="modal-desc" id="modalRestoreDesc">
+          Apakah Anda yakin ingin mengembalikan dosen ini ke daftar dosen aktif?
+        </div>
+        <div class="modal-actions">
+          <button
+            class="btn btn-outline"
+            onclick="closeModal('modalRestoreConfirm')"
+          >
+            Batal
+          </button>
+          <button class="btn btn-primary" onclick="confirmRestore()">
+            Restore
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast-container"></div>
 
@@ -943,7 +1207,7 @@
          JAVASCRIPT
     ═══════════════════════════════════════════════════════════════ -->
     <script>
-      // ── Dummy data ────────────────────────────────────────────────
+      // ── Dummy data — dosen aktif ──────────────────────────────────
       const dosenData = [
         {
           id: 1,
@@ -1097,7 +1361,56 @@
         },
       ];
 
-      // ── State ─────────────────────────────────────────────────────
+      // ── Dummy data — arsip ────────────────────────────────────────
+      const arsipData = [
+        {
+          id: 101,
+          nip: "196508141990031005",
+          nama: "Drs. Bambang Sulistyo, M.Pd.",
+          prodi: "Pendidikan Sejarah",
+          email: "bambang.s@unp.ac.id",
+          hp: "087712345678",
+          sumber: "SALAM",
+        },
+        {
+          id: 102,
+          nip: "197312202001121002",
+          nama: "Dr. Fitri Rahayu, M.Si.",
+          prodi: "Pendidikan Biologi",
+          email: "fitri.r@unp.ac.id",
+          hp: "081398765432",
+          sumber: "SALAM",
+        },
+        {
+          id: 103,
+          nip: "198204082008011003",
+          nama: "Dra. Kartini Halim, M.Pd.",
+          prodi: "Pendidikan Bahasa Inggris",
+          email: "kartini.h@unp.ac.id",
+          hp: "082287654321",
+          sumber: "Manual",
+        },
+        {
+          id: 104,
+          nip: "197011151994032004",
+          nama: "Prof. Dr. Mulyono, M.Hum.",
+          prodi: "Pendidikan Bahasa Indonesia",
+          email: "mulyono@unp.ac.id",
+          hp: "085576543210",
+          sumber: "SALAM",
+        },
+        {
+          id: 105,
+          nip: "198910252018011001",
+          nama: "Putri Handayani, S.Pd., M.Pd.",
+          prodi: "Pendidikan Matematika",
+          email: "putri.h@unp.ac.id",
+          hp: "089965432109",
+          sumber: "Manual",
+        },
+      ];
+
+      // ── State — daftar dosen ──────────────────────────────────────
       let filtered = [...dosenData];
       let currentPage = 1;
       let perPage = 10;
@@ -1106,7 +1419,42 @@
       let selectedDosen = null;
       let deleteTarget = null;
 
-      // ── Render table ──────────────────────────────────────────────
+      // ── State — arsip ─────────────────────────────────────────────
+      let filteredArsip = [...arsipData];
+      let arsipPage = 1;
+      let arsipPerPage = 10;
+      let selectedArsip = null;
+      let restoreTarget = null;
+
+      // ── State — tab ───────────────────────────────────────────────
+      let activeTab = "daftar";
+
+      // ── Tab switcher ──────────────────────────────────────────────
+      function switchTab(tab) {
+        activeTab = tab;
+        document
+          .getElementById("tabBtnDaftar")
+          .classList.toggle("active", tab === "daftar");
+        document
+          .getElementById("tabBtnArsip")
+          .classList.toggle("active", tab === "arsip");
+        document
+          .getElementById("panelDaftar")
+          .classList.toggle("active", tab === "daftar");
+        document
+          .getElementById("panelArsip")
+          .classList.toggle("active", tab === "arsip");
+        document.getElementById("headerActions").style.display =
+          tab === "daftar" ? "flex" : "none";
+      }
+
+      function updateTabCounts() {
+        document.getElementById("tabCountDaftar").textContent =
+          dosenData.length;
+        document.getElementById("tabCountArsip").textContent = arsipData.length;
+      }
+
+      // ── Render daftar dosen ───────────────────────────────────────
       function renderTable() {
         const tbody = document.getElementById("tableBody");
         const start = (currentPage - 1) * perPage;
@@ -1128,12 +1476,8 @@
               <div class="cell-nip">${d.nip}</div>
             </td>
             <td class="text-sm">${d.prodi}</td>
-            <td>
-              <span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span>
-            </td>
-            <td>
-              <span class="badge ${d.status === "Aktif" ? "badge-aktif" : "badge-nonaktif"}">${d.status}</span>
-            </td>
+            <td><span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span></td>
+            <td><span class="badge ${d.status === "Aktif" ? "badge-aktif" : "badge-nonaktif"}">${d.status}</span></td>
           </tr>
         `,
           )
@@ -1182,7 +1526,7 @@
         renderTable();
       }
 
-      // ── Filters ───────────────────────────────────────────────────
+      // ── Filters — daftar dosen ────────────────────────────────────
       function applyFilters() {
         const q = document.getElementById("searchInput").value.toLowerCase();
         const prodi = document.getElementById("filterProdi").value;
@@ -1254,7 +1598,89 @@
         });
       }
 
-      // ── Drawer: Detail ────────────────────────────────────────────
+      // ── Render arsip ──────────────────────────────────────────────
+      function renderArsipTable() {
+        const tbody = document.getElementById("arsipTableBody");
+        const start = (arsipPage - 1) * arsipPerPage;
+        const page = filteredArsip.slice(start, start + arsipPerPage);
+
+        if (page.length === 0) {
+          tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Tidak ada data arsip yang sesuai filter.</td></tr>`;
+          renderArsipPagination();
+          return;
+        }
+
+        tbody.innerHTML = page
+          .map(
+            (d, i) => `
+          <tr onclick="openArsipDetail(${d.id})">
+            <td style="color:var(--text-muted);font-size:0.8125rem;">${start + i + 1}</td>
+            <td>
+              <div class="archive-name">${d.nama}</div>
+              <div class="archive-nip">${d.nip}</div>
+            </td>
+            <td class="text-sm" style="color:#6b7280;">${d.prodi}</td>
+            <td><span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span></td>
+          </tr>
+        `,
+          )
+          .join("");
+
+        renderArsipPagination();
+      }
+
+      function renderArsipPagination() {
+        const totalPages = Math.max(
+          1,
+          Math.ceil(filteredArsip.length / arsipPerPage),
+        );
+        const pg = document.getElementById("arsipPagination");
+        const pi = document.getElementById("arsipPageInfo");
+        const start =
+          filteredArsip.length === 0 ? 0 : (arsipPage - 1) * arsipPerPage + 1;
+        const end = Math.min(arsipPage * arsipPerPage, filteredArsip.length);
+        pi.textContent = `Menampilkan ${start}–${end} dari ${filteredArsip.length} arsip`;
+
+        let html = `<button class="page-btn" onclick="goArsipPage(${arsipPage - 1})" ${arsipPage === 1 ? "disabled" : ""}>‹</button>`;
+        for (let p = 1; p <= totalPages; p++) {
+          html += `<button class="page-btn ${p === arsipPage ? "active" : ""}" onclick="goArsipPage(${p})">${p}</button>`;
+        }
+        html += `<button class="page-btn" onclick="goArsipPage(${arsipPage + 1})" ${arsipPage === totalPages ? "disabled" : ""}>›</button>`;
+        pg.innerHTML = html;
+      }
+
+      function goArsipPage(p) {
+        const totalPages = Math.ceil(filteredArsip.length / arsipPerPage);
+        if (p < 1 || p > totalPages) return;
+        arsipPage = p;
+        renderArsipTable();
+      }
+
+      function changeArsipPerPage() {
+        arsipPerPage = parseInt(
+          document.getElementById("arsipPerPageSelect").value,
+        );
+        arsipPage = 1;
+        renderArsipTable();
+      }
+
+      // ── Filters — arsip ───────────────────────────────────────────
+      function applyArsipFilters() {
+        const q = document.getElementById("searchArsip").value.toLowerCase();
+        const sumber = document.getElementById("filterArsipSumber").value;
+
+        filteredArsip = arsipData.filter((d) => {
+          const matchQ =
+            !q || d.nama.toLowerCase().includes(q) || d.nip.includes(q);
+          const matchSumber = !sumber || d.sumber === sumber;
+          return matchQ && matchSumber;
+        });
+
+        arsipPage = 1;
+        renderArsipTable();
+      }
+
+      // ── Drawer: Detail dosen aktif ────────────────────────────────
       function openDetail(id) {
         selectedDosen = dosenData.find((d) => d.id === id);
         if (!selectedDosen) return;
@@ -1307,6 +1733,46 @@
         openDrawer("drawerDetail");
       }
 
+      // ── Drawer: Detail dosen arsip ────────────────────────────────
+      function openArsipDetail(id) {
+        selectedArsip = arsipData.find((d) => d.id === id);
+        if (!selectedArsip) return;
+        const d = selectedArsip;
+        const initials = d.nama
+          .split(" ")
+          .slice(0, 2)
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase();
+
+        document.getElementById("drawerArsipDetailBody").innerHTML = `
+          <div class="detail-hero">
+            <div class="detail-avatar avatar-archive">${initials}</div>
+            <div>
+              <div class="detail-hero-name" style="color:#374151;">${d.nama}</div>
+              <div class="detail-hero-nip">${d.nip}</div>
+              <div class="detail-hero-badges">
+                <span class="badge ${d.sumber === "SALAM" ? "badge-salam" : "badge-manual"}">${d.sumber}</span>
+                <span class="badge badge-arsip">🗄️ Diarsipkan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider">INFORMASI</div>
+          <div class="info-row"><span class="info-label">Program Studi</span><span class="info-value">${d.prodi}</span></div>
+          <div class="info-row"><span class="info-label">Email</span><span class="info-value">${d.email || "—"}</span></div>
+          <div class="info-row"><span class="info-label">No. HP</span><span class="info-value">${d.hp || "—"}</span></div>
+          <div class="info-row"><span class="info-label">Sumber</span><span class="info-value">${d.sumber}</span></div>
+
+          <div class="section-divider">Aksi</div>
+          <div class="action-row">
+            <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="openRestoreConfirm()">♻️ Restore Dosen</button>
+          </div>
+        `;
+
+        openDrawer("drawerArsipDetail");
+      }
+
       // ── Drawer: Create ────────────────────────────────────────────
       function openCreateDrawer() {
         document.getElementById("createNip").value = "";
@@ -1351,6 +1817,7 @@
           status: "Aktif",
         });
         applyFilters();
+        updateTabCounts();
         closeAllDrawers();
         showToast("success", `Dosen ${nama} berhasil ditambahkan.`);
       }
@@ -1433,8 +1900,33 @@
         closeModal("modalDeleteConfirm");
         closeAllDrawers();
         applyFilters();
+        updateTabCounts();
         showToast("success", `Dosen ${deleteTarget.nama} berhasil dihapus.`);
         deleteTarget = null;
+      }
+
+      // ── Restore ───────────────────────────────────────────────────
+      function openRestoreConfirm() {
+        if (!selectedArsip) return;
+        restoreTarget = selectedArsip;
+        document.getElementById("modalRestoreDesc").textContent =
+          `Apakah Anda yakin ingin mengembalikan dosen "${restoreTarget.nama}" (NIP: ${restoreTarget.nip}) ke daftar dosen aktif?`;
+        openModal("modalRestoreConfirm");
+      }
+
+      function confirmRestore() {
+        if (!restoreTarget) return;
+        const idx = arsipData.findIndex((d) => d.id === restoreTarget.id);
+        if (idx !== -1) arsipData.splice(idx, 1);
+        closeModal("modalRestoreConfirm");
+        closeAllDrawers();
+        applyArsipFilters();
+        updateTabCounts();
+        showToast(
+          "success",
+          `Dosen ${restoreTarget.nama} berhasil dipulihkan.`,
+        );
+        restoreTarget = null;
       }
 
       // ── Sync ──────────────────────────────────────────────────────
@@ -1445,7 +1937,6 @@
       function runSync() {
         closeModal("modalSyncConfirm");
 
-        // Dummy response sesuai struktur BE
         const dummyResponse = {
           message:
             "sync selesai: 0 ditemukan NIP kosong, 7 tidak ada prodi yang cocok",
@@ -1515,12 +2006,10 @@
         const skipped = data.skipped;
         document.getElementById("syncStatSkipped").textContent = skipped.total;
 
-        // Box merah hanya jika ada yang dilewati
         const hasSkipped = skipped.total > 0;
         document.getElementById("syncStatSkippedBox").className =
           "sync-stat-box" + (hasSkipped ? " error-box" : "");
 
-        // List detail invalid_data
         const failList = document.getElementById("syncFailList");
         const failItems = document.getElementById("syncFailItems");
         const items = skipped.invalid_data || [];
@@ -1541,7 +2030,6 @@
           failList.style.display = "none";
         }
 
-        // Pesan ringkas dari message BE
         const noNipInfo =
           skipped.no_nip > 0 ? `, ${skipped.no_nip} NIP kosong` : "";
         const noProdiInfo =
@@ -1558,9 +2046,12 @@
 
       function closeAllDrawers() {
         document.getElementById("drawerOverlay").classList.remove("open");
-        ["drawerDetail", "drawerCreate", "drawerEdit"].forEach((id) =>
-          document.getElementById(id).classList.remove("open"),
-        );
+        [
+          "drawerDetail",
+          "drawerCreate",
+          "drawerEdit",
+          "drawerArsipDetail",
+        ].forEach((id) => document.getElementById(id).classList.remove("open"));
       }
 
       // ── Modal helpers ─────────────────────────────────────────────
@@ -1571,7 +2062,6 @@
         document.getElementById(id).classList.remove("open");
       }
 
-      // Close modal when clicking overlay
       document.querySelectorAll(".modal-overlay").forEach((el) => {
         el.addEventListener("click", (e) => {
           if (e.target === el) el.classList.remove("open");
@@ -1590,7 +2080,6 @@
           document
             .getElementById(prefix + f.toLowerCase())
             ?.classList.remove("invalid");
-          // also try capitalized input ids
           document.getElementById(prefix + f)?.classList.remove("invalid");
         });
       }
@@ -1606,6 +2095,8 @@
 
       // ── Init ──────────────────────────────────────────────────────
       applyFilters();
+      applyArsipFilters();
+      updateTabCounts();
     </script>
   </body>
 </html>
