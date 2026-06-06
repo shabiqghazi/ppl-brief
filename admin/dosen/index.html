@@ -881,37 +881,26 @@
       <div class="modal-box wide">
         <div class="modal-icon">✅</div>
         <div class="modal-title">Sinkronisasi Selesai</div>
-        <div class="modal-desc">
+        <div class="modal-desc" id="syncResultDesc">
           Berikut adalah hasil sinkronisasi data dosen dari SALAM.
         </div>
         <div class="sync-stats">
           <div class="sync-stat-box">
-            <div class="sync-stat-num">142</div>
-            <div class="sync-stat-label">Total Data SALAM</div>
+            <div class="sync-stat-num" id="syncStatAdded">—</div>
+            <div class="sync-stat-label">Ditambahkan</div>
           </div>
-          <div class="sync-stat-box success-box">
-            <div class="sync-stat-num">139</div>
-            <div class="sync-stat-label">Berhasil</div>
+          <div class="sync-stat-box">
+            <div class="sync-stat-num" id="syncStatUpdated">—</div>
+            <div class="sync-stat-label">Diperbarui</div>
           </div>
-          <div class="sync-stat-box error-box">
-            <div class="sync-stat-num">3</div>
-            <div class="sync-stat-label">Gagal</div>
+          <div class="sync-stat-box error-box" id="syncStatSkippedBox">
+            <div class="sync-stat-num" id="syncStatSkipped">—</div>
+            <div class="sync-stat-label">Dilewati</div>
           </div>
         </div>
-        <div class="sync-fail-list">
-          <div class="sync-fail-title">Data yang Gagal Disinkronisasi</div>
-          <div class="sync-fail-item">
-            <span>197203151999031001 — Dra. Rahmi Yusuf, M.Pd.</span>
-            <span class="sync-fail-reason">NIP duplikat</span>
-          </div>
-          <div class="sync-fail-item">
-            <span>198506202010121003 — Ahmad Fauzi, S.Pd.</span>
-            <span class="sync-fail-reason">Prodi tidak dikenal</span>
-          </div>
-          <div class="sync-fail-item">
-            <span>196712051993022002 — Prof. Dr. Siti Rahayu</span>
-            <span class="sync-fail-reason">Data tidak lengkap</span>
-          </div>
+        <div class="sync-fail-list" id="syncFailList" style="display: none">
+          <div class="sync-fail-title">Detail Data Dilewati</div>
+          <div id="syncFailItems"></div>
         </div>
         <div class="modal-actions">
           <button
@@ -1455,7 +1444,110 @@
 
       function runSync() {
         closeModal("modalSyncConfirm");
+
+        // Dummy response sesuai struktur BE
+        const dummyResponse = {
+          message:
+            "sync selesai: 0 ditemukan NIP kosong, 7 tidak ada prodi yang cocok",
+          data: {
+            added: 428,
+            updated: 0,
+            skipped: {
+              invalid_data: [
+                {
+                  nip: "196308161990032013",
+                  nama: "Aan Hasanah",
+                  kode_prodi: "86902",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "197205041999031004",
+                  nama: "Budi Rahardjo",
+                  kode_prodi: "86910",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "198104122006042002",
+                  nama: "Citra Dewi",
+                  kode_prodi: "86911",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "197809102004121001",
+                  nama: "Darmawan Putra",
+                  kode_prodi: "86912",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "196912231994032003",
+                  nama: "Eka Susilawati",
+                  kode_prodi: "86920",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "198506282011011005",
+                  nama: "Fajar Nugroho",
+                  kode_prodi: "86921",
+                  reason: "prodi tidak ditemukan",
+                },
+                {
+                  nip: "197403151998022001",
+                  nama: "Gita Purnama Sari",
+                  kode_prodi: "86930",
+                  reason: "prodi tidak ditemukan",
+                },
+              ],
+              no_nip: 0,
+              no_prodi: 7,
+              total: 7,
+            },
+          },
+        };
+
+        populateSyncResult(dummyResponse.data);
         setTimeout(() => openModal("modalSyncResult"), 200);
+      }
+
+      function populateSyncResult(data) {
+        document.getElementById("syncStatAdded").textContent = data.added;
+        document.getElementById("syncStatUpdated").textContent = data.updated;
+
+        const skipped = data.skipped;
+        document.getElementById("syncStatSkipped").textContent = skipped.total;
+
+        // Box merah hanya jika ada yang dilewati
+        const hasSkipped = skipped.total > 0;
+        document.getElementById("syncStatSkippedBox").className =
+          "sync-stat-box" + (hasSkipped ? " error-box" : "");
+
+        // List detail invalid_data
+        const failList = document.getElementById("syncFailList");
+        const failItems = document.getElementById("syncFailItems");
+        const items = skipped.invalid_data || [];
+
+        if (items.length > 0) {
+          failItems.innerHTML = items
+            .map(
+              (item) => `
+            <div class="sync-fail-item">
+              <span>${item.nip} — ${item.nama}</span>
+              <span class="sync-fail-reason">${item.reason}${item.kode_prodi ? ` (${item.kode_prodi})` : ""}</span>
+            </div>
+          `,
+            )
+            .join("");
+          failList.style.display = "block";
+        } else {
+          failList.style.display = "none";
+        }
+
+        // Pesan ringkas dari message BE
+        const noNipInfo =
+          skipped.no_nip > 0 ? `, ${skipped.no_nip} NIP kosong` : "";
+        const noProdiInfo =
+          skipped.no_prodi > 0 ? `, ${skipped.no_prodi} prodi tidak cocok` : "";
+        document.getElementById("syncResultDesc").textContent =
+          `${data.added} dosen ditambahkan, ${data.updated} diperbarui${noNipInfo}${noProdiInfo}.`;
       }
 
       // ── Drawer helpers ────────────────────────────────────────────
