@@ -1074,6 +1074,7 @@
               <div class="dtab" onclick="switchDTab(3)">Pengumuman</div>
               <div class="dtab" onclick="switchDTab(4)">Milestone</div>
               <div class="dtab" onclick="switchDTab(5)">Peserta</div>
+              <div class="dtab" onclick="switchDTab(6)">DPL</div>
             </div>
 
             <!-- Info tab -->
@@ -1574,6 +1575,69 @@
                       </tr>
                     </thead>
                     <tbody id="peserta-tbody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab DPL -->
+            <div class="dtab-panel">
+              <!-- Stats Summary -->
+              <div class="stat-cards">
+                <div class="stat-card">
+                  <div class="stat-card-label">Total DPL</div>
+                  <div class="stat-card-value" id="total-dpl">0</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-card-label">Mahasiswa Terbimbing</div>
+                  <div class="stat-card-value" id="dpl-total-mahasiswa">0</div>
+                </div>
+              </div>
+
+              <!-- Header -->
+              <div class="flex justify-between items-center mb-4">
+                <p class="text-sm text-muted" id="dpl-count">0 DPL terdaftar</p>
+                <button class="btn btn-primary" onclick="openAddDPLModal()">
+                  + Tambah DPL
+                </button>
+              </div>
+
+              <!-- Filter & Search Bar -->
+              <div class="filter-bar">
+                <input
+                  type="text"
+                  class="form-input search-input"
+                  placeholder="Cari nama dosen…"
+                  id="dpl-search"
+                  oninput="filterDPLTable()"
+                />
+                <select
+                  class="form-input"
+                  id="dpl-prodi"
+                  style="max-width: 200px"
+                  onchange="filterDPLTable()"
+                >
+                  <option value="">Semua Prodi</option>
+                  <option value="PAI">Pendidikan Agama Islam (PAI)</option>
+                  <option value="PBA">Pendidikan Bahasa Arab (PBA)</option>
+                  <option value="PGMI">PGMI</option>
+                </select>
+              </div>
+
+              <!-- DPL Table -->
+              <div class="card" style="padding: 0; overflow: hidden">
+                <div class="table-wrap">
+                  <table class="table" id="dpl-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 48px">No</th>
+                        <th>Nama Dosen</th>
+                        <th style="width: 140px">Program Studi</th>
+                        <th style="width: 150px">Jumlah Mahasiswa</th>
+                        <th style="width: 100px">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dpl-tbody"></tbody>
                   </table>
                 </div>
               </div>
@@ -2498,6 +2562,172 @@
             onclick="closePPLTypeModal()"
           >
             Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer: Tambah DPL -->
+    <div class="drawer-overlay" id="add-dpl-drawer-overlay" onclick="closeAddDPLDrawer(event)">
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+          <h2>Tambah DPL ke Periode</h2>
+          <button class="drawer-close" onclick="closeAddDPLDrawer()">✕</button>
+        </div>
+        <div class="drawer-content">
+          <!-- Step 1: Pilih Dosen -->
+          <div id="dpl-step-1">
+            <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem">
+              Langkah 1: Pilih Dosen Pembimbing
+            </h4>
+            <div class="form-group">
+              <label class="form-label">Cari Dosen *</label>
+              <input
+                type="text"
+                class="form-input"
+                id="dpl-search-input"
+                placeholder="Nama dosen…"
+                oninput="searchDosenForDPL()"
+              />
+            </div>
+            <div class="dpl-dosen-list" id="dpl-dosen-list" style="
+              border: 1px solid var(--border);
+              border-radius: 0.5rem;
+              max-height: 250px;
+              overflow-y: auto;
+              margin-bottom: 1.5rem;
+            "></div>
+          </div>
+
+          <!-- Step 2: Pilih Mahasiswa -->
+          <div id="dpl-step-2" style="display: none">
+            <h4 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem">
+              Langkah 2: Assign Mahasiswa ke DPL
+            </h4>
+            <div class="form-group">
+              <label class="form-label">Dosen yang dipilih</label>
+              <div style="
+                padding: 0.75rem;
+                background: #f0f9ff;
+                border: 1px solid #bfdbfe;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                color: #1e40af;
+              " id="dpl-selected-dosen">—</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Filter Mahasiswa</label>
+              <div style="display: flex; gap: 0.625rem; margin-bottom: 1rem">
+                <input
+                  type="text"
+                  class="form-input"
+                  id="dpl-mhs-search"
+                  placeholder="Cari nama/NIM…"
+                  style="flex: 1"
+                  oninput="filterMahasiswaForDPL()"
+                />
+                <select
+                  class="form-input"
+                  id="dpl-mhs-sekolah"
+                  style="max-width: 180px"
+                  onchange="filterMahasiswaForDPL()"
+                >
+                  <option value="">Semua Sekolah</option>
+                </select>
+              </div>
+            </div>
+            <div style="
+              border: 1px solid var(--border);
+              border-radius: 0.5rem;
+              max-height: 300px;
+              overflow-y: auto;
+              margin-bottom: 1.5rem;
+            " id="dpl-mahasiswa-list"></div>
+          </div>
+        </div>
+
+        <div class="drawer-footer" style="flex-direction: row; gap: 0.625rem">
+          <button id="dpl-btn-prev" class="btn btn-outline" style="display: none" onclick="goToDPLStep(1)">
+            ← Kembali
+          </button>
+          <div style="flex: 1"></div>
+          <button class="btn btn-outline" onclick="closeAddDPLDrawer()">
+            Batal
+          </button>
+          <button id="dpl-btn-next" class="btn btn-primary" onclick="goToDPLStep(2)">
+            Lanjut →
+          </button>
+          <button id="dpl-btn-submit" class="btn btn-primary" style="display: none" onclick="submitAddDPL()">
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer: Detail DPL -->
+    <div class="drawer-overlay" id="dpl-detail-drawer-overlay" onclick="closeDPLDetailDrawer(event)">
+      <div class="drawer" onclick="event.stopPropagation()">
+        <div class="drawer-header">
+          <h2 id="dpl-detail-title">Detail DPL</h2>
+          <button class="drawer-close" onclick="closeDPLDetailDrawer()">✕</button>
+        </div>
+        <div class="drawer-content">
+          <!-- DPL Info -->
+          <div class="drawer-section">
+            <div class="drawer-section-title">Informasi DPL</div>
+            <div class="info-row">
+              <span class="text-muted">Nama Dosen</span><span id="dpl-detail-nama">—</span>
+            </div>
+            <div class="info-row">
+              <span class="text-muted">Program Studi</span><span id="dpl-detail-prodi">—</span>
+            </div>
+            <div class="info-row">
+              <span class="text-muted">Kontak</span><span id="dpl-detail-kontak">—</span>
+            </div>
+          </div>
+
+          <!-- Mahasiswa Terbimbing -->
+          <div class="drawer-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem">
+              <div class="drawer-section-title" style="margin-bottom: 0">Mahasiswa Terbimbing</div>
+              <span class="badge" id="dpl-detail-count" style="background: var(--primary); color: white">0</span>
+            </div>
+            <div id="dpl-detail-mahasiswa-list" style="
+              border: 1px solid var(--border);
+              border-radius: 0.5rem;
+              max-height: 400px;
+              overflow-y: auto;
+            "></div>
+          </div>
+        </div>
+
+        <div class="drawer-footer">
+          <button class="btn btn-danger" onclick="confirmDeleteDPL()">
+            Hapus DPL
+          </button>
+          <button class="btn btn-outline" onclick="closeDPLDetailDrawer()">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Konfirmasi Hapus DPL -->
+    <div class="overlay" id="dpl-delete-modal" onclick="closeDPLDeleteModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-head">
+          <h3 style="font-size: 1rem; font-weight: 600; margin: 0">Konfirmasi Hapus DPL</h3>
+          <button class="drawer-close" onclick="closeDPLDeleteModal()">✕</button>
+        </div>
+        <p id="dpl-delete-message" style="margin: 1.5rem 0; color: var(--text-main)">
+          Apakah Anda yakin ingin menghapus DPL ini?
+        </p>
+        <div class="modal-footer-group">
+          <button class="btn btn-outline" onclick="closeDPLDeleteModal()">
+            Batal
+          </button>
+          <button class="btn btn-danger" onclick="confirmDeleteDPLAction()">
+            Hapus
           </button>
         </div>
       </div>
@@ -4586,9 +4816,59 @@
         },
       ];
 
+      const DOSEN_DATA = [
+        {
+          id: 1,
+          nama: "Dr. Ahmad Habibullah",
+          prodi: "PAI",
+          nip: "197805121002121001",
+          kontak: "0812-3456-7890",
+          email: "ahmad@ftk.edu"
+        },
+        {
+          id: 2,
+          nama: "Dra. Siti Aisyah",
+          prodi: "PBA",
+          nip: "197906142004122001",
+          kontak: "0813-2345-6789",
+          email: "siti@ftk.edu"
+        },
+        {
+          id: 3,
+          nama: "Prof. Muhammad Ismail",
+          prodi: "PGMI",
+          nip: "196712141990021001",
+          kontak: "0814-5678-9012",
+          email: "ismail@ftk.edu"
+        },
+        {
+          id: 4,
+          nama: "Ir. Nurul Azizah, M.Pd",
+          prodi: "PAI",
+          nip: "198003152006012001",
+          kontak: "0815-6789-0123",
+          email: "nurul@ftk.edu"
+        },
+        {
+          id: 5,
+          nama: "Dr. Rahmat Hidayat",
+          prodi: "PBA",
+          nip: "197812251998021001",
+          kontak: "0816-7890-1234",
+          email: "rahmat@ftk.edu"
+        }
+      ];
+
+      const DPL_ASSIGNMENTS = [];
+
       let pesertaFiltered = [...PESERTA_DATA];
+      let dplFiltered = [];
       let currentPesertaId = null;
       let currentHapusType = null;
+      let currentDPLId = null;
+      let currentDPLStep = 1;
+      let selectedDosenForDPL = null;
+      let selectedMahasiswaForDPL = [];
 
       function updatePesertaStats() {
         const total = PESERTA_DATA.length;
@@ -4917,11 +5197,375 @@
         closeHapusModal();
       }
 
+      // ════════════════════════════════════════════════════════════════════════════════
+      // DPL Functions
+      // ════════════════════════════════════════════════════════════════════════════════
+
+      function updateDPLStats() {
+        const totalDPL = DPL_ASSIGNMENTS.length;
+        const totalMahasiswa = DPL_ASSIGNMENTS.reduce((sum, d) => sum + d.mahasiswa.length, 0);
+        document.getElementById("total-dpl").textContent = totalDPL;
+        document.getElementById("dpl-total-mahasiswa").textContent = totalMahasiswa;
+        document.getElementById("dpl-count").textContent = `${totalDPL} DPL terdaftar`;
+      }
+
+      function renderDPLTable() {
+        const tbody = document.getElementById("dpl-tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        if (dplFiltered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted)">Belum ada DPL ditugaskan</td></tr>';
+          return;
+        }
+
+        dplFiltered.forEach((d, idx) => {
+          const dosen = DOSEN_DATA.find(ds => ds.id === d.dosenId);
+          const tr = document.createElement("tr");
+          tr.className = "row-clickable";
+          tr.onclick = () => openDPLDetailDrawer(d.id);
+          tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td>${dosen?.nama || "—"}</td>
+            <td>${dosen?.prodi || "—"}</td>
+            <td>${d.mahasiswa.length} mahasiswa</td>
+            <td>
+              <button class="btn btn-outline" style="padding: 0.375rem 0.75rem; font-size: 0.875rem" onclick="event.stopPropagation(); openDPLDetailDrawer(${d.id})">
+                Lihat
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterDPLTable() {
+        const searchVal = document.getElementById("dpl-search").value.toLowerCase();
+        const prodiVal = document.getElementById("dpl-prodi").value;
+
+        dplFiltered = DPL_ASSIGNMENTS.filter(d => {
+          const dosen = DOSEN_DATA.find(ds => ds.id === d.dosenId);
+          const matchSearch = !searchVal || dosen?.nama.toLowerCase().includes(searchVal);
+          const matchProdi = !prodiVal || dosen?.prodi === prodiVal;
+          return matchSearch && matchProdi;
+        });
+
+        renderDPLTable();
+      }
+
+      function openAddDPLModal() {
+        currentDPLStep = 1;
+        selectedDosenForDPL = null;
+        selectedMahasiswaForDPL = [];
+        document.getElementById("add-dpl-drawer-overlay").classList.add("open");
+        renderDosenListForDPL();
+        goToDPLStep(1);
+      }
+
+      function closeAddDPLDrawer(e) {
+        if (!e || e.target === document.getElementById("add-dpl-drawer-overlay")) {
+          document.getElementById("add-dpl-drawer-overlay").classList.remove("open");
+          currentDPLStep = 1;
+          selectedDosenForDPL = null;
+          selectedMahasiswaForDPL = [];
+        }
+      }
+
+      function renderDosenListForDPL() {
+        const container = document.getElementById("dpl-dosen-list");
+        container.innerHTML = "";
+
+        DOSEN_DATA.forEach(dosen => {
+          const isAssigned = DPL_ASSIGNMENTS.some(d => d.dosenId === dosen.id);
+          const div = document.createElement("div");
+          div.style.cssText = `
+            padding: 0.875rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            ${isAssigned ? 'opacity: 0.5; cursor: not-allowed;' : 'hover: background: #f9fafb;'}
+          `;
+          div.innerHTML = `
+            <div>
+              <div style="font-weight: 500">${dosen.nama}</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted)">${dosen.prodi}</div>
+            </div>
+            ${isAssigned ? '<span class="badge badge-success">Sudah ditugaskan</span>' : ''}
+          `;
+          if (!isAssigned) {
+            div.onclick = () => selectDosenForDPL(dosen.id);
+            div.style.hover = "background: #f9fafb;";
+          }
+          container.appendChild(div);
+        });
+      }
+
+      function searchDosenForDPL() {
+        const searchVal = document.getElementById("dpl-search-input").value.toLowerCase();
+        const container = document.getElementById("dpl-dosen-list");
+        const items = container.querySelectorAll("div");
+
+        items.forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(searchVal) ? "flex" : "none";
+        });
+      }
+
+      function selectDosenForDPL(dosenId) {
+        selectedDosenForDPL = dosenId;
+        const dosen = DOSEN_DATA.find(d => d.id === dosenId);
+        document.getElementById("dpl-selected-dosen").textContent = `${dosen.nama} (${dosen.prodi})`;
+        renderMahasiswaListForDPL();
+        populateSekolahFilterForDPL();
+        goToDPLStep(2);
+      }
+
+      function renderMahasiswaListForDPL() {
+        const container = document.getElementById("dpl-mahasiswa-list");
+        container.innerHTML = "";
+
+        const mahasiswaYangBoleh = PESERTA_DATA.filter(p => {
+          const sudahAdaDPL = DPL_ASSIGNMENTS.some(d => d.mahasiswa.includes(p.id));
+          return !sudahAdaDPL;
+        });
+
+        mahasiswaYangBoleh.forEach(mhs => {
+          const div = document.createElement("div");
+          const isSelected = selectedMahasiswaForDPL.includes(mhs.id);
+          div.setAttribute("data-mhs-id", mhs.id);
+          div.setAttribute("data-mhs-nama", mhs.nama);
+          div.setAttribute("data-mhs-nim", mhs.nim);
+          div.setAttribute("data-mhs-sekolah", mhs.sekolah || "");
+          div.style.cssText = `
+            padding: 0.875rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            ${isSelected ? 'background: #f0f9ff;' : ''}
+          `;
+          div.innerHTML = `
+            <input
+              type="checkbox"
+              id="mhs-checkbox-${mhs.id}"
+              ${isSelected ? 'checked' : ''}
+              onchange="toggleMahasiswaForDPL(${mhs.id})"
+            />
+            <label for="mhs-checkbox-${mhs.id}" style="flex: 1; cursor: pointer; margin: 0">
+              <div style="font-weight: 500">${mhs.nama}</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted)">${mhs.nim} • ${mhs.prodi}${mhs.sekolah ? ' • ' + mhs.sekolah : ''}</div>
+            </label>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      function populateSekolahFilterForDPL() {
+        const select = document.getElementById("dpl-mhs-sekolah");
+        const sekolahSet = new Set(PESERTA_DATA.map(p => p.sekolah).filter(Boolean));
+        select.innerHTML = '<option value="">Semua Sekolah</option>';
+        sekolahSet.forEach(sekolah => {
+          const opt = document.createElement("option");
+          opt.value = sekolah;
+          opt.textContent = sekolah;
+          select.appendChild(opt);
+        });
+      }
+
+      function filterMahasiswaForDPL() {
+        const searchVal = document.getElementById("dpl-mhs-search").value.toLowerCase();
+        const sekolahVal = document.getElementById("dpl-mhs-sekolah").value;
+        const container = document.getElementById("dpl-mahasiswa-list");
+        const items = container.querySelectorAll("[data-mhs-id]");
+
+        items.forEach(item => {
+          const nama = item.getAttribute("data-mhs-nama").toLowerCase();
+          const nim = item.getAttribute("data-mhs-nim").toLowerCase();
+          const sekolah = item.getAttribute("data-mhs-sekolah").toLowerCase();
+
+          const matchSearch = !searchVal || nama.includes(searchVal) || nim.includes(searchVal);
+          const matchSekolah = !sekolahVal || sekolah === sekolahVal.toLowerCase();
+
+          item.style.display = (matchSearch && matchSekolah) ? "flex" : "none";
+        });
+      }
+
+      function toggleMahasiswaForDPL(mahasiswaId) {
+        if (selectedMahasiswaForDPL.includes(mahasiswaId)) {
+          selectedMahasiswaForDPL = selectedMahasiswaForDPL.filter(id => id !== mahasiswaId);
+        } else {
+          selectedMahasiswaForDPL.push(mahasiswaId);
+        }
+      }
+
+      function goToDPLStep(step) {
+        currentDPLStep = step;
+        const step1 = document.getElementById("dpl-step-1");
+        const step2 = document.getElementById("dpl-step-2");
+        const btnPrev = document.getElementById("dpl-btn-prev");
+        const btnNext = document.getElementById("dpl-btn-next");
+        const btnSubmit = document.getElementById("dpl-btn-submit");
+
+        if (step === 1) {
+          step1.style.display = "block";
+          step2.style.display = "none";
+          btnPrev.style.display = "none";
+          btnNext.style.display = "block";
+          btnSubmit.style.display = "none";
+          if (!selectedDosenForDPL) btnNext.disabled = true;
+        } else {
+          step1.style.display = "none";
+          step2.style.display = "block";
+          btnPrev.style.display = "block";
+          btnNext.style.display = "none";
+          btnSubmit.style.display = "block";
+          if (selectedMahasiswaForDPL.length === 0) btnSubmit.disabled = true;
+          else btnSubmit.disabled = false;
+        }
+      }
+
+      function submitAddDPL() {
+        if (!selectedDosenForDPL || selectedMahasiswaForDPL.length === 0) {
+          alert("Pilih dosen dan minimal 1 mahasiswa");
+          return;
+        }
+
+        const newDPL = {
+          id: Math.max(...DPL_ASSIGNMENTS.map(d => d.id), 0) + 1,
+          dosenId: selectedDosenForDPL,
+          mahasiswa: [...selectedMahasiswaForDPL]
+        };
+
+        DPL_ASSIGNMENTS.push(newDPL);
+
+        selectedMahasiswaForDPL.forEach(mhsId => {
+          const mhs = PESERTA_DATA.find(p => p.id === mhsId);
+          if (mhs) {
+            mhs.dpl = selectedDosenForDPL;
+          }
+        });
+
+        const dosen = DOSEN_DATA.find(d => d.id === selectedDosenForDPL);
+        alert(`${dosen.nama} berhasil ditugaskan dengan ${selectedMahasiswaForDPL.length} mahasiswa`);
+
+        dplFiltered = [...DPL_ASSIGNMENTS];
+        renderDPLTable();
+        updateDPLStats();
+        closeAddDPLDrawer();
+      }
+
+      function openDPLDetailDrawer(dplId) {
+        currentDPLId = dplId;
+        const dpl = DPL_ASSIGNMENTS.find(d => d.id === dplId);
+        const dosen = DOSEN_DATA.find(d => d.id === dpl.dosenId);
+
+        document.getElementById("dpl-detail-title").textContent = `Detail DPL: ${dosen.nama}`;
+        document.getElementById("dpl-detail-nama").textContent = dosen.nama;
+        document.getElementById("dpl-detail-prodi").textContent = dosen.prodi;
+        document.getElementById("dpl-detail-kontak").textContent = dosen.kontak;
+        document.getElementById("dpl-detail-count").textContent = dpl.mahasiswa.length;
+
+        const mahasiswaContainer = document.getElementById("dpl-detail-mahasiswa-list");
+        mahasiswaContainer.innerHTML = "";
+
+        dpl.mahasiswa.forEach(mhsId => {
+          const mhs = PESERTA_DATA.find(p => p.id === mhsId);
+          const div = document.createElement("div");
+          div.style.cssText = `
+            padding: 0.875rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          `;
+          div.innerHTML = `
+            <div>
+              <div style="font-weight: 500">${mhs.nama}</div>
+              <div style="font-size: 0.875rem; color: var(--text-muted)">${mhs.nim} • ${mhs.prodi}</div>
+            </div>
+            <button class="btn btn-outline btn-sm" style="padding: 0.375rem 0.75rem; font-size: 0.875rem" onclick="unassignMahasiswaFromDPL(${mhsId})">
+              Lepas
+            </button>
+          `;
+          mahasiswaContainer.appendChild(div);
+        });
+
+        document.getElementById("dpl-detail-drawer-overlay").classList.add("open");
+      }
+
+      function closeDPLDetailDrawer(e) {
+        if (!e || e.target === document.getElementById("dpl-detail-drawer-overlay")) {
+          document.getElementById("dpl-detail-drawer-overlay").classList.remove("open");
+          currentDPLId = null;
+        }
+      }
+
+      function unassignMahasiswaFromDPL(mahasiswaId) {
+        const dpl = DPL_ASSIGNMENTS.find(d => d.id === currentDPLId);
+        dpl.mahasiswa = dpl.mahasiswa.filter(id => id !== mahasiswaId);
+
+        const mhs = PESERTA_DATA.find(p => p.id === mahasiswaId);
+        mhs.dpl = null;
+
+        if (dpl.mahasiswa.length === 0) {
+          alert("Semua mahasiswa sudah dilepaskan. DPL akan dihapus.");
+          const idx = DPL_ASSIGNMENTS.indexOf(dpl);
+          DPL_ASSIGNMENTS.splice(idx, 1);
+          closeDPLDetailDrawer();
+        } else {
+          const dosen = DOSEN_DATA.find(d => d.id === dpl.dosenId);
+          document.getElementById("dpl-detail-count").textContent = dpl.mahasiswa.length;
+          openDPLDetailDrawer(currentDPLId);
+        }
+
+        dplFiltered = [...DPL_ASSIGNMENTS];
+        renderDPLTable();
+        updateDPLStats();
+      }
+
+      function confirmDeleteDPL() {
+        const dpl = DPL_ASSIGNMENTS.find(d => d.id === currentDPLId);
+        const dosen = DOSEN_DATA.find(d => d.id === dpl.dosenId);
+        document.getElementById("dpl-delete-message").textContent =
+          `Apakah Anda yakin ingin menghapus ${dosen.nama} sebagai DPL? Semua mahasiswa yang dibimbing akan dilepaskan.`;
+        document.getElementById("dpl-delete-modal").classList.add("open");
+      }
+
+      function closeDPLDeleteModal(e) {
+        if (!e || e.target === document.getElementById("dpl-delete-modal")) {
+          document.getElementById("dpl-delete-modal").classList.remove("open");
+        }
+      }
+
+      function confirmDeleteDPLAction() {
+        const dpl = DPL_ASSIGNMENTS.find(d => d.id === currentDPLId);
+        const dosen = DOSEN_DATA.find(d => d.id === dpl.dosenId);
+
+        dpl.mahasiswa.forEach(mhsId => {
+          const mhs = PESERTA_DATA.find(p => p.id === mhsId);
+          if (mhs) mhs.dpl = null;
+        });
+
+        const idx = DPL_ASSIGNMENTS.indexOf(dpl);
+        DPL_ASSIGNMENTS.splice(idx, 1);
+
+        alert(`${dosen.nama} berhasil dihapus dari DPL`);
+        closeDPLDeleteModal();
+        closeDPLDetailDrawer();
+        dplFiltered = [...DPL_ASSIGNMENTS];
+        renderDPLTable();
+        updateDPLStats();
+      }
+
       // Initialize
       window.addEventListener("DOMContentLoaded", () => {
         initSekolahTable();
         updatePesertaStats();
         renderPesertaTable();
+        updateDPLStats();
+        renderDPLTable();
         // Include the base-confirm-dialog
         fetch("/app/shared/components/base-confirm-dialog.html")
           .then((r) => r.text())
