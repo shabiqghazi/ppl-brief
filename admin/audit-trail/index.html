@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audit Trail — PPL FTK</title>
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <style>
+      .nav-section {
+        padding: 0.25rem 1.5rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #6b7280;
+        margin-top: 0.75rem;
+      }
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #1f2937;
+      }
+      .sidebar-footer a {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+
+      /* Filter bar */
+      .filter-bar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .filter-bar select,
+      .filter-bar input {
+        padding: 0.45rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        background: var(--white);
+        color: var(--text-main);
+        min-width: 180px;
+      }
+      .filter-bar select:focus,
+      .filter-bar input:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: -1px;
+      }
+      .filter-count {
+        margin-left: auto;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+      }
+
+      /* Timeline */
+      .timeline {
+        position: relative;
+        padding-left: 2.5rem;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0.875rem;
+        top: 0.5rem;
+        bottom: 0;
+        width: 2px;
+        background: var(--border);
+      }
+
+      /* Date group */
+      .timeline-date-group {
+        margin-bottom: 2rem;
+      }
+      .timeline-date-label {
+        position: relative;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        padding-left: 0;
+        margin-left: -2.5rem;
+        padding-left: 2rem;
+      }
+      .timeline-date-label::before {
+        content: "";
+        position: absolute;
+        left: 0.625rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--border);
+        border: 2px solid var(--white);
+        box-shadow: 0 0 0 2px var(--border);
+      }
+
+      /* Timeline item */
+      .tl-item {
+        position: relative;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        transition: box-shadow 0.15s;
+      }
+      .tl-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      }
+      .tl-item::before {
+        content: "";
+        position: absolute;
+        left: -1.875rem;
+        top: 1.1rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background: var(--white);
+        border: 2px solid var(--border);
+        z-index: 1;
+      }
+      .tl-item.tl-mahasiswa::before {
+        border-color: #6366f1;
+        background: #eef2ff;
+      }
+      .tl-item.tl-dosen::before {
+        border-color: #0ea5e9;
+        background: #e0f2fe;
+      }
+
+      .tl-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.375rem;
+      }
+      .tl-desc {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--text-main);
+        line-height: 1.45;
+        flex: 1;
+      }
+      .tl-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .tl-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        flex-wrap: wrap;
+      }
+      .tl-actor {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+      }
+      .tl-actor strong {
+        color: var(--text-main);
+        font-weight: 500;
+      }
+
+      /* Action badges */
+      .badge-action {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .ba-register {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .ba-verify {
+        background: #d1fae5;
+        color: #065f46;
+      }
+      .ba-place {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .ba-swap {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .ba-assign-dpl {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .ba-add-mhs {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      /* Subject badge */
+      .badge-subject {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+      }
+      .bs-mahasiswa {
+        background: #eef2ff;
+        color: #4338ca;
+      }
+      .bs-dosen {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+      }
+      .empty-state p {
+        font-size: 0.9375rem;
+        margin-top: 0.5rem;
+      }
+
+      /* Stats row */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .stat-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1.1;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">PPL FTK — Admin</div>
+        <nav class="sidebar-nav">
+          <a href="../dashboard/" class="nav-item">📊 Dashboard</a>
+          <div class="nav-section">M1 — SALAM &amp; SSO</div>
+          <a href="../salam/" class="nav-item">🔗 Integrasi SALAM</a>
+          <div class="nav-section">M2 — Periode PPL</div>
+          <a href="../periode/" class="nav-item">📅 Periode PPL</a>
+          <a href="../mitra/" class="nav-item">🏫 Sekolah Mitra</a>
+          <a href="../program-studi/" class="nav-item">📚 Program Studi</a>
+          <a href="../dosen/" class="nav-item">👨‍🏫 Manajemen Dosen</a>
+          <div class="nav-section">M3 — Pendaftaran</div>
+          <a href="../pendaftaran/" class="nav-item">📝 Pendaftaran</a>
+          <a href="../penempatan/" class="nav-item">📌 Penempatan &amp; DPL</a>
+          <a href="../laporan/" class="nav-item">📄 Laporan &amp; Surat</a>
+          <a href="../audit-trail/" class="nav-item active">🔍 Audit Trail</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="../../index.html">← Keluar</a>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="top-bar">
+          <h1 style="font-size: 1.125rem; font-weight: 600">Audit Trail</h1>
+          <div style="display: flex; align-items: center; gap: 1rem">
+            <span class="text-sm text-muted">Super Admin</span>
+            <div
+              style="
+                width: 32px;
+                height: 32px;
+                background: var(--primary);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 0.8125rem;
+                font-weight: 600;
+              "
+            >
+              SA
+            </div>
+          </div>
+        </header>
+
+        <div class="page-container">
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <select>
+              <option value="">Semua Periode</option>
+              <option selected>PPL Ganjil 2025/2026</option>
+              <option>PPL Genap 2024/2025</option>
+              <option>PPL Ganjil 2024/2025</option>
+            </select>
+            <select>
+              <option value="">Semua Jenis Aksi</option>
+              <option>Pendaftaran</option>
+              <option>Verifikasi Peserta</option>
+              <option>Penempatan</option>
+              <option>Tukar Penempatan</option>
+              <option>Penugasan DPL</option>
+              <option>Tambah Mahasiswa DPL</option>
+            </select>
+            <select>
+              <option value="">Semua Subjek</option>
+              <option>Mahasiswa</option>
+              <option>Dosen</option>
+            </select>
+            <span class="filter-count">Menampilkan 12 dari 248 aktivitas</span>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline">
+            <!-- ── Hari ini ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">
+                Hari ini — Selasa, 10 Juni 2026
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Ahmad Fauzi mendaftar ke SMP Negeri 1 Bandung
+                  </div>
+                  <span class="tl-time">14:32 · 2 jam lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-register">Pendaftaran</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Ahmad Fauzi</strong> (diri sendiri)</span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Siti Nurhaliza diverifikasi sebagai peserta PPL Reguler
+                  </div>
+                  <span class="tl-time">13:15 · 3 jam lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-verify">Verifikasi Peserta</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-dosen">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Dr. Budi Santoso ditugaskan sebagai DPL (12 mahasiswa)
+                  </div>
+                  <span class="tl-time">11:47 · 5 jam lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-assign-dpl">Penugasan DPL</span>
+                  <span class="badge-subject bs-dosen">Dosen</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">Reza Permana ditukar penempatan</div>
+                  <span class="tl-time">10:05 · 6 jam lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-swap">Tukar Penempatan</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Kemarin ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">
+                Kemarin — Senin, 9 Juni 2026
+              </div>
+
+              <div class="tl-item tl-dosen">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    3 mahasiswa ditambahkan ke DPL Prof. Dewi Rahayu
+                  </div>
+                  <span class="tl-time">16:20 · 1 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-add-mhs">Tambah Mhs DPL</span>
+                  <span class="badge-subject bs-dosen">Dosen</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Rina Kartika ditempatkan ke SMK Negeri 3 Bandung
+                  </div>
+                  <span class="tl-time">15:44 · 1 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-place">Penempatan</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Dian Pratiwi ditempatkan ke SMA Negeri 5 Bandung
+                  </div>
+                  <span class="tl-time">15:30 · 1 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-place">Penempatan</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Fajar Nugroho diverifikasi sebagai peserta PPL Internasional
+                  </div>
+                  <span class="tl-time">09:11 · 1 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-verify">Verifikasi Peserta</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 3 hari lalu ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">Sabtu, 7 Juni 2026</div>
+
+              <div class="tl-item tl-dosen">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Dr. Hendra Wijaya ditugaskan sebagai DPL (8 mahasiswa)
+                  </div>
+                  <span class="tl-time">10:33 · 3 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-assign-dpl">Penugasan DPL</span>
+                  <span class="badge-subject bs-dosen">Dosen</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-mahasiswa">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    Lina Susanti mendaftar ke SMP Negeri 7 Bandung
+                  </div>
+                  <span class="tl-time">08:55 · 3 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-register">Pendaftaran</span>
+                  <span class="badge-subject bs-mahasiswa">Mahasiswa</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Lina Susanti</strong> (diri sendiri)</span
+                  >
+                </div>
+              </div>
+
+              <div class="tl-item tl-dosen">
+                <div class="tl-top">
+                  <div class="tl-desc">
+                    5 mahasiswa ditambahkan ke DPL Dr. Hendra Wijaya
+                  </div>
+                  <span class="tl-time">08:40 · 3 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-add-mhs">Tambah Mhs DPL</span>
+                  <span class="badge-subject bs-dosen">Dosen</span>
+                  <span class="tl-actor"
+                    >Oleh <strong>Super Admin</strong></span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Load more ── -->
+            <div style="text-align: center; padding: 1rem 0 2rem">
+              <button class="btn btn-outline" style="min-width: 160px">
+                Muat lebih banyak
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

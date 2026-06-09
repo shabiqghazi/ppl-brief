@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Aktivitas — PPL FTK</title>
+    <link rel="stylesheet" href="../../assets/css/main.css" />
+    <style>
+      .sidebar-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #1f2937;
+      }
+      .sidebar-footer a {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        text-decoration: none;
+      }
+
+      /* Filter bar */
+      .filter-bar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .filter-bar select {
+        padding: 0.45rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        background: var(--white);
+        color: var(--text-main);
+        min-width: 180px;
+      }
+      .filter-bar select:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: -1px;
+      }
+      .filter-count {
+        margin-left: auto;
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+      }
+
+      /* Info banner */
+      .info-banner {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 0.5rem;
+        padding: 0.875rem 1.25rem;
+        font-size: 0.875rem;
+        color: #1e40af;
+        margin-bottom: 1.5rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      /* Timeline */
+      .timeline {
+        position: relative;
+        padding-left: 2.5rem;
+      }
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.875rem;
+        top: 0.5rem;
+        bottom: 0;
+        width: 2px;
+        background: var(--border);
+      }
+
+      .timeline-date-group {
+        margin-bottom: 2rem;
+      }
+      .timeline-date-label {
+        position: relative;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        margin-left: -2.5rem;
+        padding-left: 2rem;
+      }
+      .timeline-date-label::before {
+        content: '';
+        position: absolute;
+        left: 0.625rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: var(--border);
+        border: 2px solid var(--white);
+        box-shadow: 0 0 0 2px var(--border);
+      }
+
+      /* Timeline item */
+      .tl-item {
+        position: relative;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        transition: box-shadow 0.15s;
+      }
+      .tl-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      }
+      .tl-item::before {
+        content: '';
+        position: absolute;
+        left: -1.875rem;
+        top: 1.1rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background: #e0f2fe;
+        border: 2px solid #0ea5e9;
+        z-index: 1;
+      }
+
+      .tl-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 0.375rem;
+      }
+      .tl-desc {
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--text-main);
+        line-height: 1.45;
+        flex: 1;
+      }
+      .tl-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .tl-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        flex-wrap: wrap;
+      }
+      .tl-actor {
+        font-size: 0.8125rem;
+        color: var(--text-muted);
+      }
+      .tl-actor strong {
+        color: var(--text-main);
+        font-weight: 500;
+      }
+
+      /* Mahasiswa list inside item */
+      .tl-mhs-list {
+        margin-top: 0.625rem;
+        padding: 0.625rem 0.75rem;
+        background: #f9fafb;
+        border-radius: 0.375rem;
+        border: 1px solid var(--border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+      }
+      .tl-mhs-chip {
+        background: #eef2ff;
+        color: #3730a3;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        padding: 0.15rem 0.6rem;
+        font-weight: 500;
+      }
+
+      /* Action badges */
+      .badge-action {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.55rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      .ba-assign-dpl { background: #dbeafe; color: #1e40af; }
+      .ba-add-mhs    { background: #f3f4f6; color: #374151; }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+      }
+      .empty-state p { font-size: 0.9375rem; margin-top: 0.5rem; }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">PPL FTK — DPL</div>
+        <nav class="sidebar-nav">
+          <a href="../dashboard/" class="nav-item">🏠 Dashboard</a>
+          <a href="../mahasiswa/" class="nav-item">👩‍🎓 Mahasiswa Saya</a>
+          <a href="../verifikasi/" class="nav-item">✅ Verifikasi Log</a>
+          <a href="../penilaian/" class="nav-item">🎓 Penilaian</a>
+          <a href="../audit-trail/" class="nav-item active">🔍 Riwayat Aktivitas</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="../../index.html">← Keluar</a>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header class="top-bar">
+          <h1 style="font-size: 1.125rem; font-weight: 600">Riwayat Aktivitas</h1>
+          <div style="display: flex; align-items: center; gap: 1rem">
+            <span class="text-sm text-muted">Dr. Budi Santoso</span>
+            <div style="width:32px;height:32px;background:#0ea5e9;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8125rem;font-weight:600;">BS</div>
+          </div>
+        </header>
+
+        <div class="page-container">
+
+          <!-- Info banner -->
+          <div class="info-banner">
+            <span style="font-size:1.1rem;">ℹ️</span>
+            <span>Menampilkan aktivitas yang berkaitan dengan akun Anda — <strong>Dr. Budi Santoso</strong>.</span>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <select>
+              <option value="">Semua Periode</option>
+              <option selected>PPL Ganjil 2025/2026</option>
+              <option>PPL Genap 2024/2025</option>
+              <option>PPL Ganjil 2024/2025</option>
+            </select>
+            <select>
+              <option value="">Semua Jenis Aksi</option>
+              <option>Penugasan DPL</option>
+              <option>Tambah Mahasiswa DPL</option>
+            </select>
+            <span class="filter-count">3 aktivitas</span>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline">
+
+            <!-- ── Hari ini ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">Hari ini — Selasa, 10 Juni 2026</div>
+
+              <div class="tl-item">
+                <div class="tl-top">
+                  <div class="tl-desc">Dr. Budi Santoso ditugaskan sebagai DPL (12 mahasiswa)</div>
+                  <span class="tl-time">11:47 · 5 jam lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-assign-dpl">Penugasan DPL</span>
+                  <span class="tl-actor">Oleh <strong>Super Admin</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Kemarin ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">Kemarin — Senin, 9 Juni 2026</div>
+
+              <div class="tl-item">
+                <div class="tl-top">
+                  <div class="tl-desc">4 mahasiswa ditambahkan ke DPL Dr. Budi Santoso</div>
+                  <span class="tl-time">14:30 · 1 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-add-mhs">Tambah Mhs DPL</span>
+                  <span class="tl-actor">Oleh <strong>Super Admin</strong></span>
+                </div>
+                <div class="tl-mhs-list">
+                  <span class="tl-mhs-chip">Rina Kartika</span>
+                  <span class="tl-mhs-chip">Dian Pratiwi</span>
+                  <span class="tl-mhs-chip">Reza Permana</span>
+                  <span class="tl-mhs-chip">Siti Nurhaliza</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ── 5 hari lalu ── -->
+            <div class="timeline-date-group">
+              <div class="timeline-date-label">Kamis, 5 Juni 2026</div>
+
+              <div class="tl-item">
+                <div class="tl-top">
+                  <div class="tl-desc">8 mahasiswa ditambahkan ke DPL Dr. Budi Santoso</div>
+                  <span class="tl-time">09:15 · 5 hari lalu</span>
+                </div>
+                <div class="tl-meta">
+                  <span class="badge-action ba-add-mhs">Tambah Mhs DPL</span>
+                  <span class="tl-actor">Oleh <strong>Super Admin</strong></span>
+                </div>
+                <div class="tl-mhs-list">
+                  <span class="tl-mhs-chip">Ahmad Fauzi</span>
+                  <span class="tl-mhs-chip">Fajar Nugroho</span>
+                  <span class="tl-mhs-chip">Lina Susanti</span>
+                  <span class="tl-mhs-chip">Budi Prasetyo</span>
+                  <span class="tl-mhs-chip">Maya Sari</span>
+                  <span class="tl-mhs-chip">Hendra Kurniawan</span>
+                  <span class="tl-mhs-chip">Dewi Anggraini</span>
+                  <span class="tl-mhs-chip">Yoga Pratama</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
